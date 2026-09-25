@@ -1,0 +1,5 @@
+node_modules/
+.DS_Store
+
+# Local handoff notes may contain internal information; never commit them.
+HANDOFF.md
