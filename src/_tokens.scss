@@ -1,0 +1,20 @@
+// Design tokens.
+//
+// - Every token is a CSS custom property on :root, so users can re-brand the
+//   theme by editing the top of the compiled stylesheets/application.css
+//   without a Sass build.
+// - Theme rules read tokens through var(--ravnus-*). Never hard-code values
+//   such as hex colors outside this file.
+// - Dark mode is not implemented. It will be one more token set that
+//   overrides these same custom properties.
+
+/*
+ * RAVNUS design tokens.
+ * To customize the theme without building, edit the values in this block.
+ * Source: src/_tokens.scss
+ */
+:root {
+  // Pretendard first, then the fallback stack recommended by Pretendard
+  // for a consistent look across platforms.
+  --ravnus-font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}

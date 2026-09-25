@@ -1,0 +1,13 @@
+@import url(../../../stylesheets/application.css);
+/*
+ * RAVNUS design tokens.
+ * To customize the theme without building, edit the values in this block.
+ * Source: src/_tokens.scss
+ */
+:root {
+  --ravnus-font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+}
+
+:root {
+  --fonts-main: var(--ravnus-font-sans);
+}

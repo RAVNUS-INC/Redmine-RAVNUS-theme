@@ -1,0 +1,19 @@
+// RAVNUS — Redmine theme entry point.
+// `npm run build` compiles this file to stylesheets/application.css.
+//
+// Compiled output order:
+//   1. Redmine core stylesheet (the plain CSS @import below)
+//   2. Design tokens (:root custom properties) — the user customization surface
+//   3. Theme layers that override the core (typography, then components)
+
+@use "tokens";
+@use "typography";
+
+// Load the Redmine core stylesheet before every theme rule.
+// - Keep the url() form: Redmine 6.0+ rewrites url() references in theme CSS
+//   at boot and serves this as /assets/application-<digest>.css.
+//   A plain string (@import "...") is not rewritten.
+// - Sass allows no rule before @use, so this line comes after the @use rules.
+//   Dart Sass hoists plain CSS imports, so the compiled file still starts with
+//   it (`--no-charset` keeps an @charset line from being emitted above it).
+@import url(../../../stylesheets/application.css);
