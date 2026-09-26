@@ -22,8 +22,8 @@ Redmine 6.x / 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 �
 
 ## 스타일 작성: SCSS + CSS 변수
 
-- **SCSS는 작성용이다.** 컴포넌트별 partial로 나누고, 트래커·우선순위·상태 색상은 map + `@each`, 공통 스타일은 mixin으로 작성한다.
-- **CSS 변수(`:root`)는 사용자 커스터마이즈용이다.** 색·폰트·라운드·간격 등 디자인 토큰은 SCSS 변수가 아니라 `--ravnus-*` CSS 변수로 출력한다. 사용자가 빌드 없이 컴파일된 파일 상단의 토큰 블록만 고쳐 브랜드를 바꿀 수 있어야 한다.
+- **SCSS는 작성용이다.** 컴포넌트별 partial로 나누고, 공통 스타일은 mixin으로 작성한다. 우선순위 위치 클래스(`priority-lowest` 등)와 태그 색 이름은 map + `@each`로 만든다. 설치마다 id가 다른 상태·트래커 색은 사용자 CSS(`custom.css`)의 행 매핑으로 제공한다.
+- **CSS 변수는 사용자 커스터마이즈용이다.** 색·폰트·라운드·간격 등 디자인 토큰은 SCSS 변수가 아니라 `--ravnus-*` CSS 변수로 출력한다. 기본 토큰은 명시도 0인 `:where(:root)`에 선언해, 사용자가 빌드 없이 `stylesheets/custom.css`나 자식 테마의 `:root { … }`로 덮어 브랜드를 바꿀 수 있어야 한다.
 - **Dart Sass + `@use`/`@forward` 모듈 문법만 쓴다.** Sass `@import`는 deprecated이므로 금지한다. 빌드 스크립트의 `--fatal-deprecation=import`가 이를 에러로 막는다.
 - **코어 import**는 `@import url(../../../stylesheets/application.css);`로 쓰고, 컴파일 결과 파일의 첫 줄이어야 한다.
   - 반드시 `url()` 형태로 쓴다. Redmine은 테마 CSS의 `url()`만 재작성하므로 `@import "..."` 문자열 형태는 동작하지 않는다.
@@ -41,7 +41,17 @@ Redmine 6.x / 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 �
 ## 차별점: 한글(CJK) 타이포그래피
 
 - 기존 테마들은 라틴 폰트 기준이라 한글 행간·자간·줄바꿈이 어색하다. 이 테마는 한중일 사용자의 가독성을 최우선으로 한다.
-- 기본 폰트는 Pretendard(OFL), `word-break: keep-all`, 한글 기준 행간 조정을 적용한다.
+- 기본 폰트는 Pretendard(OFL)다. 일본어·중국어(간체·번체) UI에서는 OS 기본 CJK 폰트를 앞에 두고 Pretendard는 한글만 맡는다.
+- `word-break: keep-all`은 일본어·중국어를 뺀 모든 UI 언어에 적용한다(`:root:not(:lang(ja)):not(:lang(zh))`). 영어 UI를 쓰는 한국어 사용자도 어절 단위로 줄이 바뀐다.
+- 행간은 한글 기준으로 조정하고, 언어별 값은 `DESIGN.md` §7을 따른다.
+
+## 디자인 결정 (2026-09-26, 상세는 `DESIGN.md`)
+
+- **크롬·컬러**: 기본은 "잉크 바이올렛"이다(헤더 `#311E5F`, 상단 바 `#1C0F3A`). RAVNUS Inc. 브랜드 보라 `#46009B`는 선택 표시·주 버튼·포커스에만 쓰고, 링크는 `#215DB3`이다. 다른 크롬 안(Signature, Calm, Redmine Blue, Brand-forward)은 README 프리셋으로 제공한다. 브랜드 색을 공개 테마 기본값으로 쓰는 것은 RAVNUS Inc.가 확인했다.
+- **레이아웃**: 코어 배치(상단 메뉴, 헤더, 메인 메뉴, 사이드바, 본문)를 옮기지 않고 스타일만 바꾼다. v1에는 `javascripts/theme.js`를 두지 않는다.
+- **사이드바**: 기본은 오른쪽(코어와 같음)이다. `--ravnus-sidebar-at-start: 1`로 인라인 시작 쪽(LTR에서는 왼쪽)으로 바꾼다.
+- **폰트 제공**: Pretendard Variable 동적 서브셋을 jsDelivr CDN에서 버전을 고정해 불러온다. 폰트 파일은 저장소에 넣지 않는다. CDN 스타일시트를 `@import`하지 않는다(닿지 않으면 렌더링이 늦어질 수 있음). 생성 스크립트가 CDN woff2 주소를 가진 `@font-face`를 만들고 빌드가 테마 CSS에 컴파일한다. 폐쇄망이나 엄격한 CSP 환경은 `custom.css`나 자식 테마에서 직접 호스팅한다.
+- **커스터마이즈**: 추적되는 빈 스텁 `stylesheets/custom.css`를 테마가 import하고, 사용자는 여기에 토큰을 적는다. 조직 단위 설정은 자식 테마로 관리하도록 문서화한다.
 
 ## Redmine 6+ 테마 동작 (Redmine 6.1.4 / 7.0.1 소스와 도커로 확인)
 
@@ -54,10 +64,10 @@ Redmine 6.x / 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 �
 - 기동 시 테마 CSS의 `url(...)`이 재작성된다. `url(../../../stylesheets/application.css)`는 `url("/assets/application-<digest>.css")`가 되며, 이 방식이 공식 위키에 문서화되어 있다. 내장 테마(alternate, classic)가 쓰는 `url(/application.css)`도 동작한다.
 - `javascripts/theme.js`가 있으면 모든 페이지에 자동 로드된다. JS에서 이미지 경로는 `RAILS_ASSET_URL("/icons/...")` 의사 메서드를 쓴다.
 - 프로덕션 모드는 기동 시 에셋 파일 mtime이 manifest보다 새로우면 `public/assets`로 다시 컴파일한다. Redmine 실행 유저에게 `public/assets` 쓰기 권한이 필요하고, 테마를 바꾼 뒤에는 앱 서버를 재시작해야 한다. 테마 목록도 기동 시에만 스캔한다.
-- 코어 CSS는 `:root { --fonts-main: ... }`를 정의해 본문·제목·위키 편집기에 쓴다 (6.x, 7.x 공통). 이 테마는 이 변수를 `--ravnus-font-sans`로 재정의해 기본 폰트를 바꾼다.
+- 코어 CSS는 `:root { --fonts-main: ... }`를 정의해 본문·제목·위키 편집기에 쓴다 (6.x, 7.x 공통). 이 테마는 이 변수를 재정의해 기본 폰트를 바꾼다(언어별 스택은 `DESIGN.md` §7.1).
 - Redmine 7 코어는 Open Color 변수(`--oc-*`)와 논리 속성(`padding-inline-start` 등, RTL 대응)을 쓰지만 6.x에는 없다. 6.x/7.x에 공통으로 필요한 스타일은 7 전용 변수에 기대지 않는다.
 - `<html lang>`에 사용자 언어가 들어간다 (7은 `dir`도 추가). 언어별 폰트 분기는 `:lang(ko)`, `:lang(ja)` 등으로 할 수 있다.
-- 일감 목록 행에는 `tracker-N`, `status-N`, `priority-N`, `priority-lowest|default|high3|high2|highest`, `closed`, `overdue`, `behind-schedule`, `parent`, `child` 등의 클래스가 붙는다. 색상 map + `@each`의 기준으로 쓴다.
+- 일감 목록 행에는 `tracker-N`, `status-N`, `priority-N`, `priority-lowest|default|high3|high2|highest`, `closed`, `overdue`, `behind-schedule`, `parent`, `child` 등의 클래스가 붙는다. 우선순위 위치 클래스는 map + `@each`의 기준으로, 설치마다 id가 다른 `status-N`·`tracker-N`은 사용자 CSS 행 매핑의 기준으로 쓴다.
 - 공식 문서: https://www.redmine.org/projects/redmine/wiki/howto_create_a_custom_redmine_theme
 
 ## 디렉터리 구조
@@ -72,15 +82,18 @@ Redmine 6.x / 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 �
 ├── .docker/seed.rb               # 도커 테스트 환경 샘플 데이터
 ├── docker-compose.yml            # Redmine 6.x / 7.x 테스트 환경
 ├── package.json                  # Sass 빌드 스크립트 (build / watch)
+├── DESIGN.md                     # 디자인 기획서 (결정 사항, 토큰·색·타이포 사양, 단계별 계획)
 ├── LICENSE                       # MIT
 ├── README.md                     # 영문
 └── README.ko.md                  # 한국어
 ```
 
+문서는 루트에 둔다. Redmine은 루트 파일은 서빙하지 않지만 하위 디렉터리는 서빙하므로 `docs/` 같은 디렉터리를 만들지 않는다.
+
 아직 내용이 없는 디렉터리는 만들지 않는다 (빈 placeholder 금지). 필요해지면 아래 위치에 추가한다.
 
 - 컴포넌트: `src/components/_<name>.scss`를 만들고 `src/components/_index.scss`에서 모두 `@forward`한 뒤, 엔트리에서 `@use "components";`를 typography 다음에 추가한다.
-- 런타임 디렉터리(`javascripts/`, `favicon/`, `images/`, 폰트 등): `docker-compose.yml`의 두 서비스 볼륨에도 마운트를 추가한다.
+- 런타임 디렉터리(`favicon/`, `images/` 등): `docker-compose.yml`의 두 서비스 볼륨에도 마운트를 추가한다. 폰트는 CDN을 쓰므로 저장소에 넣지 않는다.
 - CI: `.github/workflows/`
 
 ## 개발 명령
@@ -99,9 +112,8 @@ Redmine 6.x / 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 �
 - 게시된 이력 수정이나 강제 푸시는 요청 없이 하지 않는다.
 - 설치·빌드·사용법이 바뀌면 README.md와 README.ko.md를 함께 갱신한다.
 - 운영 중인 Redmine 서버에서 직접 개발하지 않는다. 개발과 검증은 도커 테스트 환경에서 한다.
+- 디자인을 바꾸려면 `DESIGN.md`를 먼저 갱신한다. 확정된 결정을 바꿀 때는 이 문서의 "디자인 결정"도 함께 고친다.
 
-## 미정 사항 (결정 전까지 임의로 정하지 않는다)
+## 남은 확인 사항
 
-- 디자인 방향: 메인 컬러, 레이아웃 변경 범위, 사이드바 위치
-- Pretendard 번들 vs CDN: 번들은 폐쇄망 설치에 대응하지만 용량이 늘어난다. 소스 분석상 테마 하위 디렉터리(예: `fonts/`)의 파일도 에셋으로 등록되고 CSS의 `url()`도 재작성되므로 서빙될 가능성이 높지만, 도커 환경에서 실제로 확인해야 한다. 번들하면 OFL 라이선스 파일을 함께 넣는다.
-- 사용자 커스터마이즈 방식: 컴파일 파일 상단 토큰 수정만 안내할지, 별도 override 파일 로드 방식을 제공할지
+- 구현 전에 `DESIGN.md` §9의 Phase 0 검증을 먼저 한다. 대상은 `custom.css`·자식 테마 import 경로, CDN `@font-face` 주소가 에셋 파이프라인을 그대로 통과하는지, CDN이 막혔을 때 렌더링이 막히지 않는지, 6.0.x 동작이다. 결과에 따라 이 문서와 README를 고친다.

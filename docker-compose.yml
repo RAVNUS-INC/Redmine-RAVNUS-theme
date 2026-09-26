@@ -7,7 +7,7 @@
 # Only the theme's runtime directories are mounted: Redmine serves every
 # top-level theme directory except src/ and dot-directories as assets, so
 # mounting the repository root would expose node_modules/ as well.
-# Mount any new runtime directory (javascripts/, images/, favicon/ ...) here too.
+# Mount any new runtime directory (images/, favicon/ ...) here too.
 
 x-redmine: &redmine
   environment:
