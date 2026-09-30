@@ -1,6 +1,6 @@
 # RAVNUS 디자인 기획서
 
-> 상태: 소유자 결정 반영 (2026-09-26) · 대상: Redmine 6.x / 7.x (테스트 기준 6.1.4 / 7.0.1, 6.0.x는 Phase 0에서 확인)
+> 상태: 소유자 결정 반영 (2026-09-26, §4.1 크롬 기본값은 2026-10-01 변경) · 대상: Redmine 6.x / 7.x (테스트 기준 6.1.4 / 7.0.1, 6.0.x는 Phase 0에서 확인)
 > 위치: 공개 저장소 루트의 `DESIGN.md`. Redmine은 테마 루트의 하위 디렉터리(`src`와 dot-디렉터리 제외)를 모두 에셋으로 서빙하지만 루트 파일은 서빙하지 않으므로 `docs/`가 아니라 루트에 둔다(§12). 배포 환경별 서버·계정·플러그인 정보는 적지 않는다.
 > 근거 자료: 작성 과정의 작업 자료(조사 4건: 코어 UI 해부, 테마 지형과 브랜드, CJK 타이포그래피, 디자인 시스템 · 디자인 방향 3건 · 심사 3건: 구현·업그레이드 안전성, CJK 가독성·접근성, 제품·채택 · 검토 의견 23건)는 저장소에 싣지 않는다. 검토 의견의 반영 내용은 부록 "개정 이력"에 요약하고, 소유자 결정 6건은 부록 "결정 기록"에 적는다.
 
@@ -12,27 +12,25 @@
 - Dart Sass `@use`로 작성하고, 토큰은 `--ravnus-*` CSS 변수로 출력한다.
 - 다크 모드는 토큰 세트 하나를 추가하는 방식으로만 만든다.
 - 기본 폰트는 Pretendard(OFL)이고 `keep-all`과 한글 기준 행간을 쓴다. UI 언어별 적용 범위는 §4.6 결정을 따른다.
-- §4.1–§4.6의 여섯 항목은 2026-09-26 소유자 결정으로 확정했다(부록 "결정 기록").
+- §4.1–§4.6의 여섯 항목은 2026-09-26 소유자 결정으로 확정했다. 2026-10-01 소유자가 §4.1의 기본 크롬을 A(Ink)에서 B(Signature)로 바꾸고, §4.2(기존 레이아웃 유지)와 §4.4(CDN 기본)는 다시 확인했다(부록 "결정 기록").
 
 ---
 
 ## 1. 요약
 
-**채택안: "Ink & Paper"(Redmine의 보수적 진화형)를 기반으로 삼고, 나머지 두 방향의 장점과 심사·검토에서 나온 필수 수정을 합친 안.** 메인 컬러·크롬(§4.1)과 레이아웃 변경 범위(§4.2)를 비롯한 6건은 2026-09-26 소유자 결정으로 확정했다(부록 "결정 기록"). §4.1은 초안처럼 A를 기본값으로 하되, 초안에 있던 선행 조건(브랜드 색 사용 확인), 임시 기본값(D), 브랜드 색 프리셋 보류는 두지 않는다. §4.4는 초안 추천(번들)과 달리 jsDelivr CDN을 기본으로 정했다. 나머지 네 건(§4.2, §4.3, §4.5, §4.6)은 초안 추천과 같다.
+**채택안: "Ink & Paper"(Redmine의 보수적 진화형)를 기반으로 삼고, 나머지 두 방향의 장점과 심사·검토에서 나온 필수 수정을 합친 안.** 메인 컬러·크롬(§4.1)과 레이아웃 변경 범위(§4.2)를 비롯한 6건은 2026-09-26 소유자 결정으로 확정했다(부록 "결정 기록"). §4.1은 처음에 초안처럼 A(Ink)를 기본값으로 정했다가, 2026-10-01 소유자가 A·B·C·D 프로토타입을 나란히 비교한 뒤 B(Signature)로 바꿨다. 초안에 있던 선행 조건(브랜드 색 사용 확인), 임시 기본값(D), 브랜드 색 프리셋 보류는 두지 않는다. §4.4는 초안 추천(번들)과 달리 jsDelivr CDN을 기본으로 정했다. 나머지 네 건(§4.2, §4.3, §4.5, §4.6)은 초안 추천과 같다. §4.2(기존 레이아웃 유지)와 §4.4(CDN 기본)는 2026-10-01에 다시 확인했다.
 
 Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드바, 표, 탭)는 그대로 둔다. CSS만으로 6.1과 7.0을 한 모습으로 맞춘 뒤, 코어가 약한 곳을 고친다. 코어에는 본문 행간이 없고, 폼 컨트롤은 Arial 13.33px로 그려지며, 기본 폰트 Noto Sans에는 라틴 글자만 있다. 회색 글자 여러 개는 AA에 못 미친다(#999 2.85:1, 7.x gray-6 3.32:1). 색은 다음과 같이 쓴다.
-- 크롬: 짙은 잉크 바이올렛(`#311E5F` 헤더, `#1C0F3A` 상단 바).
-- 브랜드 바이올렛 `#46009B`: 선택 표시, 주 버튼, 포커스에만 쓴다.
+- 크롬(Signature, §4.1): 2rem 브랜드 바이올렛 상단 바(`#46009B`, 흰 글자 12.11:1) + 흰 헤더(본문 글자 16.20:1). 메인 메뉴 바는 연한 `#F6F6FC`이고, 흰 헤더·본문과는 위아래 헤어라인으로 나눈다(§6.2). 짙은 잉크 바이올렛 크롬(Ink: `#311E5F` 헤더, `#1C0F3A` 상단 바)은 README 프리셋으로 제공한다.
+- 브랜드 바이올렛 `#46009B`: 크롬에서는 상단 바와 모바일 flyout(같은 토큰)에만 면으로 쓰고, 본문에서는 주 버튼 채움과 선택 표시, 포커스에만 쓴다.
 - 링크: 읽기 좋은 파랑 `#215DB3`.
 
-여기에 다른 방향에서 두 가지를 가져온다. Calm Workspace에서는 업데이트해도 설정이 남는 커스터마이즈 방식(`:where(:root)` 토큰 + `custom.css` 스텁)을 가져온다. Manuscript에서는 읽기 레이어를 가져온다. 언어별 본문 행간, 모든 텍스트 컨테이너의 명시적 line-height, 문장 속 링크 상시 밑줄이다.
+여기에 다른 방향에서 세 가지를 가져온다. Calm Workspace에서는 업데이트해도 설정이 남는 커스터마이즈 방식(`:where(:root)` 토큰 + `custom.css` 스텁)을 가져온다. Manuscript에서는 읽기 레이어(언어별 본문 행간, 모든 텍스트 컨테이너의 명시적 line-height, 문장 속 링크 상시 밑줄)와 Signature 크롬(2026-10-01부터 기본 크롬)을 가져온다.
 
-이 방향을 고른 이유는 다섯 가지다.
-- 심사 세 건이 모두 이 방향을 기반으로 추천했다(구현·업그레이드 8, CJK·접근성 8, 제품·채택 8).
-- 요소를 옮기지 않고, 코어가 전제하는 "어두운 크롬 위 밝은 글자"를 유지한다. 그래서 코어 업그레이드와 모르는 플러그인에 가장 덜 깨진다.
-- 사이드바 좌우 전환과 접기는 6.1.4·7.0.1 두 버전에서, 접기 셰브런의 RTL 반전은 7.0.1에서 확인됐다.
-- 제시된 명암비가 재계산 결과와 모두 일치했다.
-- 기존 Redmine 사용자가 다시 배울 것이 가장 적다.
+기반 방향과 기본 크롬은 고른 주체가 다르다.
+- **기반 방향(Ink & Paper)은 심사가 골랐다.** 심사 세 건이 모두 이 방향을 기반으로 추천했다(구현·업그레이드 8, CJK·접근성 8, 제품·채택 8). 요소를 옮기지 않으므로 코어 업그레이드에 덜 깨지고 기존 Redmine 사용자가 다시 배울 것이 가장 적다. 사이드바 좌우 전환과 접기는 6.1.4·7.0.1 두 버전에서, 접기 셰브런의 RTL 반전은 7.0.1에서 확인됐다. 제시된 명암비가 재계산 결과와 모두 일치했다.
+- **기본 크롬(Signature)은 소유자가 골랐다(2026-10-01).** 같은 기반 CSS에 토큰만 바꾼 A·B·C·D 프로토타입을 6.1.4·7.0.1에서 나란히 본 뒤, 브랜드가 선명하고(상단 바 한 줄이 RAVNUS 바이올렛) 크롬이 가볍다(어두운 띠 두 개 대신 한 개)는 이유로 B를 골랐다.
+- **받아들인 대가**: Ink & Paper 심사에서 장점으로 꼽힌 "코어가 전제하는 어두운 헤더 위 밝은 글자를 유지한다"는 이제 헤더에 적용되지 않는다. 6.1.4·7.0.1 모두 `#header`와 `#header a`에 밝은 글자를 주고, 모바일 `responsive.css`는 헤더 배경과 글자색을 하드코딩한 채 테마보다 나중에 로드된다. 테마가 놓친 규칙은 흰 바탕에 흰 글자가 되어 보이지 않고, 플러그인이 헤더에 넣는 콘텐츠도 같은 위험이 있다 (미검증: 플러그인). 대응: 헤더 안 코어 규칙을 두 버전 모두 목록으로 만들어 헤더 토큰으로 다시 칠하고(§8.4 12, §8.6), 목록 밖 자손도 따르도록 `#header`의 일반 자손에 색을 명시하며, 요소마다 계산 스타일을 assert한다(§10.2). 흰 헤더가 맞지 않는 설치는 Ink 프리셋으로 어두운 헤더를 쓴다(§6.3, §11).
 
 이 방향의 약점이었던 네 가지는 다른 방향의 요소와 필수 수정으로 보완한다. 편집한 컴파일 파일이 업데이트 때 덮이는 문제, 본문 링크를 색으로만 구분하는 문제, 주 버튼 hover가 보이지 않는 문제, 선택 행 명암 여유 부족이다. 검토에서 나온 빈틈(렌더된 화면의 코어 하드코딩 색, forced-colors와 인쇄, 코어 `overflow: hidden`에 잘리는 포커스 링, jstoolbar와 `url()` 이미지 아이콘)도 범위에 넣었다.
 
@@ -40,10 +38,10 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 
 | 항목 | 내용 | 상태 |
 |---|---|---|
-| 메인 컬러·크롬 (§4.1) | A 잉크 바이올렛 헤더 + 상단 바가 기본값. `#46009B`는 선택·주 버튼·포커스에만, 링크는 파랑. B Signature, C Calm, D 레드마인 블루, Brand-forward는 README 프리셋. RAVNUS Inc. 브랜드 색을 공개 MIT 테마의 기본값으로 쓰는 것은 소유자가 확인했다 | **결정** (2026-09-26) |
-| 레이아웃 변경 범위 (§4.2) | 기존 Redmine 레이아웃을 유지하고(영역 재배치 없음) 스타일만 바꾼다. v1에 `javascripts/theme.js` 없음. 6/7을 한 모습으로 맞춘다 | **결정** (2026-09-26) |
+| 메인 컬러·크롬 (§4.1) | B Signature가 기본값: 2rem `#46009B` 상단 바(흰 글자, 앰버 포커스 링) + 흰 헤더(헤더 토큰으로 코어 밝은 글자 규칙을 다시 칠함). `#46009B`는 크롬에서는 상단 바(모바일 flyout 포함)에만, 본문에서는 선택·주 버튼·포커스에만, 링크는 파랑. A Ink(잉크 바이올렛 헤더 + 상단 바), C Calm, D 레드마인 블루, Brand-forward는 README 프리셋. RAVNUS Inc. 브랜드 색을 공개 MIT 테마의 기본값으로 쓰는 것은 소유자가 확인했다 | **결정** (2026-09-26 A → 2026-10-01 B로 변경) |
+| 레이아웃 변경 범위 (§4.2) | 기존 Redmine 레이아웃을 유지하고(영역 재배치 없음) 스타일만 바꾼다. v1에 `javascripts/theme.js` 없음. 6/7을 한 모습으로 맞춘다 | **결정** (2026-09-26, 2026-10-01 재확인) |
 | 사이드바 기본 위치 (§4.3) | 오른쪽 기본(코어와 같음). `--ravnus-sidebar-at-start: 1`로 인라인 시작 쪽(LTR에서는 왼쪽)으로 전환 | **결정** (2026-09-26) |
-| Pretendard 제공 방식 (§4.4) | jsDelivr CDN 기본(v1.3.9 고정, Pretendard Variable 동적 서브셋). 생성 스크립트(`npm run fonts`)가 절대 https URL의 `@font-face`를 담은 `src/_pretendard.scss`를 만들고, 빌드(`npm run build`)가 이를 테마 CSS에 컴파일한다. CDN 스타일시트는 `@import`하지 않는다. 폰트 파일은 저장소에 두지 않는다. 폐쇄망·엄격한 CSP는 `custom.css`나 자식 테마에서 자체 호스팅 | **결정** (2026-09-26). 동작은 Phase 0 도커 검증 |
+| Pretendard 제공 방식 (§4.4) | jsDelivr CDN 기본(v1.3.9 고정, Pretendard Variable 동적 서브셋). 생성 스크립트(`npm run fonts`)가 절대 https URL의 `@font-face`를 담은 `src/_pretendard.scss`를 만들고, 빌드(`npm run build`)가 이를 테마 CSS에 컴파일한다. CDN 스타일시트는 `@import`하지 않는다. 폰트 파일은 저장소에 두지 않는다. 폐쇄망·엄격한 CSP는 `custom.css`나 자식 테마에서 자체 호스팅 | **결정** (2026-09-26, 2026-10-01 재확인). 동작은 Phase 0 도커 검증 |
 | 사용자 커스터마이즈 (§4.5) | `:where(:root)` 토큰 + 추적하는 빈 `custom.css` 스텁 + 자식 테마 문서화 | **결정** (2026-09-26). import 경로는 Phase 0 도커 검증 |
 | CJK 타이포 정책 (§4.6) | F1 + K2. 폰트: ko와 그 밖의 UI는 Pretendard, ja·zh·zh-TW UI는 OS 네이티브 우선(Pretendard는 한글만). keep-all: ja·zh를 뺀 모든 UI 언어 | **결정** (2026-09-26) |
 | 아이콘 | 코어 Tabler SVG 스프라이트를 토큰으로 다시 칠하기만 한다 | 추천 |
@@ -51,7 +49,7 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 | 테스트 기준 버전 | 6.1.4 / 7.0.1 도커(이미지 태그를 패치 버전으로 고정, §4.12). Phase 0에서 6.0.x로 핵심 가정 확인. 지원 범위는 그대로 | 추천 |
 
 **바로 다음 할 일**
-1. 결정 사항은 `CLAUDE.md` "디자인 결정"에 반영했다. Phase 0 결과가 필요한 문구는 결과가 나온 뒤 §12 문서 반영 규칙에 따라 고친다.
+1. 결정 사항(2026-10-01 §4.1 변경 포함)은 `CLAUDE.md` "디자인 결정"에 반영했다. Phase 0 결과가 필요한 문구는 결과가 나온 뒤 §12 문서 반영 규칙에 따라 고친다.
 2. Phase 0 도커 검증 스파이크를 한다(§9). 먼저 `docker-compose.yml`의 이미지 태그를 `redmine:6.1.4`·`redmine:7.0.1`로 고정한다(§4.12). CDN `@font-face` 확인과 6.0.x 확인을 포함한다.
 3. CDN 폰트를 처음 싣는 릴리스(v0.1.0)부터 README.md와 README.ko.md에 Pretendard 크레딧·OFL 고지와 CDN 안내(개인정보, CSP, 폐쇄망, 중국 본토)를 함께 싣는다(§4.4, §12).
 
@@ -59,15 +57,15 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 
 ## 2. 디자인 원칙
 
-원칙 1·2는 §4.2 결정(기존 레이아웃 유지, 스타일만 변경)을 따른다. 원칙 3의 폰트·줄바꿈 언어별 분기는 §4.6 결정(F1 + K2)을, 원칙 6의 강조색은 §4.1 결정(A)을 따른다.
+원칙 1·2는 §4.2 결정(기존 레이아웃 유지, 스타일만 변경)을 따른다. 원칙 3의 폰트·줄바꿈 언어별 분기는 §4.6 결정(F1 + K2)을, 원칙 6의 강조색과 크롬은 §4.1 결정(B Signature, 2026-10-01)을 따른다.
 
 1. **익숙함이 먼저다.** 코어에서 찾던 것은 RAVNUS에서도 같은 자리에 있다. 영역을 옮기거나 숨기지 않고 동작도 바꾸지 않는다. v1에는 `javascripts/theme.js`를 두지 않는다. 기존 Redmine 사용자에게 재학습을 요구하지 않는다.
 2. **요소는 옮기지 않고 스타일만 바꾸며, 두 코어를 한 모습으로 맞춘다.** 6.1과 7.0에 공통인 id·class(`#top-menu`, `#header`, `#main-menu`, `#sidebar`, `#content`, `table.list`, `div.issue`, `.tabs`)만 스타일한다. 6의 그라디언트·둥근 탭·`left:10px` 해킹과, 7의 flex 헤더·indigo 메뉴 바를 각각 명시적으로 리셋해 같은 결과를 만든다. 7에만 있는 `--oc-*`에는 기대지 않는다.
 3. **타이포그래피가 제품이다.** 모든 텍스트 컨테이너에 단위 없는 line-height를 명시한다. 행간, 자간, 문자 사이 간격은 언어별(`:lang`)로 따로 둔다. 폰트와 줄바꿈을 언어별로 얼마나 나눌지는 §4.6 결정을 따른다. 12px보다 작은 글자는 없다(간트 제목 열 제외, §7.2). 폼 컨트롤도 페이지 폰트를 쓴다.
 4. **가독성은 숫자로 지킨다.** 테마가 칠하는 모든 텍스트 쌍은 4.5:1 이상이고, 본문은 7:1 이상이다(실제 16.2:1). 컨트롤 경계, 포커스 링, 의미 있는 그래픽은 놓일 수 있는 **모든** 표면(hover 행, 선택 행 포함)에서 3:1 이상이다. 토큰 쌍은 CI가 기본값과 모든 프리셋에 대해 검사하고, 렌더된 화면은 axe-core로 검사해 테마가 덮지 않은 코어 하드코딩 색까지 잡는다(§10.2). 다만 axe-core는 핵심 화면에서만 돌리고 그라디언트·배경 이미지·가상 요소 위 글자는 판정하지 못하므로(incomplete), 그 밖의 화면과 글자는 스크린샷 검토로 확인한다.
 5. **색만으로 구분하지 않는다(WCAG 1.4.1).** 우선순위는 막대 개수와 모양으로, 상태는 빈 원·반원·체크·채운 원으로, 기한 초과와 일정 지연은 굵기와 서로 다른 글리프로 표시한다. 문장 속 링크는 밑줄로도 구분한다. 이 단서는 forced-colors와 흑백 인쇄에서도 남아야 한다(§8.8, §8.9).
-6. **브랜드는 절제한다.** 강조색(기본값 A안의 바이올렛 `#46009B`)은 "지금 위치"와 "누를 곳"만 알린다. 상태·우선순위 같은 의미 색에는 쓰지 않는다. 로고의 앰버·라임·시안도 의미 역할에 넣지 않는다. 기본 헤더에 로고를 넣지 않는다.
-7. **모든 값은 토큰이고 되돌릴 수 있다.** 색·크기·간격·라운드는 `--ravnus-*` 토큰이다. 틴트 표면은 `--ravnus-bg-canvas`와 섞고, 밝게·어둡게 하는 파생(hover, active, 상단 바)은 내부 토큰 `--_ravnus-mix-light`·`--_ravnus-mix-dark`와 섞는다(§5.4·§5.5). 그래서 다크 세트는 재정의만으로 끝난다. 눈에 띄는 선택은 설치마다 되돌릴 수 있다. 줄무늬, 사이드바 위치, 본문 폭 제한, keep-all 범위는 토큰 하나로, 밀도는 토큰 두 개(§6.3 Compact 프리셋)로 바꾼다.
+6. **브랜드는 절제한다.** 기본값(Signature)에서 크롬에 브랜드 바이올렛 `#46009B`를 면으로 쓰는 곳은 2rem 상단 바(모바일에서는 같은 토큰을 쓰는 flyout)뿐이다. 프리셋은 크롬 토큰이 가리키는 곳에만 쓴다(Brand-forward의 헤더, §4.1). 본문에서는 주 버튼 채움과 선택·포커스 표시에만 쓴다. 강조색(같은 `#46009B`)은 "지금 위치"와 "누를 곳"만 알리고, 상태·우선순위 같은 의미 색에는 쓰지 않는다. 로고의 앰버·라임·시안도 의미 역할에 넣지 않는다. 기본 헤더에 로고를 넣지 않는다.
+7. **모든 값은 토큰이고 되돌릴 수 있다.** 색·크기·간격·라운드는 `--ravnus-*` 토큰이다. 틴트 표면은 `--ravnus-bg-canvas`와 섞고, 밝게·어둡게 하는 파생(hover, active)은 내부 토큰 `--_ravnus-mix-light`·`--_ravnus-mix-dark`와 섞는다(§5.4·§5.5). 헤더가 어두운 프리셋의 상단 바는 같은 식으로 빌드 때 계산한 값을 README 블록에 리터럴로 싣는다(§5.4 폴백). 그래서 다크 세트는 재정의만으로 끝난다. 눈에 띄는 선택은 설치마다 되돌릴 수 있다. 줄무늬, 사이드바 위치, 본문 폭 제한, keep-all 범위는 토큰 하나로, 밀도는 토큰 두 개(§6.3 Compact 프리셋)로 바꾼다.
 
 ---
 
@@ -80,20 +78,22 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 | 약점 | 편집한 컴파일 파일이 git pull에 덮인다. 본문 링크에 밑줄이 없다(본문 글자 대비 2.53:1). 주 버튼 hover가 1.19:1이라 보이지 않는다. 선택 행의 fg-subtle이 4.29:1이다. high2/highest 행 마커가 색으로만 다르다. 크롬이 무겁고 PurpleMine을 떠올리게 할 수 있다 (미검증: 사용자 인상) | 흰 헤더가 코어·플러그인의 밝은 글자 전제를 뒤집는다. `transform` 셰브런이 7의 RTL 반전을 깬다(검증됨). 스크린샷에서 브랜드 인상이 약하다. 제목 링크가 검정이고 줄무늬가 없어 가장 낯설다. 크롬이 약 126px이다 | 순수 텍스트 셀 + border-collapse라 td에 알약을 만들 수 없다. ja·zh UI에도 keep-all을 건다. 진행 막대를 보라로 칠해 의미 색 규칙을 어긴다. 자식 테마 import 경로 `../../ravnus/stylesheets/...`가 Propshaft에서 해석되지 않는다(소스 추적, §4.5). 공수 추정이 낙관적이다 |
 | 심사 점수 (구현·업그레이드 / CJK·접근성 / 제품·채택) | **8 / 8 / 8** | 7 / 7 / 6 | 6 / 7.5 / 6.5 |
 
+이 표는 세 방향 원안의 평가 기록이다. 2026-10-01 기본 크롬이 Signature(흰 헤더)로 바뀌었으므로, Ink & Paper의 "코어의 어두운 크롬 전제를 유지해 오버라이드가 가장 적고 플러그인에 강하다"는 이제 Ink 프리셋에만 해당한다. Calm Workspace 약점의 "흰 헤더가 코어·플러그인의 밝은 글자 전제를 뒤집는다"는 기본 크롬에도 해당하며, 대응은 §4.1에 적었다.
+
 ### 채택안에 가져온 요소
 
 | 출처 | 가져온 것 | 이유 |
 |---|---|---|
-| Ink & Paper (기반) | 배치 유지, 잉크 바이올렛 크롬, 링크 파랑, 토큰 세트와 명암 수치, 크롬 위 흰 포커스 링, `@supports` color-mix 폴백, 프리셋 체계, 우선순위 막대 글리프, 줄무늬 유지 | 심사 세 건 모두 기반으로 추천 |
+| Ink & Paper (기반) | 배치 유지, 잉크 바이올렛 크롬(2026-10-01부터 README Ink 프리셋), 연한 메인 메뉴 바, 링크 파랑, 토큰 세트와 명암 수치, 크롬 토큰 체계(Ink 프리셋의 흰 포커스 링 포함), `@supports` color-mix 폴백, 프리셋 체계, 우선순위 막대 글리프, 줄무늬 유지 | 심사 세 건 모두 기반으로 추천 |
 | Calm Workspace | 모든 토큰을 `:where(:root)`에 선언, 추적하는 `custom.css` 스텁, 행에 커스텀 속성을 주는 상태·트래커 매핑(id 개수 제한 없음), hover는 밝게·active는 어둡게, 목록 제목 14px/500과 메타 13px 구분, CSS 주입 프로브 하네스, 나중에 로드되는 코어 CSS보다 셀렉터를 한 단계 높이는 규칙 | 업데이트 안전성, 색+모양 매핑, 검증 방법 |
-| Manuscript | 언어별 본문 행간·자간, 모든 텍스트 컨테이너의 명시적 line-height, 본문 링크 상시 밑줄, 상태 모양 4종 구분, 틴트만으로 구분하는 사이드바, 자식 테마 배포(경로 수정), CJK 합성 기울임 제거, Signature 크롬 프리셋, 일감 제목 확대 | CJK 읽기 품질 |
+| Manuscript | 언어별 본문 행간·자간, 모든 텍스트 컨테이너의 명시적 line-height, 본문 링크 상시 밑줄, 상태 모양 4종 구분, 틴트만으로 구분하는 사이드바, 자식 테마 배포(경로 수정), CJK 합성 기울임 제거, Signature 크롬(2rem 브랜드 바이올렛 상단 바 + 흰 헤더, 앰버 포커스 링. 2026-10-01 소유자 결정으로 기본 크롬, §4.1), 일감 제목 확대 | CJK 읽기 품질. Signature 크롬은 소유자 선호(브랜드 선명도, 가벼운 크롬) |
 | 심사 필수 수정 | `body.has-main-menu`는 6.1.4에도 있으므로 `:has()` 폴백을 뺀다. 셰브런은 `scale` 속성으로 뒤집는다. 사이드바 토큰은 논리 방향 이름으로 짓는다. 6/7 기준선을 둘 다 명시적으로 리셋한다. 주 버튼은 allowlist로 정한다. td는 알약 대신 글리프+글자색으로 표시한다. 크롬 안 요소는 크롬 토큰만 쓴다. `border-control`은 모든 표면에서 3:1 이상이다. 선택 행은 마커 대신 배경과 체크박스로 표시한다. `--color-header-background`로 브리지하지 않는다 | 검증된 결함 |
 | 검토 반영 | 행 단위 기본값을 명시도 0(`:where()`)으로 선언, 폰트 제공 방식 변경을 컴파일 파일이 아니라 `custom.css`·자식 테마에서(§4.4 결정 뒤에는 자체 호스팅 경로), 렌더 화면 axe-core 검사, forced-colors·인쇄 대응, 포커스 링을 자르는 코어 `overflow: hidden` 해소, 문장 속 링크 밑줄 범위 확대, 일정 지연 글리프, 이름 열 줄바꿈, 모바일 컨트롤 크기, 12px 하한 목록 | 검토 의견(부록) |
 
 **채택안에서 뺀 요소**
 
 아래 목록의 처음 세 항목은 §4에 검토한 선택지로 남아 있다.
-- 흰 헤더를 기본값으로 쓰는 안(§4.1 B·C 선택지. 결정에 따라 README 프리셋으로만 제공)
+- 기본값으로서의 흰 상단 바 크롬(§4.1 C Calm 선택지)과 기본값으로서의 어두운 잉크 바이올렛 크롬(§4.1 A. 2026-09-26 기본값이었으나 2026-10-01 기본값에서 뺐다). 둘 다 README 프리셋으로는 제공한다
 - ja·zh UI의 keep-all(§4.6 K3 선택지)
 - Pretendard 폰트 파일 번들과 별도 폰트 스타일시트(`ravnus-fonts.css`) 분리(§4.4 결정으로 CDN 기본. 폰트 파일은 저장소에 두지 않는다)
 - `clamp()` 사이드바 폭(900–1090px 노트북에서 본문을 좁힘)
@@ -107,33 +107,48 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 
 ## 4. 결정 사항
 
-§4.1–§4.6의 여섯 항목은 2026-09-26 **소유자 결정**으로 확정했다(부록 "결정 기록"). 각 절의 선택지 표는 검토한 대안과 절충의 기록으로 남기고, 고른 선택지에 "결정"을 적는다. §5 이후의 사양은 이 결정을 따른다. §4.7–§4.12는 "추천"이며 이견이 없으면 이 문서대로 확정한다.
+§4.1–§4.6의 여섯 항목은 2026-09-26 **소유자 결정**으로 확정했다. 2026-10-01 소유자가 §4.1의 기본값을 A에서 B로 바꾸고 §4.2와 §4.4는 다시 확인했다(부록 "결정 기록"). 각 절의 선택지 표는 검토한 대안과 절충의 기록으로 남기고, 고른 선택지에 "결정"을 적는다. §5 이후의 사양은 이 결정을 따른다. §4.7–§4.12는 "추천"이며 이견이 없으면 이 문서대로 확정한다.
 
-### 4.1 메인 컬러·팔레트·크롬 (결정: 2026-09-26)
+### 4.1 메인 컬러·팔레트·크롬 (결정: 2026-09-26, 변경: 2026-10-01)
 
 | 선택지 | 모습 | 장점 | 약점 |
 |---|---|---|---|
-| **A. 잉크 바이올렛 (결정: 기본값)** | 상단 바 `#1C0F3A`, 헤더 `#311E5F`(흰 글자 14.17:1). 메인 메뉴는 연한 바 `#F6F6FC`에 `#46009B` 밑줄 마커 | 코어 크롬 전제를 유지해 오버라이드가 가장 적다. 플러그인이 헤더에 넣은 링크도 읽힌다. Theme_List 썸네일에서 "테마가 적용된" 화면으로 보인다. PurpleMine(`#614BA6`)보다 어둡고 채도가 낮다 | 어두운 띠 두 개(상단과 헤더의 대비 1.26:1, 헤어라인으로 보완). 크롬 합계가 약 116px(프로토타입을 6.1.4·7.0.1에서 측정)로 코어(7.0.1 104px, 6.1.4 107px)보다 크다 (미검증: Phase 2에서 최종 CSS로 재측정) |
-| B. Signature | 2rem `#46009B` 상단 바(흰 글자 12.11:1, 앰버 포커스 링 6.24:1) + 흰 헤더 | 브랜드 서명이 선명하고 가볍다 | 흰 헤더가 코어 `#header a` 밝은 글자 전제를 뒤집어 오버라이드가 늘어난다. 플러그인 헤더 콘텐츠가 흰 바탕에 흰 글자가 될 위험이 있다 |
-| C. Calm | 상단·헤더 모두 흰색. 보라는 탭 밑줄과 버튼에만 | 가장 조용하다 | 스크린샷에서 테마가 없는 것처럼 보인다. B와 같은 반전 위험이 가장 크다 |
+| A. 잉크 바이올렛 (2026-09-26 기본값, 2026-10-01부터 README 프리셋 "Ink") | 상단 바 `#1C0F3A`, 헤더 `#311E5F`(흰 글자 14.17:1). 메인 메뉴는 연한 바 `#F6F6FC`에 `#46009B` 밑줄 마커 | 코어 크롬 전제를 유지해 오버라이드가 가장 적다. 밝은 글자를 전제한 플러그인 헤더 링크도 읽힐 것으로 본다 (미검증: 개별 플러그인을 시험하지 않았다). Theme_List 썸네일에서 "테마가 적용된" 화면으로 보인다. PurpleMine(`#614BA6`)보다 어둡고 채도가 낮다 | 어두운 띠 두 개(상단과 헤더의 대비 1.26:1, 헤어라인으로 보완). 크롬 합계가 약 116px(프로토타입을 6.1.4·7.0.1에서 측정)로 코어(7.0.1 104px, 6.1.4 107px)보다 크다 (미검증: Phase 2에서 최종 CSS로 재측정) |
+| **B. Signature (결정: 기본값, 2026-10-01)** | 2rem `#46009B` 상단 바(흰 글자 12.11:1, 앰버 포커스 링 6.24:1) + 흰 헤더(본문 글자 16.20:1). 메인 메뉴는 A와 같은 연한 바 | 브랜드 서명이 선명하고 가볍다. 어두운 띠가 하나다 | 흰 헤더가 코어 `#header a` 밝은 글자 전제를 뒤집어 오버라이드가 늘어난다(§8.4 12, §8.6). 플러그인 헤더 콘텐츠가 흰 바탕에 흰 글자가 될 위험이 있다 (미검증). 크롬 합계가 약 120px로 A보다 4px 크다 (미검증: Phase 2에서 재측정) |
+| C. Calm | 상단·헤더 모두 흰색. 보라는 탭 밑줄과 버튼에만 | 가장 조용하다 | 스크린샷에서 테마가 없는 것처럼 보인다. B의 흰 헤더 반전에 더해 상단 바·flyout의 밝은 글자 전제도 뒤집혀(§8.4 12, §8.6 "밝은 flyout") 반전 위험이 가장 크다 |
 | D. 레드마인 블루 | 헤더 `#2B5F8A`(흰 글자 6.76:1), 강조 `#1864AB`(6.09:1) | 브랜드 색을 쓰지 않아 가장 중립적이다 | 차별점이 약하다 |
 
-**결정: A를 기본값으로 하고, B(Signature)·C(Calm)·D(레드마인 블루)와 Brand-forward(헤더 `#46009B`, 흰 글자 12.11:1)를 README 프리셋으로 제공한다.** Phase 2가 끝날 때 기본값 A와 대안 크롬 프리셋 4종을 6.1.4·7.0.1에서 찍어 README 프리셋 스크린샷으로 쓴다(§9 Phase 2).
+**결정 (2026-10-01): B(Signature)를 기본값으로 하고, A(Ink)·C(Calm)·D(레드마인 블루)와 Brand-forward(헤더 `#46009B`, 흰 글자 12.11:1)를 README 프리셋으로 제공한다.** Signature는 더 이상 프리셋이 아니다. 2026-09-26 결정(A 기본값, B·C·D·Brand-forward 프리셋)은 부록 "결정 기록"에 이력으로 남긴다. 채택안의 나머지(기반 방향 Ink & Paper의 배치, 타이포그래피, 크롬이 아닌 토큰, 목록 표현)는 그대로이고, 기본 크롬의 처리만 Signature를 따른다. 메인 메뉴 바의 색·탭 표현, 강조 `#46009B`, 링크 `#215DB3`과 크롬이 아닌 기존 토큰의 값은 그대로다. 흰 헤더와의 경계를 위해 메인 메뉴 바에 위아래 헤어라인(위는 header-divider, 아래는 새 토큰 `--ravnus-nav-border`)과 `box-sizing: border-box`만 더한다(§6.2, §8.4 3). 이 선은 크롬 선택과 상관없는 규칙이라 Ink 프리셋 화면(2026-09-26 기본값 A)에도 새로 생긴다. Phase 2가 끝날 때 기본값 B와 대안 크롬 프리셋 4종을 6.1.4·7.0.1에서 찍어 README 프리셋 스크린샷으로 쓴다(§9 Phase 2).
 
-**1차 시각 비교 (2026-09-26, 작업 자료)**: 같은 기반 CSS에 토큰만 바꾼 A·B·C·D 프로토타입을 로컬 도커의 6.1.4·7.0.1에 Pretendard를 로드해 입히고 일감 목록·상세를 캡처했다. 크롬 높이는 A·C·D 116px(상단 바 28 + 헤더 88, 헤더 안에 메뉴 바 36 포함. 즉 28 + 52 + 36), B 120px(상단 바 32 + 헤더 88), 코어는 7.0.1 104px, 6.1.4 107px다. 네 안 모두 크롬 높이는 6과 7에서 같았다. 칠하지 않은 코어 색 몇 곳(`…` 아이콘, 사이드바 접기 아이콘, "내보내기" 글자)은 6과 7에서 다르다. 프로토타입은 저장소에 싣지 않는다 (미검증: 작업 자료의 프로토타입 측정. 최종 CSS의 높이는 Phase 2에서 잰다).
+- **값**: 상단 바 `--ravnus-topbar-bg` #46009B(최소 높이 2rem), `--ravnus-topbar-fg` #FFFFFF, `--ravnus-topbar-fg-muted` #CAC5EA, `--ravnus-topbar-focus` #FEA800(앰버 링). 헤더 `--ravnus-header-bg`는 canvas(#FFFFFF), `--ravnus-header-fg`는 fg-default(#202026), `--ravnus-header-fg-muted`는 fg-subtle(#64626A), `--ravnus-header-focus`는 accent(#46009B). 대비와 경계선은 §6.2다.
+- **근거**: 소유자 선호. 아래 1차 시각 비교의 프로토타입을 나란히 본 뒤, 브랜드가 선명하고(상단 바 한 줄이 RAVNUS 바이올렛) 크롬이 가볍다(어두운 띠 두 개 대신 한 개)는 이유로 B를 골랐다. 심사 점수로 고른 것이 아니다. 심사는 기반 방향(Ink & Paper)을 골랐다(§1).
+- **받아들인 대가**:
+  1. 흰 헤더가 코어의 "어두운 헤더 위 밝은 글자" 전제를 뒤집는다. 6.1.4·7.0.1 모두 `#header`와 `#header a`에 밝은 글자를 주고, 모바일 `responsive.css`는 헤더 배경(#628db6)과 프로젝트 이동 글자·메뉴 토글 색을 하드코딩한 채 테마보다 나중에 로드된다(§8.3). A에서는 테마가 규칙을 놓쳐도 어두운 헤더 위 밝은 글자라 읽히지만, B에서는 흰 바탕에 흰 글자가 되어 보이지 않는다.
+  2. 다시 칠할 코어 규칙이 늘고(데스크톱 §8.4 12, 모바일 §8.6), 코어가 바뀔 때마다 이 목록을 다시 감사해야 한다.
+  3. 플러그인이 헤더에 넣는 링크·아이콘·글자가 밝은 글자를 전제하면 읽히지 않을 수 있다 (미검증: 특정 플러그인을 시험하지 않았다).
+  4. 흰 헤더, 연한 메뉴 바(`#F6F6FC`, 흰색과 1.08:1), 흰 본문이 이어져 영역 경계가 약하다. 메뉴 바와 본문 사이의 1.08:1은 A에도 있었지만, B에서는 메뉴 바 위아래가 모두 흰색이 된다.
+  5. 크롬이 A보다 4px 높다(프로토타입 120px, 코어보다 13–16px 큼) (미검증: Phase 2에서 재측정).
+- **완화**:
+  1. 헤더 안의 코어 밝은 글자 규칙을 두 버전 모두 목록으로 만들어(§8.4 12, §8.6) 헤더 토큰으로 다시 선언한다. 목록 밖 자손도 따르도록 `#header`의 `color`, `#header a`와 그 hover·포커스, `#header svg.icon-svg`의 stroke, `#header svg.icon-svg-filled`의 fill에 헤더 토큰을 명시한다. 헤더 안 오버레이(`#project-jump .drdn-content`)와 상단 바 안의 7 계정 드롭다운(`#account .dropdown-content`)은 overlay 표면이므로 일반 토큰으로 되돌린다(§6.2).
+  2. 어두운 헤더에서는 흰 필드 자체가 경계였던 빠른 검색 입력과 프로젝트 이동 트리거에 `--ravnus-header-control-border`(기본 border-control, 흰 헤더 위 4.12:1) 테두리를 준다.
+  3. 헤더와 메뉴 바 사이, 상단 바와 헤더 사이, 모바일 헤더 아래에 `--ravnus-header-divider` 헤어라인(#D9D8DD)을, 메뉴 바와 본문 사이에 `--ravnus-nav-border` 헤어라인(#D9D8DD)을 둔다(§6.2). 메뉴 바의 선은 `box-sizing: border-box`로 nav-height 안에 넣어 헤더 예약 패딩과 맞춘다(§8.4 3).
+  4. Phase 2에서 헤더 요소마다 계산 스타일 assert와 axe-core 검사를 1440·800px, 익명·로그인, 6.1.4·7.0.1에서 돌린다(§9, §10.2).
+  5. 헤더에 콘텐츠를 넣는 플러그인 때문에 흰 헤더가 맞지 않는 설치는 Ink 프리셋 블록(§6.3)을 `custom.css`나 자식 테마에 넣어 코어와 같은 어두운 헤더로 돌아간다. 플러그인 CSS 자체는 범위 밖이다(§11).
+
+**1차 시각 비교 (2026-09-26, 작업 자료)**: 같은 기반 CSS에 토큰만 바꾼 A·B·C·D 프로토타입을 로컬 도커의 6.1.4·7.0.1에 Pretendard를 로드해 입히고 일감 목록·상세를 캡처했다. 크롬 높이는 A·C·D 116px(상단 바 28 + 헤더 88, 헤더 안에 메뉴 바 36 포함. 즉 28 + 52 + 36), B 120px(상단 바 32 + 헤더 88, 즉 32 + 52 + 36), 코어는 7.0.1 104px, 6.1.4 107px다. 네 안 모두 크롬 높이는 6과 7에서 같았다. 칠하지 않은 코어 색 몇 곳(`…` 아이콘, 사이드바 접기 아이콘, "내보내기" 글자)은 6과 7에서 다르다. 프로토타입은 저장소에 싣지 않는다 (미검증: 작업 자료의 프로토타입 측정. 최종 CSS의 높이는 Phase 2에서 잰다). 2026-10-01 소유자가 이 비교를 보고 B를 기본값으로 골랐다.
 
 **브랜드 색 사용**
 - 소유자가 RAVNUS Inc. 브랜드 색(`#46009B`와 이를 바탕으로 만든 크롬 색)을 공개 MIT 테마의 기본값과 프리셋에 써도 된다고 확인했다(2026-09-26). 그래서 선행 조건이나 임시 기본값을 두지 않는다.
-- 브랜드 색 사용에 조건이 없으므로 A를 처음부터 기본값으로 한다. 대안 크롬 프리셋 4종의 README 블록과 스크린샷은 크롬 스타일이 들어가는 v0.2.0(Phase 2)부터 싣는다.
+- 브랜드 색 사용에 조건이 없으므로 기본값 B의 상단 바에 `#46009B`를 그대로 쓴다. 대안 크롬 프리셋 4종(Ink, Brand-forward, Calm, Redmine Blue)의 README 블록과 스크린샷은 크롬 스타일이 들어가는 v0.2.0(Phase 2)부터 싣는다.
 - D(레드마인 블루)는 브랜드 색을 쓰지 않는 프리셋으로 남는다. 로고는 기본 헤더에 넣지 않는다(§2 원칙 6).
 
 모든 안에 공통으로 적용하는 규칙:
-- 강조색(A는 `#46009B`)은 주 버튼, 선택 마커, 포커스 링, 체크박스 `accent-color`에만 쓴다.
+- 강조색(`#46009B`)은 본문에서 주 버튼, 선택 마커, 포커스 링, 체크박스 `accent-color`에만 쓴다. 크롬에서는 크롬 토큰이 가리킬 때만 면으로 쓴다(B의 상단 바와 같은 토큰을 쓰는 모바일 flyout, Brand-forward의 헤더).
 - 링크는 `#215DB3`이고 방문한 링크도 같은 색이다. hover는 `#164384`에 밑줄을 긋는다. 코어의 빨간 hover를 대체한다.
 - 중립 회색은 OKLCH 색상각 약 290, 채도 0.014 이하로 보라 기미만 준다.
 - 로고의 앰버 `#FEA800`, 라임 `#90CF1F`, 시안 `#00B6C4`는 흰 바탕 텍스트 대비가 1.89–2.47:1이라 의미 역할에서 뺀다. 앰버는 Signature의 보라 바 위 포커스 링으로만 쓴다.
 
-### 4.2 레이아웃 변경 범위 (결정: 2026-09-26)
+### 4.2 레이아웃 변경 범위 (결정: 2026-09-26, 재확인: 2026-10-01)
 
 | 선택지 | 내용 | 장점 | 약점 |
 |---|---|---|---|
@@ -141,7 +156,8 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 | 2. 크롬 재설계, CSS만 | 흰 헤더, 밑줄 탭 스트립, 테두리 없는 표(Calm) | 현대적이다 | 코어 전제를 뒤집고 유지 부담이 가장 크다 |
 | 3. 재배치, theme.js 사용 | 세로 내비 레일, 메인 메뉴와 사이드바 병합 | 차별화된다 | `#main-menu`가 `#header` 안에 있고 `responsive.js`가 리사이즈 때마다 DOM을 옮긴다. Sidebar White(118KB JS)는 Redmine 7의 상태 필터를 깨뜨린 전례가 있다 |
 
-**결정: 1.** 기존 Redmine 레이아웃을 유지한다. 영역을 옮기지 않고 스타일만 바꾼다.
+**결정: 1.** 기존 Redmine 레이아웃을 유지한다. 영역을 옮기지 않고 스타일만 바꾼다. 2026-10-01 소유자가 이 결정을 다시 확인했다. 재배치(선택지 3)는 작업량이 늘어난다는 이유로 받아들이지 않았다.
+- §4.1 B의 흰 헤더는 색 처리이고 영역·순서·크기 구조를 바꾸지 않으므로 이 결정 안에 있다. 선택지 2의 밑줄 탭 스트립과 테두리 없는 표는 들여오지 않는다.
 - v1에는 `javascripts/theme.js`를 두지 않고 `javascripts/` 디렉터리도 만들지 않는다.
 - theme.js는 레이아웃 변경(요소 재배치)에 쓰지 않는다. 레이아웃을 바꾸지 않는 theme.js 기능은 v2 이후에 따로 검토한다(§8.2).
 - 같은 이름의 코어 파일 대체(테마 `stylesheets/responsive.css` 등)도 하지 않는다. 가능성은 있지만 시험하지 않았다.
@@ -170,7 +186,7 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 - 폭은 코어 단계(22%, 240, 280, 320, 360, 380px)를 유지한다.
 - 900px 미만에서는 `responsive.js`가 사이드바 내용을 flyout으로 옮기므로 이 토큰은 영향이 없다.
 
-### 4.4 Pretendard 제공 방식 (결정: 2026-09-26)
+### 4.4 Pretendard 제공 방식 (결정: 2026-09-26, 재확인: 2026-10-01)
 
 | 선택지 | 저장소 크기 | 첫 방문 전송량 | 장점 | 약점 |
 |---|---|---|---|---|
@@ -180,7 +196,7 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 
 파일 크기는 jsDelivr의 `pretendard@1.3.9` 파일 목록 합계(2026-09-26)이고, 이 절의 MiB는 2^20바이트다.
 
-**결정: jsDelivr CDN을 기본으로 하고, 폰트 파일은 저장소에 넣지 않는다.** 초안의 추천(번들 기본, CDN opt-in)을 뒤집은 결정이다. `fonts/` 디렉터리, 동봉 OFL 파일, `docker-compose.yml`의 폰트 마운트는 없다. 방식은 다음과 같다.
+**결정: jsDelivr CDN을 기본으로 하고, 폰트 파일은 저장소에 넣지 않는다.** 초안의 추천(번들 기본, CDN opt-in)을 뒤집은 결정이다. 2026-10-01 소유자가 CDN 기본을 다시 확인했다. `fonts/` 디렉터리, 동봉 OFL 파일, `docker-compose.yml`의 폰트 마운트는 없다. 방식은 다음과 같다.
 
 - **CDN 스타일시트를 `@import`하지 않는다.** `@import`로 불러온 스타일시트는 받거나 실패할 때까지 페이지 렌더링을 막는 것으로 본다. 그러면 폐쇄망에서 요청이 응답 없이 버려질 때 연결 시간 초과까지 화면이 늦게 뜰 수 있다 (미검증: 명세 근거와 브라우저 동작을 확인하지 않았다. 이 방식은 쓰지 않으므로 Phase 0에서 따로 재지 않는다).
 - **생성 스크립트(`npm run fonts`)가 `src/_pretendard.scss`를 만들고, 빌드(`npm run build`)가 이를 테마 CSS에 컴파일한다.** 생성되는 `@font-face`는 업스트림 unicode-range를 그대로 쓰고 `font-family: "Pretendard Variable"; font-style: normal; font-weight: 45 920; font-display: swap`으로 선언한다. `src`는 절대 https CDN URL이다.
@@ -256,13 +272,17 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 @import url(../../../stylesheets/application.css);  /* 코어. 주석을 뺀 첫 규칙 */
 @import url(custom.css);                              /* 사용자 스텁. 업스트림은 빈 파일로 두고 바꾸지 않는다 */
 @font-face { font-family: "Pretendard Variable"; /* … */ src: url(https://cdn.jsdelivr.net/npm/pretendard@1.3.9/…); } /* 생성된 CDN @font-face 92개(§4.4) */
-:where(:root) { --ravnus-accent: #46009b; /* … 기본 토큰(§4.1 결정 A) … */ }
+:where(:root) { --ravnus-accent: #46009b; /* … 기본 토큰(§4.1 결정 B Signature) … */ }
 :root { --fonts-main: var(--ravnus-font-ui); --color-current-marker: var(--ravnus-accent); }
 ```
 
 ```css
 /* stylesheets/custom.css 사용 예. 업스트림 스텁은 빈 파일이다 */
-:root { --ravnus-accent: #0b6e4f; }  /* 토큰 노브 */
+:root {
+  --ravnus-accent: #0b6e4f;           /* 토큰 노브. 기본 상단 바(topbar-bg)도 이 색이 된다 */
+  --ravnus-topbar-fg-muted: #d3e6df;  /* 함께 바꾼다. 기본 #CAC5EA는 #0b6e4f 위 3.78로 AA 미달, 이 값은 4.81 */
+  --ravnus-topbar-focus: #ffffff;     /* 함께 바꾼다. 기본 앰버 #FEA800은 #0b6e4f 위 3.22, 흰 링은 6.25 */
+}
 /* 폰트 자체 호스팅은 §4.4의 @font-face와 --ravnus-font-sans 예시를 여기에 넣는다 */
 /* 행 단위 매핑(§6.5): 색, 채움, 체크를 모두 적는다 */
 tr.status-2 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; --ravnus-status-check: 0; }
@@ -273,6 +293,7 @@ tr.status-2 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravn
 - 행 단위 매핑(`tr.status-N`, `tr.tracker-N`)은 `:root` 토큰이 아니라 행에 거는 커스텀 속성이다. 테마의 행 단위 기본값도 명시도 0으로 선언하므로(§5.6) 순서상 앞에 오는 `custom.css`의 매핑이 이긴다.
 - `custom.css`는 테마 규칙보다 먼저 로드된다. 토큰이 아닌 일반 규칙을 덮으려면 셀렉터를 한 단계 높여야 한다. README에 적는다.
 - 파생 토큰은 선언된 곳(`:root`)에서 계산된다. 그래서 노브는 반드시 `:root`에서 바꿔야 한다.
+- 기본 Signature의 상단 바는 `var(--ravnus-accent)`를 따르지만 상단 바 보조 글자 `--ravnus-topbar-fg-muted`(#CAC5EA)와 앰버 링 `--ravnus-topbar-focus`(#FEA800)는 `#46009B` 기준 고정값이다. 그래서 강조색을 바꾸면 이 둘도 함께 바꾼다(위 예시, §5.4 명암 한계). README의 커스터마이즈 안내에도 적는다.
 - Propshaft digest에는 참조 파일 내용이 들어가므로 `custom.css`만 고쳐도 캐시가 갱신된다(6.1.4의 Propshaft 1.1.0, 7.0.1의 1.3.2 소스 확인). 다만 반영하려면 앱을 재시작해야 한다.
 - 자식 테마 경로: Redmine 소스(`lib/redmine/asset_path.rb`)를 따라가 보면 `url(../ravnus/application.css)`가 해석되고, 5.x식 `../../ravnus/stylesheets/...`는 해석되지 않는다. 기동 확인은 Phase 0에서 하고, 절대 경로 `url(/themes/ravnus/application.css)`도 함께 시험한다 (미검증).
 - Dart Sass는 plain CSS import 두 개(코어, `custom.css`)를 원래 순서대로 `@use`로 들어온 `@font-face`보다 위로 올린다. 로컬 빌드로 확인했다(2026-09-26, Dart Sass 1.105.0, `--fatal-deprecation=import`. 생성 `@font-face` 규칙 하나를 담은 모듈을 `@use`하고 그 뒤에 `@import url(../../../stylesheets/application.css);`, `@import url(custom.css);`를 둔 엔트리를 컴파일하면 두 import가 이 순서로 주석을 뺀 첫 두 규칙에, `@font-face`가 그 아래에 나온다. 도커는 쓰지 않았다). 실제 엔트리에서도 유지되는지는 CI 빌드 비교에 회귀 검사로 둔다(§10.2 6).
@@ -345,7 +366,7 @@ Pretendard와 대부분의 CJK 폰트에는 이탤릭이 없어 브라우저가 
 
 - 지원 범위는 `CLAUDE.md`대로 Redmine 6.x / 7.x이고 이 문서는 줄이지 않는다.
 - 테스트 기준은 6.1.4와 7.0.1(도커)이다.
-- 기준 버전은 이미지 태그로 고정한다. 지금 `docker-compose.yml`은 부동 태그 `redmine:6`·`redmine:7`을 쓴다. 실행 중인 컨테이너는 6.1.4·7.0.1이지만 `docker compose pull` 한 번에 기준이 조용히 바뀔 수 있다. 그래서 Phase 0 전에 `redmine:6.1.4`·`redmine:7.0.1`로 고정하고, Phase 0 결과표에는 각 컨테이너의 `Redmine::VERSION`을 함께 적는다. 기준 버전을 올릴 때는 태그, 이 문서, `CLAUDE.md`, README를 함께 고친다(§12).
+- 기준 버전은 이미지 태그로 고정한다. 지금 `docker-compose.yml`은 부동 태그 `redmine:6`·`redmine:7`을 쓴다. 실행 중인 컨테이너는 6.1.4·7.0.1이지만 `docker compose pull` 한 번에 기준이 조용히 바뀔 수 있다. 그래서 Phase 0 전에 `redmine:6.1.4`·`redmine:7.0.1`로 고정하고, Phase 0 결과표에는 각 컨테이너의 `Redmine::VERSION`을 함께 적는다. 기준 버전을 올릴 때는 태그, 이 문서, `CLAUDE.md`, README를 함께 고친다(§12). 이때 흰 헤더 재칠 목록(§8.4 12, §8.6)의 대상 규칙·행 번호와 헤더 계산 스타일 assert(§10.2 3)를 새 코어에서 다시 읽어 고친다(§11).
 - 6.x 초기 버전의 핵심 가정은 Phase 0에서 패치 버전까지 고정한 `redmine:6.0.x` 이미지(예: `redmine:6.0.11`)로 확인한다. 대상은 `body.has-main-menu`, 사이드바 접기 토글(`#sidebar-switch-button`), 크롬 마크업(`#top-menu`, `#header`, `#main-menu`, `#sidebar`)이다 (미검증). 6.0.x와 6.1.4가 모두 통과하면 그 사이의 6.1.0–6.1.1도 같은 가정이 성립한다고 본다 (미검증: 추론).
 - 차이가 나오면 해당 버전 대응을 Phase 2–3 범위에 넣고, README와 `CLAUDE.md`의 테스트 문구를 결과에 맞게 고친다. 6.0 서비스를 `docker-compose.yml`에 상시 추가할지, 1회 실행으로 끝낼지, 매트릭스(§10.4)에 넣을지와 그 범위는 Phase 0에서 정한다. 상시 추가하면 `CLAUDE.md` 개발 명령과 README를 함께 고친다.
 - v1은 아이콘 스프라이트 교체를 쓰지 않으므로 6.1.2 제약과는 무관하다.
@@ -372,7 +393,7 @@ Pretendard와 대부분의 CJK 폰트에는 이탤릭이 없어 브라우저가 
   - 색: `bg`, `fg`, `border`, `accent`, `on`(`on-accent`, `on-solid`), `link`, `focus`, `shadow`, `em`(`em-bg`)
   - 타이포: `font`(`font-sans`, `font-mono`, `font-ui`, `font-feature-settings`), `font-size`, `line-height`, `letter-spacing`, `word-break`
   - 치수: `space`, `radius`, `control-height`
-  - 영역: `header`, `topbar`, `nav`(`nav-bg`, `nav-height`), `sidebar`, `sticky-header`, `list`(`list-link`), `row`(`row-pad-y`, `row-stripe`, `row-marker-*`), `subject`(`subject-min-inline-size`), `prose`(`prose-max-inline-size`)
+  - 영역: `header`(`header-divider`, `header-control-border`), `topbar`(`topbar-height`), `nav`(`nav-bg`, `nav-border`, `nav-height`), `sidebar`, `sticky-header`, `list`(`list-link`), `row`(`row-pad-y`, `row-stripe`, `row-marker-*`), `subject`(`subject-min-inline-size`), `prose`(`prose-max-inline-size`)
   - 도메인: `priority`, `status`, `tracker`, `tag`, `progress`
 - role: `info`, `success`, `warning`, `danger`. 도메인 category에서는 값 이름(`high3`, `highest`, `open`, `progress`, `done`, `closed`, `red` 등)이 role 자리에 온다. 중립 표현은 별도 role 없이 `bg-*`·`fg-*`를 쓴다.
 - variant: `subtle`(틴트 배경), `muted`(더 진한 틴트), `border`, `fg`(글자), `bg`, `solid`(채움), `color`. 표면·글자 단계 이름(`canvas`, `inset`, `raised`, `overlay`, `default`, `inverse`, `control`, `icon`, `decoration`)은 §6.1 표를 따른다.
@@ -383,13 +404,13 @@ Pretendard와 대부분의 CJK 폰트에는 이탤릭이 없어 브라우저가 
 
 | 그룹 | 토큰 (기본값) |
 |---|---|
-| 1. 브랜드 | `--ravnus-accent` (#46009B), `--ravnus-on-accent` (#FFFFFF), `--ravnus-link` (#215DB3), `--ravnus-header-bg` (#311E5F), `--ravnus-header-fg` (#FFFFFF), `--ravnus-header-fg-muted` (#D1CEE4), `--ravnus-bg-canvas` (#FFFFFF), `--ravnus-radius` (6px). 값은 §4.1 결정(A 잉크 바이올렛)의 기본값이다 |
+| 1. 브랜드 | `--ravnus-accent` (#46009B), `--ravnus-on-accent` (#FFFFFF), `--ravnus-link` (#215DB3), `--ravnus-topbar-bg` (var(--ravnus-accent) = #46009B), `--ravnus-topbar-fg-muted` (#CAC5EA), `--ravnus-topbar-focus` (#FEA800), `--ravnus-topbar-height` (2rem), `--ravnus-header-bg` (var(--ravnus-bg-canvas) = #FFFFFF), `--ravnus-bg-canvas` (#FFFFFF), `--ravnus-radius` (6px). 값은 §4.1 결정(B Signature)의 기본값이다. 나머지 크롬 토큰은 §6.2, 어두운 헤더는 §6.3 Ink 프리셋 블록이다 |
 | 2. 타이포 | `--ravnus-font-sans`(기본 스택은 테마 CSS에 생성된 CDN `"Pretendard Variable"`로 시작한다. 폰트를 자체 호스팅하면 이 토큰을 바꾼다, §4.4), `--ravnus-font-sans-ja`, `--ravnus-font-sans-zh`, `--ravnus-font-sans-zh-tw`, `--ravnus-font-mono`, `--ravnus-font-feature-settings` (normal), `--ravnus-word-break` (keep-all, ja·zh UI는 미설정이라 normal. §4.6) |
 | 3. 레이아웃 | `--ravnus-sidebar-at-start` (0), `--ravnus-row-pad-y` (0.375rem), `--ravnus-font-size-cell` (0.8125rem), `--ravnus-font-size-cell-subject` (0.875rem), `--ravnus-row-stripe` (var(--ravnus-bg-subtle)), `--ravnus-list-link` (var(--ravnus-link)), `--ravnus-prose-max-inline-size` (none), `--ravnus-subject-min-inline-size` (12em) |
 | 4. 도메인 훅 | 주석 예시만 둔다. `custom.css`에 `tr.status-N { … }`, `tr.tracker-N { … }` 형태로 적는다(§6.5). 테마 기본값이 명시도 0이라 이 예시가 이긴다(§5.6) |
 | 5. 고급 | 시맨틱 전체 세트. 다크 모드가 재정의하는 면이다 |
 
-리브랜딩은 보통 2–3개만 고치면 된다. 나머지는 모두 런타임에 파생된다.
+리브랜딩은 보통 강조색과 그에 딸린 상단 바 토큰 두 개(아래), 곧 3개 안팎만 고치면 된다. 나머지는 모두 런타임에 파생된다. 기본 상단 바는 `var(--ravnus-accent)`이고 상단 바 글자는 `var(--ravnus-on-accent)`이므로 강조색을 바꾸면 상단 바도 함께 바뀐다. 그러나 `--ravnus-topbar-fg-muted`(#CAC5EA)와 `--ravnus-topbar-focus`(#FEA800, 앰버 링)는 파생하지 않는 `#46009B` 기준 고정값이다. 그래서 강조색을 바꾸면 이 둘도 함께 바꾼다(§4.5 예시). 예를 들어 강조색 `#0b6e4f`에서 기본 보조 글자는 3.78:1로 AA(4.5:1)에 못 미치고 앰버 링은 3.22:1이다(§5.4 명암 한계).
 
 `--ravnus-list-link`는 `table.list` 셀 안 링크(일감 제목, 담당자, 프로젝트, 상위 일감 등)의 글자색이다. 기본값은 `--ravnus-link`이고, `--ravnus-fg-default`로 바꾸면 Calm처럼 검정 제목이 된다. hover 색은 `--ravnus-link-hover`, 밑줄은 hover에서만 긋는다(§7.9). 선택 행(§6.5)의 셀 링크도 이 노브를 따른다.
 
@@ -406,7 +427,7 @@ Pretendard와 대부분의 CJK 폰트에는 이탤릭이 없어 브라우저가 
 | `--ravnus-nav-bg` / `--ravnus-nav-hover-bg` | 4% / 9% | #F6F6FC / #ECEAF8 |
 | `--ravnus-em-bg` | 같은 식, 10% | #E9E8F7 (본문 글자 13.39:1, §4.11) |
 | `--ravnus-link-hover` | `color-mix(in oklch, var(--ravnus-link) 80%, var(--_ravnus-mix-dark))` | #164384 |
-| `--ravnus-topbar-bg` | `color-mix(in oklch, var(--ravnus-header-bg) 72%, var(--_ravnus-mix-dark))` | #1C0F3A |
+| `--ravnus-topbar-bg` | 기본(Signature)은 파생하지 않고 `var(--ravnus-accent)`다. 헤더가 어두운 프리셋(Ink, Brand-forward, Redmine Blue, §6.3)의 값은 `color-mix(in oklch, var(--ravnus-header-bg) 72%, var(--_ravnus-mix-dark))`로 빌드 때 계산하고, README 블록에는 식이 아니라 결과 리터럴을 싣는다(아래 폴백) | 기본 #46009B. 프리셋 Ink #1C0F3A, Brand-forward #2A0062, Redmine Blue #183A57 |
 | `--ravnus-link-decoration` | `color-mix(in oklch, var(--ravnus-link) 75%, transparent)` | 문장 속 링크 밑줄. 합성색 canvas 위 약 #5886C6(3.72:1), bg-subtle 3.63, accent-subtle 3.48, bg-inset 3.52. 원안 50%는 canvas 위 2.27:1이라 올렸다 |
 | `--ravnus-focus-ring` | `var(--ravnus-accent)` | #46009B |
 | 그림자 | `color-mix(in srgb, var(--ravnus-shadow-color) N%, transparent)` | §8.5 |
@@ -415,10 +436,12 @@ Pretendard와 대부분의 CJK 폰트에는 이탤릭이 없어 브라우저가 
 - **쓴다**: 인자 두 개짜리 `color-mix(in oklch, …)`. Baseline widely available(2025-11-09)이고 Chrome 111, Firefox 113, Safari 16.2부터 지원한다.
 - **쓰지 않는다**: 상대 색 문법(Baseline low 2024-09-16), `light-dark()`(low 2024-05-13), `contrast-color()`(low 2026-04-10), 인자 셋 이상의 color-mix. OKLCH 리터럴은 Sass에서만 쓰고 출력은 hex다.
 - **폴백**: Redmine은 최신 브라우저만 공식 지원하지만 조직의 관리형 브라우저는 늦을 수 있다. `var()`에 든 미지원 함수는 computed-value 시점에 무효가 되므로, 같은 속성을 두 번 선언하는 폴백은 동작하지 않는다. 대신 `@supports not (color: color-mix(in oklch, red, blue)) { :where(:root) { … } }` 블록에 리터럴 hex를 넣는다. 이 값은 빌드 때 Dart Sass `color.mix($method: oklch)`와 `color.to-gamut($method: clip)`로 생성해 런타임 값과 어긋나지 않게 한다. 폴백은 사용자가 바꾼 노브를 따라가지 않으므로(README에 적는다) 일치가 필요한 것은 기본값과 §6.3 프리셋의 파생값뿐이다.
-  - **색역**: A안의 파생값 9개(accent-hover·active·subtle·muted, nav-bg, nav-hover-bg, em-bg, link-hover, topbar-bg)와 D 프리셋 8개, Brand-forward 상단 바 1개, 모두 18개가 sRGB 안에 있다(OKLab 계산, accent-active는 G 채널 0인 경계). sRGB 안의 값은 색역 매핑 방법(`clip`이든 CSS Color 4의 OKLCH 채도 축소든)과 표시 장치(sRGB든 P3든)와 상관없이 같은 색으로 보이므로 폴백 hex와 런타임 값이 같다.
+  - **프리셋 블록은 리터럴로 싣는다.** 사용자 `:root`(0,1,0)에 적은 color-mix는 테마의 `@supports not (…) { :where(:root) { … } }` 폴백(0,0,0)이 덮지 못한다. color-mix를 지원하지 않는 브라우저에서는 그 값을 쓰는 속성이 computed-value 시점에 무효가 된다. 예를 들어 `--ravnus-topbar-bg`에 식을 적으면 `background: var(--ravnus-topbar-bg)`가 투명해져, 흰 페이지 위에 흰 상단 메뉴 글자가 남는다. 파생이 테마의 `:where(:root)`에만 있던 A 기본값에서는 폴백이 이 경우를 막았다. 그래서 README 프리셋 블록에는 파생값을 빌드가 계산한 리터럴 hex로 싣는다(헤더가 어두운 프리셋의 상단 바 Ink #1C0F3A, Brand-forward #2A0062, Redmine Blue #183A57). 강조색을 바꾸는 Redmine Blue는 accent 파생 7개(accent-hover·active·subtle·muted, nav-bg, nav-hover-bg, em-bg)도 리터럴로 싣는다. 싣지 않으면 식은 테마 `:where(:root)`에서 그대로 계산되지만, 미지원 브라우저에서는 테마 폴백의 기본(바이올렛) 값이 적용된다. 블록 주석에는 "header-bg(또는 accent)를 바꾸면 §5.4 식으로 다시 계산한다"고 적는다. CI는 README 블록의 리터럴이 Sass 파생 계산값과 같은지 검사한다(§10.2 6).
+  - **색역**: 기본값의 파생값 8개(accent-hover·active·subtle·muted, nav-bg, nav-hover-bg, em-bg, link-hover), Ink 프리셋 상단 바 1개(#1C0F3A, 2026-09-26 기본값 A의 파생 상단 바와 같은 값), D 프리셋 8개, Brand-forward 상단 바 1개, 모두 18개가 sRGB 안에 있다(OKLab 계산, accent-active는 G 채널 0인 경계). sRGB 안의 값은 색역 매핑 방법(`clip`이든 CSS Color 4의 OKLCH 채도 축소든)과 표시 장치(sRGB든 P3든)와 상관없이 같은 색으로 보이므로 폴백 hex와 런타임 값이 같다.
   - 파생값이 sRGB 밖으로 나가면 둘이 달라질 수 있다. 브라우저가 어떤 방법으로 매핑하는지는 확인하지 않았고 (미검증), P3 같은 넓은 색역 디스플레이에서는 sRGB 밖 결과가 그대로 표시돼 sRGB로 자른 폴백과 달라질 수 있다 (미검증). 그래서 빌드 스크립트는 기본값·프리셋의 파생값이 sRGB 밖이면 실패시킨다.
   - Phase 1에서 Sass 결과를 OKLab 계산값, 그리고 sRGB 색 프로필로 고정한 Chrome(`--force-color-profile=srgb`)의 계산값과 비교한다 (미검증).
-- **명암 한계**: 임의의 강조색에서 파생한 값은 명암을 보장하지 않는다. 예를 들어 흰 글자는 `#3B82F6` 위에서 3.68:1, `#F97316` 위에서 2.80:1이다. 그래서 `--ravnus-on-accent`를 별도 노브로 두고, CI는 기본값과 프리셋만 보장한다.
+- **명암 한계**: 임의의 강조색에서 파생한 값은 명암을 보장하지 않는다. 예를 들어 흰 글자는 `#3B82F6` 위에서 3.68:1, `#F97316` 위에서 2.80:1이다. 그래서 `--ravnus-on-accent`를 별도 노브로 두고, CI는 기본값과 프리셋만 보장한다. 사용자 값은 검사하지 않는다.
+  - **상단 바**: 기본 Signature에서는 상단 바가 `var(--ravnus-accent)`를 따르지만 상단 바 보조 글자 `--ravnus-topbar-fg-muted`(#CAC5EA)와 앰버 링 `--ravnus-topbar-focus`(#FEA800)는 고정값이라, 강조색만 바꾸면 이 둘의 명암이 떨어진다. 예를 들어 `#0b6e4f` 상단 바에서 보조 글자(6 `#loggedas` 등)는 3.78:1로 AA(4.5:1)에 못 미치고, 앰버 링은 3.22:1이다(흰 on-accent 글자는 6.25:1). 그래서 "강조색을 바꾸면 상단 바 보조 글자와 앰버 링도 바꾼다"를 §4.5 예시와 README 커스터마이즈 안내에 적는다. 상단 바를 강조색에 묶지 않는 프리셋(Ink, Brand-forward, Redmine Blue는 리터럴, Calm은 bg-subtle, §6.3)에는 해당하지 않는다.
 
 ### 5.5 다크 모드 준비
 
@@ -431,12 +454,13 @@ Pretendard와 대부분의 CJK 폰트에는 이탤릭이 없어 브라우저가 
   - 내부 믹스: `--_ravnus-mix-light`, `--_ravnus-mix-dark`
   - 기타: scrim, `::selection`, 플래시, 위키 diff 추가·삭제, 저널 강조, 진행 막대, 간트 막대, 우선순위·상태·태그 색, 아이콘 stroke
 - **규칙**:
-  - 표면과 파생에 `white`·`black` 리터럴을 직접 쓰지 않는다. 틴트 표면은 `--ravnus-bg-canvas`와 섞고, 밝게·어둡게 하는 명암 파생(accent-hover·active, link-hover, topbar-bg)은 `--_ravnus-mix-light`·`--_ravnus-mix-dark`를 거친다.
+  - 표면과 파생에 `white`·`black` 리터럴을 직접 쓰지 않는다. 틴트 표면은 `--ravnus-bg-canvas`와 섞고, 밝게·어둡게 하는 명암 파생(accent-hover·active, link-hover)은 `--_ravnus-mix-light`·`--_ravnus-mix-dark`를 거친다. 헤더가 어두운 프리셋의 topbar-bg는 같은 식의 계산 결과를 README 블록에 리터럴로 싣는다(§5.4 폴백).
   - 크롬 토큰은 가능하면 시맨틱 토큰을 참조한다.
   - 지금은 `color-scheme: light`를 선언한다.
 - **다크 전에 남은 일**:
   - Pygments 구문 강조의 하드코딩 hex 44–48개를 토큰화한다(v1 범위 밖).
   - 브랜드 보라는 어두운 배경에서 쓸 수 없다(`#46009B` on `#1C1C1C` 1.41:1). 훨씬 밝은 보라 틴트가 필요하다.
+  - 기본 상단 바는 `var(--ravnus-accent)`, 기본 헤더는 `var(--ravnus-bg-canvas)`를 가리킨다. 다크 세트가 강조색을 밝히고 canvas를 어둡게 하면 크롬도 따라 바뀌므로, 크롬 토큰(`--ravnus-topbar-*`, `--ravnus-header-*`)은 다크 세트에서 따로 정하고 명암을 다시 검사한다.
   - 6의 하드코딩 UI hex 105종과 7의 `--oc-*` 사용을 명시 셀렉터로 모두 덮는다.
   - `url()` 이미지 아이콘(§8.7 목록, `jstoolbar.css`의 20개 포함)은 토큰으로 칠할 수 없으므로 `mask-image`나 테마 대체 이미지가 필요하다.
   - 플러그인 CSS는 범위 밖이다.
@@ -456,7 +480,7 @@ Pretendard와 대부분의 CJK 폰트에는 이탤릭이 없어 브라우저가 
 
 ### 6.1 기본 라이트 팔레트
 
-모든 대비는 WCAG 2.x 명암비다. "선택 행"은 `--ravnus-accent-muted`(#E5E3F5)를 말한다. 값은 §4.1 결정(A)의 기본값이다.
+모든 대비는 WCAG 2.x 명암비다. "선택 행"은 `--ravnus-accent-muted`(#E5E3F5)를 말한다. 값은 기본값이다. 2026-10-01 §4.1 변경(A Ink → B Signature)은 크롬 토큰(§6.2)을 바꾸고, 이 절의 기존 값은 그대로다. 이 절에는 메인 메뉴 바와 본문 사이 경계를 위한 `--ravnus-nav-border` 한 개만 추가했다(비텍스트 요소 표). 흰 헤더와 메뉴 바 사이 선은 크롬 토큰 header-divider다(§6.2).
 
 **표면**
 
@@ -484,7 +508,7 @@ raised와 overlay는 라이트에서 canvas와 같다. 다크 세트에서 떠 �
 | `--ravnus-fg-subtle` | #64626A | 메타, placeholder, 푸터, 닫힌 일감(코어 #999 2.85, gray-6 3.32 대체) | 6.01 / 4.76. Ink & Paper 원안(#6A6972, 선택 행 4.29)에서 교체 |
 | `--ravnus-link` | #215DB3 | 링크. 방문한 링크도 같은 색 | 6.40 / 5.07. 본문 글자와는 2.53:1이므로 문장 속 링크에는 상시 밑줄(§7.9) |
 | `--ravnus-link-hover` | #164384 | hover(밑줄 동반) | 9.68 / 7.67 |
-| `--ravnus-accent` | #46009B | 주 버튼 채움, 선택 마커, 포커스 링, 체크박스 | 텍스트 12.11 / 9.60, 흰 글자 12.11 |
+| `--ravnus-accent` | #46009B | 주 버튼 채움, 선택 마커, 포커스 링, 체크박스. 기본 상단 바(§6.2)도 이 토큰을 가리킨다 | 텍스트 12.11 / 9.60, 흰 글자 12.11 |
 | `--ravnus-on-accent` | #FFFFFF | 강조색 위 글자·아이콘 | 12.11 |
 | `--ravnus-fg-disabled` | #9F9DA3 | 비활성 컨트롤 전용(명암 요건 면제, 2.68). 정보를 담는 글자에는 쓰지 않는다 | — |
 | `--ravnus-bg-inverse` / `--ravnus-fg-inverse` | var(fg-default) / var(bg-canvas) | `.ui-tooltip`(코어는 검정) | 16.20 |
@@ -495,6 +519,7 @@ raised와 overlay는 라이트에서 canvas와 같다. 다크 세트에서 떠 �
 |---|---|---|---|
 | `--ravnus-border-muted` | #E6E6E9 | 행 구분선, 진행 막대 트랙 | 장식(요건 없음) |
 | `--ravnus-border-default` | #D9D8DD | 카드, 박스, 탭, 플래시 구분선 | 장식 |
+| `--ravnus-nav-border` | var(--ravnus-border-default) = #D9D8DD | 메인 메뉴 바와 본문 사이 선(`#main-menu`의 `border-block-end`, §6.2) | 장식. nav-bg 1.32, canvas 1.42 |
 | `--ravnus-border-control` | #7D7C85 | 입력·셀렉트·보조 버튼 테두리 | canvas 4.12, 최저 3.27(선택 행), hover 행 3.63, inset 3.76 |
 | `--ravnus-fg-icon` | #7D7C85 | `svg.icon-svg` 기본 stroke | border-control과 같음 |
 | `--ravnus-focus-ring` | = accent | `:focus-visible` 2px 실선, offset 2px(잘리는 컨테이너 안에서는 안쪽, §8.1) | canvas 12.11, 선택 행 9.60 |
@@ -540,31 +565,62 @@ raised와 overlay는 라이트에서 canvas와 같다. 다크 세트에서 떠 �
 
 색각 이상에서는 파랑-보라, 빨강-주황이 구분되지 않는다. 그래서 동시에 쓰는 색은 4개 이하로 권하고, 의미는 트래커 이름 글자가 전달한다고 README에 적는다.
 
-### 6.2 크롬 (기본 Ink)
+### 6.2 크롬 (기본 Signature)
 
-크롬 안의 모든 요소(`#top-menu`, `#header`, 모바일 flyout)는 아래 토큰에서만 색을 가져온다. fg-\* 계열이나 border-\* 계열 토큰을 쓰지 않는다. 그래야 모든 프리셋이 명암을 지킨다.
+크롬 안의 모든 요소(`#top-menu`, `#header`, 모바일 헤더와 flyout)는 아래 토큰에서만 색을 가져온다. 크롬 규칙은 fg-\* 계열이나 border-\* 계열 토큰을 직접 쓰지 않는다(아래 기본값처럼 크롬 토큰이 시맨틱 토큰을 가리키는 것은 된다). 그래야 모든 프리셋이 명암을 지킨다. 메인 메뉴 바(`#main-menu`)는 크롬 선택과 상관없이 `--ravnus-nav-*`(§6.1)를 쓴다. 헤더 안에서도 canvas 표면을 가진 컨트롤(빠른 검색 입력, 프로젝트 이동 트리거)의 글자와 오버레이(`#project-jump .drdn-content`)는 크롬 표면 위가 아니므로 폼 컨트롤·overlay 규칙을 따르고, 컨트롤 테두리만 아래 `--ravnus-header-control-border`를 쓴다. 상단 바도 같다. 상단 바의 일반 자손 규칙(`#top-menu a`, 아이콘 stroke)과 topbar-focus는 7의 `#account .dropdown-content`(overlay 표면)를 빼고 적용한다. 이 드롭다운은 `#top-menu` 안에 있는 흰 오버레이다(7.0.1 `dropdown.css` 20–31행 배경 oc-white, 39–45행은 항목 링크에 색을 주지 않는다). 6의 `#top-menu a {color: #fff}`(6.1.4 `application.css` 78행)에 맞춰 `#top-menu a`에 topbar-fg를 그대로 주면 드롭다운 항목이 흰 바탕에 흰 글자가 되고, 앰버 링은 흰 오버레이 위에서 1.94:1이다. 드롭다운 항목은 overlay·focus-ring(accent) 규칙을 따른다. 기본값은 §4.1 결정 B(Signature, 2026-10-01)이고, 2026-09-26 기본값이던 A(Ink)의 값은 §6.3 프리셋 블록에 있다.
 
-| 토큰 | 기본 | 대비 |
-|---|---|---|
-| `--ravnus-header-bg` | #311E5F (oklch 0.30 0.11 292) | 흰 글자 14.17 |
-| `--ravnus-topbar-bg` | #1C0F3A (파생) | 흰 글자 17.81 |
-| `--ravnus-header-fg` / `--ravnus-topbar-fg` | #FFFFFF | — |
-| `--ravnus-header-fg-muted` / `--ravnus-topbar-fg-muted` | #D1CEE4 | 헤더 위 9.22 / 상단 바 위 11.59 |
-| `--ravnus-header-divider` | #3E3463 | 장식 헤어라인(1.27) |
-| `--ravnus-header-focus` / `--ravnus-topbar-focus` | #FFFFFF | 14.17 / 17.81. 헤더 위 accent는 1.17이라 쓸 수 없다 |
-| `--ravnus-header-icon` | var(--ravnus-header-fg-muted) | hover 시 header-fg |
+| 토큰 | 기본 (Signature) | 대비 | 쓰는 곳 |
+|---|---|---|---|
+| `--ravnus-topbar-bg` | var(--ravnus-accent) = #46009B | 흰 글자 12.11 | 상단 바, 모바일 flyout 표면 |
+| `--ravnus-topbar-fg` | var(--ravnus-on-accent) = #FFFFFF | 12.11 | 상단 메뉴 링크·아이콘, 7 계정 드롭다운 트리거와 그 아이콘(코어 명시도가 높아 따로 선언, §8.4 12), flyout 글자·링크·아이콘 |
+| `--ravnus-topbar-fg-muted` | #CAC5EA | 7.32 | 상단 바와 flyout의 보조 글자(6 `#loggedas` 등) |
+| `--ravnus-topbar-focus` | #FEA800 (로고 앰버) | 상단 바 위 6.24 | 상단 바·flyout 포커스 링. 흰 헤더 위에서는 1.94이므로 링이 상단 바 밖으로 나가지 않게 `outline-offset`을 정한다 |
+| `--ravnus-topbar-height` | 2rem (`min-block-size`로 적용) | — | 상단 바 높이. Ink·Brand-forward·Calm·Redmine Blue 프리셋은 1.75rem(프로토타입 A·C·D의 28px) |
+| `--ravnus-header-bg` | var(--ravnus-bg-canvas) = #FFFFFF | 본문 글자 16.20 | 데스크톱·모바일 헤더, flyout 절 제목(h3) 띠 |
+| `--ravnus-header-fg` | var(--ravnus-fg-default) = #202026 | 16.20 | h1(앱 제목, 현재 프로젝트명 `.current-project`), 모바일 프로젝트 이동 제목, 메뉴 토글, 헤더 링크 hover, flyout h3 |
+| `--ravnus-header-fg-muted` | var(--ravnus-fg-subtle) = #64626A | 6.01 | 브레드크럼 링크와 구분자, 빠른 검색 레이블과 링크, 모바일 펼침 캐럿 |
+| `--ravnus-header-icon` | var(--ravnus-header-fg-muted) | 6.01(3:1 요건). hover 시 header-fg | `#header svg.icon-svg` stroke, `#header svg.icon-svg-filled` fill |
+| `--ravnus-header-focus` | var(--ravnus-accent) = #46009B | 흰 헤더 12.11 | 헤더 안 포커스 링(브레드크럼, 검색 레이블 링크, 검색 입력 `#q`, 모바일 토글). 검색 입력은 코어 `input[type="text"]:focus {outline: none}`(0,2,1)을 이기도록 `#quick-search #q:focus-visible`처럼 명시도를 높인다(§8.4 12). 프로젝트 이동 트리거는 코어 마크업이 tabindex 없는 `span.drdn-trigger`라 키보드 포커스를 받지 않는다. 펼친 뒤의 포커스는 오버레이 안 `#projects-quick-search`에 가고 focus-ring 규칙을 따른다. 메인 메뉴 바의 탭은 일반 `--ravnus-focus-ring`(nav-bg 위 11.25)을 쓴다 |
+| `--ravnus-header-divider` | var(--ravnus-border-default) = #D9D8DD | 장식 헤어라인. 흰 헤더 1.42, 메뉴 바(nav-bg) 1.32 | 아래 "경계선" |
+| `--ravnus-header-control-border` | var(--ravnus-border-control) = #7D7C85 | 흰 헤더 4.12 | 헤더 안 빠른 검색 입력 `#q`와 `#project-jump .drdn-trigger`의 테두리. 두 컨트롤의 표면은 canvas다 |
+
+**경계선** (`--ravnus-header-divider`와 `--ravnus-nav-border`, 1px 실선. 장식이라 3:1 요건은 없다. 배경 차이가 큰 곳(상단 바와 헤더 12.11:1)에서는 배경이 경계를 전달하지만, 배경 차이가 거의 없는 곳(흰 헤더와 메뉴 바, 메뉴 바와 본문, 모두 1.08:1)에서는 이 선이 경계의 주 단서다)
+- 헤더와 메인 메뉴 바 사이: `#main-menu`의 `border-block-start`(header-divider). 흰 헤더와 메뉴 바(`#F6F6FC`)는 1.08:1이라 선이 없으면 경계가 보이지 않는다.
+- 메인 메뉴 바와 본문 사이: `#main-menu`의 `border-block-end`(nav-border). 메뉴 바 아래는 크롬 선택과 상관없이 흰 본문이므로 크롬 토큰이 아니라 nav 토큰으로 둔다. 헤더가 어두운 프리셋의 header-divider(Ink #3E3463)는 흰 본문 위에서 11.19:1로 너무 진하기 때문이다. `#main-menu`는 `box-sizing: border-box`로 두어 위아래 선이 nav-height 안에 들어가게 하고, 헤더 예약 패딩(nav-height)과 메뉴 높이를 맞춘다(§8.4 3).
+- 상단 바와 헤더 사이: `#header`의 `border-block-start`. Signature에서는 상단 바와 헤더가 12.11:1이라 없어도 구분되지만, 프리셋 공통 규칙으로 둔다. 상단 바가 연한 Calm(bg-subtle, 흰 헤더와 1.05:1)과 어두운 띠 두 개인 Ink(1.26:1)에서는 이 선이 경계를 만든다.
+- 모바일 헤더 아래: `border-block-end`(§8.6). 흰 모바일 헤더가 흰 본문 위에 고정되기 때문이다. 코어 `responsive.css`는 `border: none`(6.1.4·7.0.1 98행)이다.
+- flyout 절 제목(h3) 위아래 선(§8.6).
+- 선 두께는 Phase 2 크롬 높이 측정에 포함한다.
+
+**모바일 flyout**(§8.6): 표면은 topbar-bg, 글자·링크·아이콘은 topbar-fg, 보조 글자는 topbar-fg-muted, 절 제목 h3 띠는 header-bg 위 header-fg, h3 위아래 선은 header-divider, 항목 구분선은 topbar-fg(currentColor) 15%, 검색 입력 테두리는 header-control-border, 포커스는 topbar-focus다. Signature의 flyout 표면은 보라라서 코어 `responsive.css`의 "어두운 flyout 위 흰 글자" 전제가 그대로 맞는다. 상단 바가 연한 Calm 프리셋에서는 flyout 표면도 밝아지므로, 흰 필드와 흰색 10% 구분선에 기대던 경계를 위 두 규칙으로 만든다(§8.6 "밝은 flyout").
 
 ### 6.3 프리셋 (README 복사용 `:root{}` 블록)
 
-기본값은 Ink(A)다. 대안 크롬 프리셋 네 가지(Brand-forward, Signature, Calm, Redmine Blue)는 크롬 스타일이 들어가는 v0.2.0(Phase 2)부터 README에 싣는다(§4.1 결정. 브랜드 색 사용은 소유자가 확인했다).
+기본값은 Signature(B)다(§6.2). 대안 크롬 프리셋 네 가지(Ink, Brand-forward, Calm, Redmine Blue)는 크롬 스타일이 들어가는 v0.2.0(Phase 2)부터 README에 싣는다(§4.1 결정. 브랜드 색 사용은 소유자가 확인했다). Signature는 기본값이므로 프리셋 목록에 없다. 헤더가 어두운 프리셋(Ink, Brand-forward, Redmine Blue)은 흰 헤더용 기본 크롬 토큰을 거의 모두 바꾸므로 크롬 토큰 블록 전체를 싣는다. `--ravnus-header-icon`(header-fg-muted를 따름)과 `--ravnus-header-control-border`는 바꾸지 않는다. 어두운 헤더 위에서는 canvas 필드 표면 자체가 경계가 된다(§6.6). 파생값(상단 바, Redmine Blue의 accent 파생)은 color-mix 식이 아니라 빌드가 계산한 리터럴 hex로 싣는다. 사용자 `:root`의 식은 테마 폴백이 덮지 못하기 때문이다(§5.4).
+
+**Ink (A)**: 2026-09-26 기본값이던 잉크 바이올렛 크롬. 코어처럼 어두운 헤더 위 밝은 글자를 쓴다.
+
+```css
+:root {
+  --ravnus-header-bg: #311E5F;            /* oklch 0.30 0.11 292. 흰 글자 14.17 */
+  --ravnus-header-fg: #FFFFFF;
+  --ravnus-header-fg-muted: #D1CEE4;      /* 헤더 위 9.22 */
+  --ravnus-header-divider: #3E3463;       /* 장식 헤어라인, 헤더와 1.27 */
+  --ravnus-header-focus: #FFFFFF;         /* 14.17. 헤더 위 accent는 1.17이라 쓸 수 없다 */
+  --ravnus-topbar-bg: #1C0F3A;            /* 흰 글자 17.81. header-bg를 바꾸면 color-mix(in oklch, header-bg 72%, 검정)으로 다시 계산(§5.4). 식을 적으면 color-mix 미지원 브라우저에서 투명해진다 */
+  --ravnus-topbar-fg: #FFFFFF;
+  --ravnus-topbar-fg-muted: #D1CEE4;      /* 상단 바 위 11.59 */
+  --ravnus-topbar-focus: #FFFFFF;         /* 17.81 */
+  --ravnus-topbar-height: 1.75rem;
+}
+```
 
 | 프리셋 | 바뀌는 토큰 | 핵심 대비 |
 |---|---|---|
-| Ink (A, 기본값) | — | 위 표 |
-| Brand-forward | header-bg #46009B | 흰 글자 12.11, muted #D1CEE4 7.88. 파생 상단 바 #2A0062는 흰 글자 16.47 |
-| Signature (B) | topbar-bg #46009B, topbar-fg #FFF, topbar-fg-muted #CAC5EA, topbar-focus #FEA800. header-bg는 canvas, header-fg는 fg-default, header-fg-muted는 fg-subtle, header-focus는 accent | 흰 글자 12.11, muted 7.32, 앰버 링 6.24. 헤더 16.20 / 6.01 |
-| Calm (C) | topbar-bg는 bg-subtle, 헤더는 Signature와 같음, 상단 바 글자는 fg-muted | 7.26, 포커스 11.55 |
-| Redmine Blue (D) | header-bg #2B5F8A, header-fg-muted #D4E2EF, accent #1864AB | 흰 글자 6.76, muted 5.13. 파생 상단 바 #183A57은 11.79. 파생 선택 행 #E4ECF6 위에서 link 5.37, fg-subtle 5.04, border-control 3.46 |
+| Ink (A) | 위 블록 | 흰 글자 헤더 14.17 / 상단 바 17.81, muted 9.22 / 11.59, 흰 포커스 링 14.17 / 17.81, 상단 바와 헤더 1.26(헤어라인으로 보완) |
+| Brand-forward | Ink 블록에서 header-bg #46009B, topbar-bg #2A0062(리터럴, §5.4) | 흰 글자 12.11, muted #D1CEE4 7.88. 상단 바 #2A0062는 흰 글자 16.47, muted 10.72 |
+| Calm (C) | topbar-bg는 bg-subtle, topbar-fg는 fg-muted, topbar-fg-muted는 fg-subtle, topbar-focus는 accent, topbar-height 1.75rem. 헤더는 기본값(흰 헤더) 그대로 | 상단 바 글자 7.26, muted 5.73, 포커스 11.55. 상단 바와 헤더(1.05)는 header-divider로 구분(§6.2). 상단 바가 밝으므로 코어가 높은 명시도로 밝은 색을 주는 6 `#loggedas`와 7 계정 트리거·아이콘을 topbar 토큰으로 다시 칠하는 규칙(§8.4 12)과, 모바일 flyout 표면도 밝아져 필요한 검색 입력 테두리·항목 구분선 규칙(§8.6 "밝은 flyout")이 이 프리셋의 전제다 |
+| Redmine Blue (D) | Ink 블록에 header-bg #2B5F8A, header-fg-muted #D4E2EF, topbar-bg #183A57(리터럴), accent #1864AB와 accent 파생 7개의 리터럴(빌드 계산값, §5.4) | 흰 글자 6.76, muted 5.13. 상단 바 #183A57은 흰 글자 11.79, topbar-fg-muted(Ink 값 #D1CEE4) 7.67. 파생 선택 행 #E4ECF6 위에서 link 5.37, fg-subtle 5.04, border-control 3.46 |
 | Left sidebar | `--ravnus-sidebar-at-start: 1` | — |
 | Compact | `--ravnus-row-pad-y: 0.25rem; --ravnus-font-size-cell-subject: 0.8125rem` | — |
 | Classic stripes off | `--ravnus-row-stripe: transparent` | — |
@@ -655,12 +711,13 @@ raised와 overlay는 라이트에서 canvas와 같다. 다크 세트에서 떠 �
 `culori` 또는 `colorjs.io`를 devDependency로 추가한다. 추가하기 전에 의존성과 라이선스를 확인한다. 기본값과 §6.3의 모든 프리셋에 대해 다음 쌍을 검사한다.
 - fg-default, fg-muted, fg-subtle, link, 역할별 fg가 canvas, subtle, inset, hover, raised, overlay, accent-subtle, accent-muted, nav-bg, 네 역할 틴트 위에서 4.5 이상(본문 fg-default는 7 이상)
 - on-accent / accent, on-solid / 역할별 solid가 4.5 이상
-- header-fg·header-fg-muted / header-bg, topbar-fg·topbar-fg-muted / topbar-bg가 4.5 이상
-- border-control, fg-icon, focus-ring, header-focus, topbar-focus가 자기 표면 전부에서 3 이상
+- header-fg·header-fg-muted / header-bg, topbar-fg·topbar-fg-muted / topbar-bg가 4.5 이상. flyout h3(header-fg / header-bg)도 여기에 들어간다
+- border-control, fg-icon, focus-ring, header-focus, topbar-focus, header-icon이 자기 표면 전부에서 3 이상(header-focus·header-icon은 header-bg, topbar-focus는 topbar-bg. 메뉴 바 탭은 focus-ring이 nav-bg 위에서 검사된다)
+- 헤더 안 컨트롤 경계: header-control-border / header-bg 또는 canvas(필드 표면) / header-bg 중 하나가 3 이상. 기본 흰 헤더는 앞의 것(4.12), 어두운 헤더 프리셋은 뒤의 것(Ink 14.17, Brand-forward 12.11, Redmine Blue 6.76)으로 통과한다
 - link-decoration(canvas 위 합성)이 canvas, subtle, inset, accent-subtle에서 3 이상
 - 진행 막대 구간 / 트랙이 3 이상
 
-이 게이트는 토큰 쌍만 본다. 테마가 덮지 않은 코어 색은 §10.2의 렌더 화면 검사가 맡는다.
+이 게이트는 토큰 쌍만 본다. 테마가 덮지 않은 코어 색은 §10.2의 렌더 화면 검사가 맡는다. 특히 흰 헤더에서 테마가 놓친 코어 밝은 글자 규칙(§8.4 12, §8.6)은 토큰 쌍 검사로 잡히지 않으므로 계산 스타일 assert(§10.2 3)로 잡는다.
 
 ---
 
@@ -819,20 +876,20 @@ pre, code, kbd, samp, textarea { text-autospace: no-autospace; }
 
 | 영역 | 바꾸는 것 | 유지하는 것 |
 |---|---|---|
-| 상단 메뉴 `#top-menu` | 최소 1.75rem 바, topbar 토큰, 13px, 아이콘 색 | 항목, 순서, 동작, 7의 계정 드롭다운 |
-| 헤더 `#header` | 평면 header-bg, 헤어라인, h1 22px/700, 브레드크럼 13px, 검색 필드(canvas, 2rem, `--ravnus-radius`), `#project-jump` 색 | 모든 요소의 위치 |
+| 상단 메뉴 `#top-menu` | `--ravnus-topbar-height`(기본 2rem, 어두운 헤더 프리셋과 Calm은 1.75rem) 바, topbar 토큰(기본 `#46009B` 위 흰 글자), 13px, 아이콘 색, 바 안에 머무는 앰버 포커스 링 | 항목, 순서, 동작, 7의 계정 드롭다운 |
+| 헤더 `#header` | 평면 header-bg(기본 흰색), 상단 바·메뉴 바와의 경계 헤어라인(header-divider, §6.2), h1 22px/700, 브레드크럼 13px, 검색 필드와 `#project-jump` 트리거(canvas, 2rem, `--ravnus-radius`, header-control-border 테두리. 트리거의 필드 표면은 `@media (min-width: 900px)`로 한정하거나 모바일 규칙에서 `background: transparent; border: 0`을 다시 선언한다, §8.6). 헤더 안 글자·링크·아이콘·포커스는 모두 header 토큰으로 다시 칠한다. 대상 코어 규칙은 §8.4 12(데스크톱)와 §8.6(모바일) | 모든 요소의 위치 |
 | 메인 메뉴 `#main-menu` | 전폭 연한 바 `nav-bg`(높이 `--ravnus-nav-height` 2.25rem). 탭은 14px/500 fg-muted, hover는 nav-hover-bg, 선택은 fg-default 600 + `inset 0 -3px 0 accent`(forced-colors에서는 테두리, §8.8). `.new-object`는 테두리 버튼, `.menu-children`은 오버레이 | 절대 위치 구조, 탭 순서, `.tabs-buttons` 넘침 버튼 |
 | 사이드바 | bg-subtle 틴트(테두리 없음. 구분이 약하면 양쪽 `border-inline`을 border-muted로 주면 위치 토큰과 상관없이 동작, 미검증), h3 13px/600 fg-muted(대문자 변환 없음), 링크 13px/1.5, 선택 항목은 accent-subtle + accent 글자(10.81) + 3px 인라인 시작 마커(`border-inline-start`), 위치 토큰 | 코어 폭 단계, 접기 토글, localStorage 상태, 접힘 패딩 |
 | 본문 `#content` | 패딩 20px 24px 16px, 본문 폭 제한 opt-in 토큰(위키·뉴스 본문 전용, 기본 none) | `overflow-x: auto` |
 | 일감 목록 | 밀도, 글리프, 행 상태, 그룹 행·합계(§6.5), `th`(bg-subtle, 13px/600, fg-muted, 본문 행과 같은 높이), 행 구분선 border-muted | 열 구성, 정렬, 체크박스, `nowrap` 열 |
 | 일감 상세 | `div.issue` 카드(bg-subtle, 1px border-default, radius-lg, 패딩 16px 20px), 제목 22px, 레이블 fg-muted 600. 저널 헤더는 bg-subtle, `--ravnus-radius`, `:target`은 accent-subtle, 비공개 노트는 3px danger 인라인 시작선(`border-inline-start`). `#sticky-issue-header`도 같은 토큰 | 2열 속성 그리드, 170px 레이블 폭(토큰화), 모든 요소 순서 |
-| 폼·버튼 | 폰트 상속, 높이 2rem(표·필터 안은 1.75rem), radius, border-control, 포커스 링, 주 버튼 allowlist, `.btn-alert` 위험 스타일. `.tabular` 레이블의 고정 line-height를 풀어 긴 CJK 레이블이 줄바꿈되게 한다. 코어 `html>body .tabular p {overflow: hidden}`(6.1.4 1041행, 7.0.1 1295행)은 세로 패딩이 3px뿐이라 입력 밖으로 4px 나오는 포커스 링의 위아래를 자른다. `overflow: visible; display: flow-root`로 바꿔 float 정리는 유지한다. 넓은 내용이 넘치는 곳이 생기는지 Phase 4에서 확인한다 (미검증) | `.tabular` 구조 |
+| 폼·버튼 | 폰트 상속, 높이 2rem(표·필터 안은 1.75rem), radius, border-control, 포커스 링, 주 버튼 allowlist, 텍스트 입력 포커스 링 복원(코어 `input[type="text"]:focus, … {border: 1px solid #5ad; outline: none}`(6.1.4 647–655행, 7.0.1 859–867행은 테두리 blue-5, 명시도 0,2,1)이 outline을 없애므로 일반 `:focus-visible`(0,1,0)로는 이기지 못한다. 테마 규칙을 `input[type="text"]:focus-visible`처럼 0,2,1 이상으로 선언한다), `.btn-alert` 위험 스타일. `.tabular` 레이블의 고정 line-height를 풀어 긴 CJK 레이블이 줄바꿈되게 한다. 코어 `html>body .tabular p {overflow: hidden}`(6.1.4 1041행, 7.0.1 1295행)은 세로 패딩이 3px뿐이라 입력 밖으로 4px 나오는 포커스 링의 위아래를 자른다. `overflow: visible; display: flow-root`로 바꿔 float 정리는 유지한다. 넓은 내용이 넘치는 곳이 생기는지 Phase 4에서 확인한다 (미검증) | `.tabular` 구조 |
 | 메시지 | 플래시·오류·경고·충돌 박스를 역할 토큰과 `--ravnus-radius`로. `.nodata`는 중립(bg-subtle, fg-muted). 7의 닫힌 프로젝트 `p.warning`. 6은 SVG가 없는 메시지 상자에 `background` 약식 속성으로 PNG를 깐다. `div.flash.error`와 `#errorExplanation`은 exclamation.png, `div.flash.notice`는 true.png, `div.flash.warning`과 `.conflict`는 warning.png다(모두 `:not(:has(svg))`, 6.1.4 1249–1287행). 테마가 `background-color`만 덮으면 PNG가 남고, 약식을 덮으면 사라진다. 아이콘을 남기는 쪽(`background-color`만 덮기)을 기본으로 한다 | 마크업 |
 | 본문 내 탭 `#content .tabs` | 박스형 탭을 유지하고 색만 바꾼다(선택 탭은 canvas, fg-default 600). 코어는 `height`(7은 `block-size`) 2.6em에 `overflow: hidden`이다(6.1.4 1486행, 7.0.1 1793행). 그래서 탭 포커스 링이 잘리고, 고정 높이라 CJK 행간이나 WCAG 1.4.12 간격 덮어쓰기에서 글자가 잘릴 수 있다(소스에서 유도, 미검증). 탭 링크의 포커스 링은 안쪽(`outline-offset: -2px`)에 그린다. 높이는 (1) 절대 위치 `ul`을 정적 배치로 바꿔 auto로 두거나 (2) `lh` 단위로 계산한다. 탭 `ul`은 6에서 `min-width: 2000px`(6.1.4 1487행), 7에서 `min-inline-size: 100%; inline-size: max-content`(7.0.1 1794–1800행)라 탭 영역보다 넓어질 수 있다. 이를 가리는 overflow는 유지해야 하므로 Phase 6에서 프로브로 둘 중 하나를 고른다 (미검증) | 구조, 넘침 버튼 |
 | 편집기 툴바 `.jstElements`, `.jstTabs`(편집·미리보기 탭), 도움말 링크 | 버튼 표면·테두리·hover·선택 상태를 토큰으로 바꾼다. 대체하는 코어 hover는 `.jstElements button:hover`의 `border-color`·`background-color`로, 6은 `#bbb`·`#e5e5e5`(6.1.4 `jstoolbar.css` 68행), 7은 `var(--oc-gray-5)`·`var(--oc-gray-3)`(7.0.1 69행)이다. 표 생성기의 선택·hover 셀(`.table-generator td.selected-cell, td:hover`, 6 `#759FCF`, 7 `var(--oc-blue-1)`, 96·97행)도 토큰으로. 포커스 링, 미리보기 탭은 본문 탭과 같은 규칙 | 버튼 아이콘. `jstoolbar.css`의 `background-image: url(...)` 20개(6·7)라 다시 칠할 수 없다(§8.7) |
 | 플로팅 레이어 | context menu, 7 `#account .dropdown-content`, jQuery UI(autocomplete, dialog, datepicker, tooltip), tribute 멘션 목록에 `--ravnus-bg-overlay` 표면, border-default, radius, shadow-overlay를 준다. 툴팁은 inverse | 동작 |
 | 로그인 | 박스(bg-subtle, radius-lg, shadow-raised. 코어의 주황 #FFEBC1 대체), `#login-submit` 주 버튼 | 구조 |
-| 모바일 (<900px) | 색과 컨트롤 크기 연결(§8.6) | `responsive.js`의 DOM 이동 |
+| 모바일 (<900px) | 흰 모바일 헤더와 그 안 글자 재칠(코어 `responsive.css` 목록), 헤더 아래 헤어라인, flyout 색, 컨트롤 크기 연결(§8.6) | `responsive.js`의 DOM 이동 |
 | 로드맵, 간트, 달력, 활동, 저장소, 관리 | 색만 다시 칠한다(진행 막대는 녹색 계열). 간트 제목 열은 크기·행간 규칙에서 뺀다(§7.2) | 구조 |
 | forced-colors, 인쇄 | §8.8, §8.9 | 코어 `@media print`의 크롬 숨김 |
 | Pygments, 위키 문법 도움말 | v1 유지. 도움말 페이지는 `wiki_syntax.css`를 확장자까지 붙여 링크하므로 테마로 바꿀 수 없다 | — |
@@ -853,23 +910,42 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 
 - 테마 `application.css`는 7의 `dropdown.css`와 `responsive.css`보다 **먼저** 로드된다. 그 뒤에 페이지별로 `context_menu.css`, `jstoolbar.css`, `gantt.css`(7), `scm.css`가 온다. 명시도가 같으면 코어 규칙이 이긴다.
 - 이 파일들을 덮는 규칙은 셀렉터를 한 단계 높인다. 검증된 예로, 모바일 토글에서 `body #header .mobile-toggle-button`은 지고 `body #header a.mobile-toggle-button`은 이긴다(두 버전).
-- `!important`는 코어가 쓴 곳(`.context-menu-selection` 계열)에만 쓴다.
+- `!important`는 코어가 쓴 곳에만 쓴다. `.context-menu-selection` 계열과, 프로젝트 이동 목록 `#project-jump .drdn-items>*`와 그 hover(6.1.4 `application.css` 350–351행, 7.0.1 529–530행)다. 프로젝트 이동 목록 항목과 hover는 overlay 토큰으로 `!important` 재선언한다(코어 hover 명암은 흰 글자/#759FCF 2.76:1, 흰 글자/#1C7ED6 4.20:1로 AA 미달). 이 둘은 §10.2 3 계산 스타일 assert에 넣는다.
 - 명시도가 높은 `:has()` 규칙으로 자기 모바일 리셋을 덮지 않는다.
 - 사용자가 덮을 행 단위 기본값은 반대로 명시도 0으로 둔다(§5.6).
 
 ### 8.4 6.1과 7.0 차이 처리 목록
 
 1. **상단 메뉴**: 6은 `div#top-menu`(float, `#loggedas`, `#account` float right, 배경 #3E5B76, 0.8em 굵게)다. 7은 `nav.top-menu#top-menu`(flex, `.top-menu__links`, `.profile-menu > #account.dropdown`, 배경 #234761, 0.75rem)다. 공통 id `#top-menu`와 `#account`를 기준으로 flex로 맞춘다. 7 드롭다운 표면은 `dropdown.css`보다 명시도를 높인다.
-2. **헤더**: 6은 그라디언트 #628DB6에서 #356D92, padding 4px 16px 20px, min-height 8.7ex, h1 1.4375rem이다. 7은 평면 #3A78A3, h1 flex column에 min-block-size 2.75rem과 line-height 1.15, `#quick-search` min-block-size 2.75rem이다. **모든 값을 명시적으로 리셋한다.** 일부만 리셋하면 6이 72px, 7이 88px로 달라진다(측정).
-3. **메인 메뉴**: 6은 둥근 탭에 `left:10px; margin-right:-500px; width:100%`다. 7은 전폭 바(`inset-inline:0`, padding 2px 20px, indigo-0)다. `inset-inline:0; margin:0; inline-size:auto`와 토큰으로 맞춘다. 헤더의 메뉴 공간 예약은 `body.has-main-menu #header { padding-block-end: var(--ravnus-nav-height) }`로 한다. 이 클래스는 **6.1.4에도 있다**(6.1.4 `app/helpers/application_helper.rb` 878행, 7.0.1은 920행. 로컬 도커의 6.1.4 인스턴스에서 익명 `/projects` 응답의 `<body>` class로도 확인). `:has()` 폴백은 쓰지 않는다. 6.0.x에 있는지는 Phase 0에서 확인한다 (미검증).
+2. **헤더**: 6은 그라디언트 #628DB6에서 #356D92, padding 4px 16px 20px, min-height 8.7ex, h1 1.4375rem이다. 7은 평면 #3A78A3, h1 flex column에 min-block-size 2.75rem과 line-height 1.15, `#quick-search` min-block-size 2.75rem이다. **모든 값을 명시적으로 리셋한다.** 일부만 리셋하면 6이 72px, 7이 88px로 달라진다(측정). 두 버전 모두 헤더 글자와 링크를 밝게 두므로, 흰 헤더(기본 Signature)에서 다시 칠할 규칙은 항목 12에 모았다.
+3. **메인 메뉴**: 6은 둥근 탭에 `left:10px; margin-right:-500px; width:100%`다. 7은 전폭 바(`inset-inline:0`, padding 2px 20px, indigo-0)다. `inset-inline:0; margin:0; inline-size:auto`와 토큰으로 맞춘다. 헤더의 메뉴 공간 예약은 `body.has-main-menu #header { padding-block-end: var(--ravnus-nav-height) }`로 한다. `#main-menu`는 `box-sizing: border-box`로 두고 블록 크기를 nav-height로 준다. 코어는 두 버전 모두 box-sizing을 주지 않으므로(6.1.4 102행, 7.0.1 199–209행) 그대로 두면 위아래 경계선(§6.2) 2px만큼 절대 위치 메뉴가 예약 패딩보다 커진다. 예약 패딩의 nav-height는 선을 포함한 값이다. 이 클래스는 **6.1.4에도 있다**(6.1.4 `app/helpers/application_helper.rb` 878행, 7.0.1은 920행. 로컬 도커의 6.1.4 인스턴스에서 익명 `/projects` 응답의 `<body>` class로도 확인). `:has()` 폴백은 쓰지 않는다. 6.0.x에 있는지는 Phase 0에서 확인한다 (미검증).
 4. **논리 속성**: 7은 논리 속성을 587줄 쓰고, 6은 53줄에 별도 `rtl.css`가 있다. 테마는 논리 속성으로 쓴다. 같은 박스 면에 대한 논리·물리 선언은 캐스케이드 순서로 정해진다. `[dir=rtl]` 속성은 7에만 있다. 6은 `rtl.css`가 `html {direction: rtl}`을 주므로 논리 속성은 6에서도 뒤집히고, `[dir=rtl]` 셀렉터만 동작하지 않는다. 그래서 방향이 필요한 표현(행 마커, 인라인 시작선)은 `[dir=rtl]` 대신 논리 속성으로 쓴다.
 5. **색**: 6에는 UI hex가 105종 하드코딩돼 있다. 7은 `--oc-*`를 342회 쓰고 hex는 2개다. 두 버전 모두 명시 셀렉터에 `--ravnus-*`를 준다. `--oc-*` 재매핑은 주 수단으로 쓰지 않는다. `--color-header-background`와 `--color-top-menu-background`는 7.0.1에 **없으므로** 브리지하지 않는다. 실제로 있는 코어 훅은 `--fonts-main`과 `--color-current-marker`(7)뿐이다.
 6. **파일 분리**: `dropdown.css`(전역)와 `gantt.css`(간트 페이지)는 7에만 있다. 6의 간트 규칙은 `application.css` 안에 있다.
-7. **버전 전용 클래스**: 7에만 `.top-menu*`, `.dropdown*`, `.current-project`, `#new-object`, `.news-article`이 있다. 6에만 `#loggedas`, `.icon-gravatar`, `.board`, `.revision_graph`가 있다. 공통 셀렉터를 우선하고, 버전 전용 셀렉터는 각각 보강한다.
+7. **버전 전용 클래스**: 7에만 `.top-menu*`, `.dropdown*`, `.current-project` 스타일(7.0.1 `application.css` 169행. `span.current-project` 마크업 자체는 6.1.4 `app/helpers/application_helper.rb` 815행에서도 나온다), `#new-object`, `.news-article`이 있다. 6에만 `#loggedas`, `.icon-gravatar`, `.board`, `.revision_graph`가 있다. 공통 셀렉터를 우선하고, 버전 전용 셀렉터는 각각 보강한다.
 8. **컴포넌트 변경**: 7은 `div.issue`(테두리 없음, 16px 패딩, `.details > hr`), `.box`(그림자 없음), 입력(padding 4px 7px, 고정 24px 높이 없음), `#content` 패딩, 사이드바 선택 스타일을 바꿨다. 테마는 이 속성들을 모두 명시해 두 기준선을 덮는다.
 9. **저널·반응·히스토리 탭**: 6.1에서 7.0으로 가며 바뀐 영역이다(Opale #27이 깨진 곳). 시드 #8에서 제목, h2, 배지 마크업이 같음은 확인했다. 저널이 있는 일감은 아직 비교하지 않았다 (미검증). Phase 0에서 #7로 비교한다.
 10. **아이콘**: 6은 112개, 7은 118개 심볼이다. 다시 칠하기만 하므로 영향이 없다. `url()` 이미지 수는 크게 다르다(§8.7).
 11. **이미지 폴백**: 6의 코어 CSS는 고유 `url()` 110개, 7은 14개(폰트·open-color 포함)를 쓴다. 6에는 SVG가 없는 `.icon-*`의 PNG 폴백과 flash PNG가 남아 있다.
+12. **헤더의 밝은 글자 전제(흰 헤더 재칠 목록, 데스크톱)**: 두 코어 모두 헤더를 어두운 파랑으로 칠하고 그 위 글자와 링크를 밝게 둔다. 기본 크롬 Signature의 헤더는 흰색이므로 아래 규칙을 두 버전 모두 header 토큰으로 다시 선언한다. A(Ink)에서는 규칙을 놓쳐도 어두운 헤더 위 밝은 글자라 드러나지 않지만, 흰 헤더에서는 흰 바탕에 흰 글자가 되어 보이지 않는다. 그래서 Phase 2에서 요소마다 계산 스타일을 assert한다(§10.2 3). 행 번호는 각 버전의 `app/assets/stylesheets/application.css`이고, 로컬 `redmine:6`(6.1.4)·`redmine:7`(7.0.1) 이미지에서 읽었다. 모바일(`responsive.css`) 목록은 §8.6이다.
+
+    | 대상 | 6.1.4 | 7.0.1 | 테마 처리 |
+    |---|---|---|---|
+    | 헤더 배경과 상속 글자색(h1의 앱 제목, 현재 프로젝트명, 브레드크럼 구분자 `span.separator`, 검색 레이블의 ":") | `#header` 83–90행: `background: linear-gradient(180deg, #628DB6 30%, #356D92)`(86행), `color: #f8f8f8`(87행) | `#header` 134–141행: `background: #3A78A3`(136행), `color: var(--oc-white)`(137행) | `background` 약식으로 header-bg(6의 그라디언트까지 지운다), `color`는 header-fg |
+    | 헤더 링크(브레드크럼의 상위 프로젝트 `a.root`·`a.ancestor`, 빠른 검색 레이블의 "검색" 링크) | `#header a {color:#f8f8f8}`(91행). `#header a:hover`는 없고, 전역 `a:hover`(225행, #c61a1a)는 명시도에서 져서 hover 때 밑줄만 생긴다 | `#header a {color: var(--oc-gray-0)}`(145행, #F8F9FA, 흰 헤더와 1.05:1), `#header a:hover {color: var(--oc-white)}`(146행) | `#header a`는 header-fg-muted, hover는 header-fg와 밑줄, `:focus-visible`은 header-focus. 6에는 hover 규칙을 새로 둔다. 이 hover 밑줄(`#header a:hover`, 1,1,1)은 코어 `.mobile-toggle-button:hover, :active {text-decoration: none}`(두 버전 `responsive.css` 255–258행, 0,2,0)을 이기므로, 모바일 메뉴 토글에서는 밑줄을 다시 지운다(§8.6 메뉴 토글 행) |
+    | 브레드크럼 `#header h1 .breadcrumbs` | 93행(색 없음, 87행 상속) | 161–168행(색 없음, 137행 상속) | header-fg-muted |
+    | 현재 프로젝트명 `#header h1 .current-project` | 스타일 규칙 없음. 마크업은 있다(`application_helper.rb` 815행). 87행 상속 | 169–172행(말줄임만, 색 없음, 137행 상속) | header-fg |
+    | 빠른 검색 레이블 `#quick-search form label` | 99행(색 없음, 87행 상속) | 191–196행(색 없음, 137행 상속) | header-fg-muted |
+    | 빠른 검색 입력 `#quick-search #q` | 96행 `border:1px solid #ccc`(흰 헤더와 1.61:1) | 181–188행 `border: 1px solid var(--oc-gray-4)`(#CED4DA, 흰 헤더와 1.49:1) | 어두운 헤더에서는 흰 필드 자체가 경계였다. 테두리를 header-control-border(4.12)로 |
+    | 텍스트 입력 포커스(검색 입력 `#q`에 적용) | 647–655행 `input[type="text"]:focus, … {border: 1px solid #5ad; outline: none}`(`outline: none` 654행). 명시도 0,2,1 | 859–867행, 테두리 `var(--oc-blue-5)`, `outline: none` 866행 | 일반 `:focus-visible`(0,1,0)로는 outline을 되살리지 못한다. `#quick-search #q:focus-visible`처럼 0,2,1 이상으로 header-focus outline을 선언한다. 테두리는 코어처럼 `#quick-search #q`(2,0,0)가 포커스 때도 이기므로 header-control-border 그대로다. 본문 입력에도 같은 코어 규칙이 걸린다(§8.1 폼·버튼) |
+    | 프로젝트 이동 트리거 `#project-jump .drdn-trigger` | 336–347행: `border:1px solid #ccc`(342행), `color:#555`(345행), `background:#fff url(/chevron-down.svg)`(346행) | 514–526행: `border:1px solid var(--oc-gray-4)`(521행), `color:var(--oc-gray-7)`(524행), `background:var(--oc-white) url(/chevron-down.svg)`(525행) | 테두리는 header-control-border. 글자는 canvas 필드 위이므로 폼 컨트롤 규칙(fg-default)을 따른다. 필드 표면(canvas 배경, 테두리, 화살표 이미지)은 `@media (min-width: 900px)`로 한정하거나 모바일 규칙에서 `background: transparent; border: 0`을 다시 선언한다. 코어 모바일 규칙(§8.6, 명시도 1,1,0)보다 높은 명시도로 필드 표면을 주면 모바일에서 canvas 배경이 남는다. 흰 헤더에서는 드러나지 않지만 헤더가 어두운 프리셋에서는 header-fg(#FFFFFF) 제목이 흰 canvas 위에 놓여 1.0:1이 된다. 트리거는 tabindex 없는 `span`이라(6.1.4 `application_helper.rb` 612행, 7.0.1 618행) click 처리만 있고(`application-legacy.js` 6.1.4 834행, 7.0.1 898행) 키보드 포커스를 받지 않는다. 펼친 뒤 포커스는 오버레이 안 `#projects-quick-search`(focus-ring)로 간다 |
+    | 펼침 화살표 | `url(/chevron-down.svg)`(346행), 펼친 상태 `url(/arrow_up.png)`(348행) | 525행, 527행 | `url()` 이미지라 다시 칠할 수 없지만 canvas 필드 안에 있어 헤더 색과 상관없다. 그대로 둔다(§8.7) |
+    | 헤더 아이콘 | 헤더 전용 규칙 없음. 전역 `svg.icon-svg {stroke: #343a40}`(2027–2032행) | 헤더 전용 규칙 없음. 전역 `svg.icon-svg {stroke: var(--oc-gray-8)}`(2228–2233행) | 코어 헤더에서 메뉴 바와 오버레이 밖에 놓이는 아이콘은 없다. 플러그인 대비로 `#header svg.icon-svg` stroke와 `#header svg.icon-svg-filled` fill에 header-icon(hover header-fg)을 준다 |
+
+    - **일반 자손 규칙의 범위**: `#header a`, `#header svg.icon-svg` 같은 일반 자손 규칙은 메인 메뉴 바(`#main-menu`, nav 토큰)와 헤더 안 오버레이(`#project-jump .drdn-content`, overlay 표면)를 빼고 적용한다. 그렇지 않으면 어두운 헤더 프리셋에서 흰 header-fg·밝은 header-icon이 흰 오버레이나 연한 메뉴 바로 새어 들어간다. 예: 프로젝트 이동 목록의 검색 아이콘(6.1.4 `application_helper.rb` 621행, 7.0.1 627행), 메뉴 넘침 버튼 아이콘(`button.tab-left/right svg.icon-svg`, 6.1.4 1552행 #999, 7.0.1 1868행 gray-6). 검색 입력, 프로젝트 이동 트리거처럼 canvas 표면을 가진 헤더 안 컨트롤도 크롬 표면이 아니므로 글자는 폼 컨트롤 규칙을 따른다. 상단 바도 같다. 상단 바의 일반 자손 규칙(`#top-menu a`, 아이콘 stroke)과 topbar-focus는 7의 `#account .dropdown-content`(overlay 표면)를 빼고 적용한다. 드롭다운 항목은 overlay·focus-ring(accent) 규칙을 따른다(§6.2). 이 드롭다운은 `#top-menu` 안의 흰 오버레이이고(7.0.1 `dropdown.css` 20–31행) 코어는 항목 링크에 색을 주지 않는다(39–45행). 그래서 6의 `#top-menu a {color:#fff}`(6.1.4 78행)에 맞춘 `#top-menu a` 규칙(1,0,1)이 그대로 닿으면 항목이 흰 바탕에 흰 글자가 되고, 앰버 링은 흰 오버레이 위에서 1.94:1이다.
+    - **흰 헤더 전용이 아닌 것**: 6의 메인 메뉴 링크 `#main-menu li a {color: #fff}`(112–121행, 114행)는 어두운 헤더 위 탭을 전제하지만, 테마는 크롬 선택과 상관없이 연한 메뉴 바(nav 토큰, §8.1)로 덮는다. 7은 이미 연한 메뉴 바다(228–240행, gray-8 글자). 상단 바 규칙(6 `#top-menu` 69행 배경 #3E5B76·글자 #fff, `#top-menu a` 78행, `#loggedas` 79행 / 7 `nav.top-menu` 79–87행 배경 #234761·글자 gray-2, `.top-menu__links a`·`#account .dropdown-trigger` 96–103행과 hover 105–109행, 아이콘 stroke 111–118행)도 밝은 글자를 전제하지만, Signature의 상단 바는 `#46009B`로 어두우므로 그 전제가 유지된다. 테마는 이 규칙들을 topbar 토큰으로 다시 칠한다. 상단 바가 연한 Calm 프리셋(bg-subtle #FAF9FC)에서는 이 전제가 뒤집히므로, 코어가 테마의 `#top-menu a`(1,0,1)보다 높은 명시도로 색을 주는 규칙을 놓치면 안 된다. 6은 `#top-menu #loggedas {color: #fff}`(79행, 2,0,0)이고, 7은 계정 드롭다운 트리거다. `#account .dropdown-trigger`(96–103행, 1,1,0, gray-1 글자), 그 hover(105–109행, 1,2,0, 흰 글자와 `rgba(255,255,255,0.12)` 배경), `#account .dropdown-trigger .icon-svg`(111–114행, 1,2,0, gray-1 stroke), hover 아이콘(116–118행, 1,3,0, 흰 stroke)이다. 테마는 `#top-menu #loggedas`(2,0,0)를 뒤에 선언해 topbar-fg-muted를 주고, 7 트리거는 `#top-menu #account .dropdown-trigger`(2,1,0)와 hover(2,2,0)에 topbar-fg, `#top-menu #account .dropdown-trigger .icon-svg`(2,2,0)와 hover 아이콘(2,3,0)에 topbar-fg stroke를 준다. 이렇게 하지 않으면 gray-1(#F1F3F5) 글자·아이콘이 Calm 상단 바 위에서 1.06:1로 보이지 않는다. Signature에서는 gray-1이 보라 위 10.89:1로 읽히지만 토큰 색이 아니다. hover 배경(흰색 12%)은 Calm에서 보이지 않을 뿐 글자를 가리지 않으므로 둔다.
+    - **관계없는 파일**: 7 `dropdown.css`(전체 55줄)에는 `#header` 규칙이 없고 상단 바 계정 드롭다운과 `.dropdown-content` 오버레이만 다룬다. 6 `rtl.css`의 `#header`(17행)는 패딩만 준다.
+    - **헤더 안 플러그인 콘텐츠**: 두 버전의 레이아웃(`app/views/layouts/base.html.erb`, `#header`는 6.1.4 69행, 7.0.1 90행부터)은 `#header` 안에 훅 출력 지점이 없다. 플러그인은 메뉴 API로 `#main-menu`에 항목을 넣거나(nav 규칙이 칠한다), 훅으로 넣은 JS·CSS로 헤더에 요소를 더하거나 색을 바꿀 수 있다. `view_layouts_base_html_head` 훅은 테마 스타일시트(두 버전 `base.html.erb` 11행의 `application`)와 `heads_for_theme`(6.1.4 15행, 7.0.1 14행) 뒤인 18행(6.1.4)·17행(7.0.1)에서 출력된다. 그래서 이 훅의 CSS는 같은 명시도에서 테마의 `#header a` 등을 이긴다. `view_layouts_base_body_top`·`view_layouts_base_body_bottom` 훅(6.1.4 23·143행, 7.0.1 22·167행)으로 넣은 JS도 헤더를 바꿀 수 있다. 이런 콘텐츠가 밝은 글자를 직접 지정하면 흰 헤더에서 읽히지 않는다 (미검증: 개별 플러그인을 시험하지 않았다). 대응은 §11이다.
 
 ### 8.5 밀도·간격·라운드·그림자
 
@@ -877,7 +953,7 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 - **높이**:
   - 일감 목록 행은 제목 14px × 1.45 + 6px × 2 ≈ 32px다. 헤더 행도 같은 높이다(Carbon 규칙).
   - 컨트롤은 `--ravnus-control-height` 2rem, `-sm` 1.75rem이다.
-  - 상단 바는 min-block-size 1.75rem, 메인 메뉴는 2.25rem이다.
+  - 상단 바는 min-block-size `--ravnus-topbar-height`(기본 Signature 2rem, 어두운 헤더 프리셋과 Calm은 1.75rem), 메인 메뉴는 2.25rem이다(`box-sizing: border-box`라 위아래 경계선 포함, 헤더 예약 패딩과 같은 값, §8.4 3). 크롬 합계는 프로토타입에서 기본 B 약 120px(상단 바 32 + 헤더 88, 헤더 안 메뉴 바 36 포함), 상단 바 28px인 A·C·D 116px였다(§4.1) (미검증: Phase 2에서 최종 CSS로 재측정).
   - 텍스트 크기를 키우거나 WCAG 1.4.12 간격을 덮어써도 잘리지 않도록 크롬 높이는 고정 px가 아니라 rem과 `min-block-size`로 준다.
 - **라운드**: `--ravnus-radius-sm` 3px(인라인 코드, 작은 태그, 사이드바 항목), `--ravnus-radius`(노브) 6px(버튼, 입력, 헤더 검색 필드, 플래시·메시지, `.box`, 저널 헤더, `pre`, 드롭다운), `--ravnus-radius-lg` 8px(`div.issue`, 로그인, 대화상자), `--ravnus-radius-full` 9999px(배지, 점).
 - **그림자**: 본문은 테두리와 틴트로만 구분하고, 그림자는 떠 있는 레이어에만 쓴다. `--ravnus-shadow-color: var(--ravnus-fg-default)`로 두고 다크에서는 재정의한다. 그림자에 의미를 싣지 않는다(forced-colors에서 사라짐).
@@ -887,8 +963,31 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 
 ### 8.6 모바일 (<900px)
 
-- **헤더**: `@media screen and (max-width: 899px)` 안에서 `html body #header`에 header-bg를 준다. 코어 `responsive.css`는 #628db6을 하드코딩하고 나중에 로드된다. 데스크톱용 메뉴 공간 예약 패딩은 0으로 되돌린다. 코어 7도 32px가 새지만 `#project-jump`가 절대 위치라 드러나지 않을 뿐이다.
-- **flyout**: `.flyout-menu`는 topbar-bg, h3는 header-bg, 구분선은 header-divider로 한다(#3e5b76, #628db6, #506a83 대체). `#project-jump` 제목과 토글에는 header-fg를 준다.
+- **헤더**: `@media screen and (max-width: 899px)` 안에서 `html body #header`에 header-bg를 준다. 코어 `responsive.css`는 #628db6을 하드코딩하고 나중에 로드된다. 데스크톱용 메뉴 공간 예약 패딩은 0으로 되돌린다. 코어 7도 32px가 새지만 `#project-jump`가 절대 위치라 드러나지 않을 뿐이다. 900px 미만에서는 `#top-menu`가 숨으므로(두 버전 `responsive.css` 116–119행) 같은 셀렉터에서 `border-block-start: 0`을 다시 선언하고 아래 선(header-divider)만 둔다. 그래야 border-box 64px 안의 절대 위치 `#project-jump.drdn`과 메뉴 토글이 어긋나지 않는다(소스에서 유도, 미검증).
+- **흰 모바일 헤더**: 기본 Signature에서는 800px 헤더도 흰색이다. 코어 모바일 헤더는 어두운 파랑 위 흰 글자를 전제하므로 아래 규칙을 모두 다시 칠한다(§8.3대로 명시도를 높인다). 흰 헤더가 흰 본문 위에 고정되므로 헤더 아래에 header-divider `border-block-end`를 준다. 이 미디어 쿼리 안에서 코어가 모든 요소에 `box-sizing: border-box`(6.1.4·7.0.1 `responsive.css` 44–50행)를 주므로 선을 더해도 헤더 높이 64px는 그대로이고 sticky 일감 헤더의 64px 오프셋(6.1.4 881행 `top`, 7.0.1 867행 `inset-block-start`)과 어긋나지 않는다 (소스에서 유도, 미검증: Phase 2에서 800px로 확인). 행 번호는 각 버전의 `app/assets/stylesheets/responsive.css`이고 모두 34행에서 시작하는 `@media screen and (max-width: 899px)` 안이다.
+
+  | 대상 | 6.1.4 | 7.0.1 | 테마 처리 |
+  |---|---|---|---|
+  | 모바일 헤더 `#header` | 92–102행: `border: none`(98행), `background-color: #628db6`(99행) | 92–102행: 98행, 99행 같음 | header-bg, 헤더 아래 header-divider 선 |
+  | 메뉴 토글 `#header a.mobile-toggle-button`(`:after`의 "≡"·"×" 글자) | 110–112행 `color: #f8f8f8`. hover·active 밑줄 제거는 255–258행 `.mobile-toggle-button:hover, .mobile-toggle-button:active {text-decoration: none}`(0,2,0) | 110–112행 `color: var(--oc-gray-0)`. 255–258행 같음 | header-fg. 포커스는 header-focus. 테마의 `#header a:hover` 밑줄(1,1,1, §8.4 12)이 코어 255–258행을 이겨 display:block 링크의 "≡"·"×" 글리프에 밑줄이 생기므로, `#header a.mobile-toggle-button:hover, #header a.mobile-toggle-button:active`(1,2,1)에 `text-decoration: none`을 다시 선언한다. 메뉴 바·오버레이 제외(§8.4 12 "일반 자손 규칙의 범위") 때문에 테마 hover 규칙의 명시도가 오르면 이 선언도 그보다 높게 올린다 |
+  | 토글 왼쪽 구분선 `.mobile-toggle-button` | 236–253행 `border-left: 1px solid #ddd`(252행) | 236–253행 `border-inline-start: 1px solid var(--oc-gray-3)`(252행) | header-divider |
+  | 프로젝트 이동 제목 `#project-jump .drdn-trigger`(모바일에서는 투명 배경의 1.5em 굵은 제목) | 144–155행: `color:#fff`(149행), `background:transparent`(151행), `border:0`(154행) | 142–153행: `color:var(--oc-white)`(147행), 149행, 152행 | header-fg. 데스크톱 필드 표면(canvas 배경, header-control-border 테두리, 화살표 이미지)은 쓰지 않는다. 데스크톱 규칙을 `@media (min-width: 900px)`로 한정하거나, 이 미디어 쿼리 안에서 `background: transparent; border: 0`을 코어(1,1,0)와 데스크톱 테마 규칙보다 높은 명시도로 다시 선언한다. 그러지 않으면 헤더가 어두운 프리셋에서 흰 제목이 canvas 위에 놓인다(§8.4 12) |
+  | 펼침 캐럿 `#project-jump .drdn-trigger:before`("^" 글자를 뒤집어 그림) | 156–172행, `opacity: .6`(171행), 색은 149행 상속 | 154–171행, `opacity: .6`(170행), 색은 147행 상속 | opacity를 1로 되돌리고 header-fg-muted(6.01). 흰 헤더에서 60% 불투명도 글자는 명암이 떨어진다 |
+  | flyout 표면과 글자 `.flyout-menu` | 275–289행: `color: white`(287행), `background-color: #3e5b76`(288행) | 275–289행: 287행, 288행 같음 | topbar-bg, topbar-fg |
+  | flyout 절 제목 `.flyout-menu h3` | 296–311행: `color: white`(307행), `border-top`·`border-bottom: 1px solid #506a83`(308·309행), `background-color: #628db6`(310행) | 296–310행: `color: white`(307행), `border-block: 1px solid #506a83`(308행), `background-color: #628db6`(309행) | header-bg, header-fg, 위아래 선 header-divider |
+  | `.flyout-menu h4` | 313–315행 `color: white`(314행) | 312–314행(313행) | topbar-fg |
+  | flyout 링크 `.flyout-menu a` | 449–451행 `color: white`(450행) | 449–451행(450행) | topbar-fg |
+  | flyout 아이콘 `.flyout-menu .icon svg, .flyout-menu .icon-only svg` | 453–455행 `stroke: white`(454행) | 453–455행(454행) | topbar-fg |
+  | 사용자 링크 `.flyout-menu__avatar a` | 505–511행 `color: white`(510행) | 505–510행(509행) | topbar-fg |
+  | flyout 항목 구분선 | `rgba(255,255,255,.1)`(364·421·440·494행) | 같은 값(364·421·440·494행) | 장식선이다. 흰색 10%라 어두운 flyout(Signature, Ink, Brand-forward, Redmine Blue)에서만 보이고, 표면이 밝은 Calm에서는 사라진다. 선 색을 `color-mix(in srgb, currentColor 15%, transparent)`(flyout 안 currentColor는 topbar-fg)로 다시 선언한다(아래 "밝은 flyout") |
+  | flyout 검색 입력 `.flyout-menu__search input[type='text']`(0,2,1) | 474–487행: `border: none`(483행), `background-color: #fff`(486행) | 474–487행: 483행, `background-color: var(--oc-white)`(486행) | 표면은 canvas 그대로, 테두리는 header-control-border 1px(canvas 4.12, Calm 표면 bg-subtle 위 3.93). 글자는 폼 컨트롤 규칙을 따른다. 필드 안 돋보기(`label.search-magnifier--flyout`의 아이콘, 6.1.4 `base.html.erb` 32행, 7.0.1 31행)는 canvas 위이므로 flyout 아이콘 규칙(topbar-fg)에서 빼고 fg-icon을 쓴다 |
+
+- **flyout**: `.flyout-menu`는 topbar-bg와 topbar-fg, h3는 header-bg와 header-fg, h3 위아래 선은 header-divider로 한다(#3e5b76, #628db6, #506a83 대체, §6.2). 항목 구분선과 검색 입력은 위 표대로 한다. Signature의 flyout 표면은 `#46009B`라 코어의 "어두운 flyout 위 흰 글자" 전제가 유지되고, 흰색이 되는 것은 h3 띠뿐이다.
+- **밝은 flyout(Calm 프리셋)**: Calm은 topbar-bg가 bg-subtle(#FAF9FC)이라 flyout 표면도 밝다. 코어의 "어두운 flyout" 전제가 뒤집히는 곳은 세 가지이고, 모두 프리셋과 상관없는 같은 규칙으로 처리한다(§8.3대로 명시도를 높인다).
+  1. 글자·링크·아이콘: 코어의 `white`를 topbar 토큰으로 다시 칠한다(위 표. Calm은 fg-muted 7.26, fg-subtle 5.73).
+  2. 검색 입력: 코어 입력은 테두리 없는 흰 필드라 어두운 flyout에서는 필드 자체가 경계지만, Calm 표면과는 1.05:1이다. header-control-border 테두리가 경계를 만든다(위 표).
+  3. 항목 구분선: 흰색 10%는 Calm 표면에서 사라진다. currentColor(topbar-fg) 15%로 바꾸면 sRGB 합성 기준 표면 대비가 Signature 약 1.37, Calm 약 1.25다(코어의 어두운 flyout은 약 1.28). 장식선이라 3:1 요건은 없다. 이 선언은 `var()` 없이 `color-mix(in srgb, currentColor 15%, transparent)`로 쓴다. 그래서 color-mix를 지원하지 않는 브라우저는 선언을 파싱 단계에서 버리고 코어 값을 쓴다. 어두운 flyout은 코어와 같고, Calm에서만 선이 사라진다.
+  - Calm의 7 계정 트리거는 flyout이 아니라 상단 바 규칙이다(§8.4 12). Calm flyout은 Phase 7에서 두 버전으로 확인한다 (미검증).
 - **폼 컨트롤 크기**: 코어 `responsive.css`는 같은 미디어 쿼리에서 `body, input, select, textarea, button { font-size: 0.875rem }`을 테마보다 나중에, 같은 명시도로 선언한다(6.1.4·7.0.1 74행). 그래서 그대로 두면 모바일에서 `--ravnus-font-size-base` 노브가 body와 컨트롤에 반영되지 않는다. 같은 미디어 쿼리 안에서 `html body`, `html body :is(input, select, textarea, button)`처럼 명시도를 높여 토큰에 연결한다.
 - **열린 항목: iOS 입력 확대.** iOS Safari는 16px 미만 입력에 포커스하면 화면을 확대한다 (미검증: 도커 환경에 iOS 실기가 없다). 선택지는 (1) 14px 유지(확대 감수, 데스크톱과 같은 크기), (2) 900px 미만이나 `(pointer: coarse)`에서 입력 컨트롤만 16px이다. 2026-09-26 소유자 결정 6건과는 별개다. Phase 7 전에 실기로 확인한 뒤 소유자 결정 요청 여부를 정한다.
 - **DOM**: `responsive.js`의 메뉴·사이드바 이동에는 손대지 않는다.
@@ -899,7 +998,7 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 - `a.icon .icon-svg, a .icon-svg { stroke: currentColor }`. 아이콘이 링크 색과 hover 색을 따르고, 코어의 빨간 hover를 대체한다.
 - `.icon-svg-filled { fill: currentColor }`.
 - `.icon-ok`, `.icon-error`, `.icon-warning`은 각각 success, danger, warning fg를 쓴다.
-- 크롬 안 아이콘은 `--ravnus-header-icon`을 쓴다. 선택 행에서는 코어가 강제한 흰색을 currentColor로 되돌린다(`!important`).
+- 헤더 안 아이콘은 `--ravnus-header-icon`, 상단 바와 flyout 아이콘은 `--ravnus-topbar-fg`를 쓴다(§6.2). 메인 메뉴 바, 헤더 안 오버레이, 상단 바 안의 7 계정 드롭다운 목록의 아이콘은 여기서 빼고 nav·overlay 규칙을 따른다(§8.4 12). flyout 검색 입력 안 돋보기도 canvas 필드 위이므로 빼고 fg-icon을 쓴다(§8.6). 선택 행에서는 코어가 강제한 흰색을 currentColor로 되돌린다(`!important`).
 - stroke-width는 코어의 1.5를 유지한다.
 - 상태·우선순위·기한 초과·일정 지연 글리프는 아이콘이 아니라 CSS 그림(테두리, border-radius, 그라디언트, clip-path)이다. 그래서 `url()`이나 data:가 없고 토큰으로 다시 칠해진다.
 - **토큰으로 칠할 수 없는 코어 이미지** (v1 유지, 다크 전에 처리, §5.5):
@@ -912,6 +1011,7 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 코어에는 forced-colors 처리가 없다(6.1.4·7.0.1 stylesheets grep 0건). CSS Color Adjust 명세상 이 모드에서는 box-shadow가 none이 되고, `url()`이 아닌 background-image도 none이 되며, 글자·배경·테두리 색은 시스템색으로 강제된다. 그래서 그라디언트 글리프, box-shadow 마커, 배경색으로 채운 모양이 사라진다. `@media (forced-colors: active)` 블록에서 다음을 처리한다.
 - 행 마커와 인라인 시작선은 처음부터 테두리로 그린다(§6.4, §8.1). 테두리는 이 모드에서도 남는다.
 - 메인 메뉴 선택 탭은 `inset` 그림자 대신 `border-block-end: 3px solid Highlight`를 준다.
+- 이 모드에서는 상단 바·헤더·메뉴 바 배경이 모두 시스템 배경색이 된다. 크롬 경계선(header-divider, nav-border, §6.2)은 테두리로 그리므로 남아 영역을 나눈다 (미검증: Phase 2 에뮬레이션).
 - 상태의 빈 원, 채운 원, 체크는 테두리로 그리므로 이 모드에서도 같은 모양일 것으로 본다(§6.5) (미검증: Phase 3).
 - 그라디언트나 배경으로 채우는 글리프(우선순위 막대, 우선순위 "!" 사각형, 기한 초과 "!" 원, 반원, 일정 지연 삼각형, 진행 막대 구간과 빗금)는 `forced-color-adjust: none`을 주고 시스템색(`CanvasText`, `Canvas`, `Highlight`)으로 다시 그린다.
 - 포커스 링은 `outline`이라 남는다. 확인만 한다.
@@ -938,14 +1038,14 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 
 | 단계 | 범위 | 완료 기준 |
 |---|---|---|
-| **Phase 0 검증 스파이크** | 1. CDN `@font-face` 보존: 이미지 태그를 고정한 6.1.4·7.0.1 기동 후(각 컨테이너의 `Redmine::VERSION`을 결과표에 적는다, §4.12) `/assets`로 서빙된 테마 CSS를 받아 절대 https `url()` 92개의 URL 문자열이 생성 파일과 글자 그대로 같은지 비교하고, 폰트 요청이 고정 버전의 `cdn.jsdelivr.net` URL로 가서 200 `font/woff2`를 받는지, 폰트 요청에 실린 `Referer` 헤더 값이 무엇인지 기록(§4.4 README 개인정보 문구의 근거) · 2. CDN 차단 시 폴백과 렌더링: Playwright `page.route`로 `cdn.jsdelivr.net` 요청을 abort했을 때와 응답 없이 붙잡아 둘 때(폐쇄망의 연결 시간 초과 흉내) 글자가 §7.1 시스템 폰트로 그려지는지, 첫 페인트가 차단 전후로 늦어지지 않고 첫 글자 표시가 `swap`의 짧은 block 기간(§4.4)보다 더 늦어지지 않는지, 테마 CSS 말고 기다리는 스타일시트 요청이 없는지. 무응답 경우에는 `page.goto`를 `waitUntil: 'domcontentloaded'`로 부르고(기본값 `'load'`로는 시험이 멈출 수 있다) window `load` 이벤트 시각을 재며, 그동안 일괄 편집의 "지우기" 체크박스가 필드를 비활성화하는지와 저장하지 않은 변경 경고가 등록되는지 본다(둘 다 `load`에 묶여 있다, §4.4) · 3. 덮었을 때 CDN 미요청: 시험용 자식 테마와 `custom.css`에 (가) §4.4의 `"RAVNUS Sans Local"` `@font-face`와 네 폰트 스택(`--ravnus-font-sans`·`-ja`·`-zh`·`-zh-tw`), (나) "시스템 폰트만 쓰기" 블록을 각각 넣고 ko·en·ja·zh·zh-TW UI에서 `cdn.jsdelivr.net` 요청이 0건인지 네트워크 탭으로 확인. 자식 테마의 `url(../fonts/…)` 재작성도 함께 본다 · 4. 페이지별 폰트 조각 수와 바이트: /issues, /projects, 일감 상세, 위키 `타이포그래피_샘플`을 ko·ja·zh UI에서 잰다(작업 자료의 487/307/257KB 재측정) · 5. `custom.css` 스텁 import, 자식 테마 `url(../ravnus/application.css)`와 `url(/themes/ravnus/application.css)` · 6. import 순서: Dart Sass 동작은 로컬 빌드로 확인했으므로(§4.5) 1에서 받은 서빙된 테마 CSS의 주석을 뺀 첫 두 규칙이 코어·`custom.css` import 순서인지만 함께 본다 · 7. 로그인 상태 크롬(6 `#loggedas`, 7 `#account` 드롭다운)과 저널·히스토리 탭 마크업을 두 버전에서 캡처해 비교 · 8. Pretendard 로드 상태의 코어 행 높이 재측정 · 9. UI 언어 전환을 하네스에 연결: 익명 화면은 Playwright `locale`(Accept-Language), 로그인 화면은 admin 언어 설정(전환 동작 자체는 확인됨, §10.4) · 10. Redmine 6.0.x: 패치 버전을 고정한 `redmine:6.0.x` 이미지(예: `redmine:6.0.11`) 서비스를 추가하거나 1회 실행해 `body.has-main-menu`, 사이드바 접기 토글, 크롬 마크업이 6.1.4와 같은지 확인 | 항목마다 통과 여부와 실패 시 대응을 적는다. 1이 실패하면 §11 "CDN 폰트 URL이 기동 때 재작성됨", 2가 실패하면 "CDN 차단 때 렌더링이나 `load`가 늦어짐", 3이 실패하면 "자체 호스팅으로 덮어도 CDN 조각이 요청됨" 행의 대응을, 5가 실패하면 §4.5·§11의 커스터마이즈 대응을 적용하고, 결과를 `CLAUDE.md`·README에 반영한다(§12). 결과표 머리에 각 컨테이너의 `Redmine::VERSION`을 적는다. 폰트 파일이 저장소에 없으므로 `docker-compose.yml`에 상시 폰트 마운트를 추가하지 않는다. 3의 시험용 폰트 파일은 시험할 때 내려받아 `.gitignore`에 넣은 경로(예: `.docker/fonts-test/`)에 두고 커밋하지 않는다(`.docker/`는 추적되는 디렉터리다). `.docker/`는 두 서비스에 `/ravnus-dev`로 읽기 전용 마운트돼 있어 컨테이너 안에서 보이지만 테마 디렉터리가 아니므로 서빙되지 않는다. 그래서 3에는 1회 실행용 마운트를 따로 준다(커밋하지 않는 compose override 파일을 `docker compose -f docker-compose.yml -f <override> up -d`로 얹는다). `custom.css` 경우는 `.docker/fonts-test`를 `/usr/src/redmine/themes/ravnus/fonts:ro`로 마운트하고(§4.4의 `themes/ravnus/fonts/` 위치), 시험용 `custom.css`는 추적 스텁을 고치지 않고 커밋하지 않는 파일을 `/usr/src/redmine/themes/ravnus/stylesheets/custom.css:ro`에 파일 단위로 마운트한다. 자식 테마 경우는 시험용 자식 테마 디렉터리(예: `.docker/theme-test/`, 안의 `stylesheets/`와, `.gitignore`에 넣은 `fonts/`)를 `/usr/src/redmine/themes/<시험 이름>:ro`로 마운트한다. 커밋할 수 있는 것은 시험용 자식 테마의 CSS뿐이다. 시험 중에도 저장소 작업 트리의 테마 런타임 디렉터리(`stylesheets/` 등)에는 폰트 파일을 넣지 않는다. 컨테이너 안의 `themes/ravnus/fonts/`는 위 1회 실행용 마운트로만 생긴다. 6.0.x 결과에 따라 README·`CLAUDE.md`의 테스트 문구를 고치고, 차이가 있으면 대응 항목을 해당 Phase에 추가한다 |
+| **Phase 0 검증 스파이크** | 1. CDN `@font-face` 보존: 이미지 태그를 고정한 6.1.4·7.0.1 기동 후(각 컨테이너의 `Redmine::VERSION`을 결과표에 적는다, §4.12) `/assets`로 서빙된 테마 CSS를 받아 절대 https `url()` 92개의 URL 문자열이 생성 파일과 글자 그대로 같은지 비교하고, 폰트 요청이 고정 버전의 `cdn.jsdelivr.net` URL로 가서 200 `font/woff2`를 받는지, 폰트 요청에 실린 `Referer` 헤더 값이 무엇인지 기록(§4.4 README 개인정보 문구의 근거) · 2. CDN 차단 시 폴백과 렌더링: Playwright `page.route`로 `cdn.jsdelivr.net` 요청을 abort했을 때와 응답 없이 붙잡아 둘 때(폐쇄망의 연결 시간 초과 흉내) 글자가 §7.1 시스템 폰트로 그려지는지, 첫 페인트가 차단 전후로 늦어지지 않고 첫 글자 표시가 `swap`의 짧은 block 기간(§4.4)보다 더 늦어지지 않는지, 테마 CSS 말고 기다리는 스타일시트 요청이 없는지. 무응답 경우에는 `page.goto`를 `waitUntil: 'domcontentloaded'`로 부르고(기본값 `'load'`로는 시험이 멈출 수 있다) window `load` 이벤트 시각을 재며, 그동안 일괄 편집의 "지우기" 체크박스가 필드를 비활성화하는지와 저장하지 않은 변경 경고가 등록되는지 본다(둘 다 `load`에 묶여 있다, §4.4) · 3. 덮었을 때 CDN 미요청: 시험용 자식 테마와 `custom.css`에 (가) §4.4의 `"RAVNUS Sans Local"` `@font-face`와 네 폰트 스택(`--ravnus-font-sans`·`-ja`·`-zh`·`-zh-tw`), (나) "시스템 폰트만 쓰기" 블록을 각각 넣고 ko·en·ja·zh·zh-TW UI에서 `cdn.jsdelivr.net` 요청이 0건인지 네트워크 탭으로 확인. 자식 테마의 `url(../fonts/…)` 재작성도 함께 본다 · 4. 페이지별 폰트 조각 수와 바이트: /issues, /projects, 일감 상세, 위키 `타이포그래피_샘플`을 ko·ja·zh UI에서 잰다(작업 자료의 487/307/257KB 재측정) · 5. `custom.css` 스텁 import, 자식 테마 `url(../ravnus/application.css)`와 `url(/themes/ravnus/application.css)` · 6. import 순서: Dart Sass 동작은 로컬 빌드로 확인했으므로(§4.5) 1에서 받은 서빙된 테마 CSS의 주석을 뺀 첫 두 규칙이 코어·`custom.css` import 순서인지만 함께 본다 · 7. 로그인 상태 크롬(6 `#loggedas`, 7 `#account` 드롭다운)과 저널·히스토리 탭 마크업을 두 버전에서 캡처해 비교 · 8. Pretendard 로드 상태의 코어 행 높이 재측정 · 9. UI 언어 전환을 하네스에 연결: 익명 화면은 Playwright `locale`(Accept-Language), 로그인 화면은 admin 언어 설정(전환 동작 자체는 확인됨, §10.4) · 10. Redmine 6.0.x: 패치 버전을 고정한 `redmine:6.0.x` 이미지(예: `redmine:6.0.11`) 서비스를 추가하거나 1회 실행해 `body.has-main-menu`, 사이드바 접기 토글, 크롬 마크업이 6.1.4와 같은지 확인 | 항목마다 통과 여부와 실패 시 대응을 적는다. 1이 실패하면 §11 "CDN 폰트 URL이 기동 때 재작성됨", 2가 실패하면 "CDN 차단 때 렌더링이나 `load`가 늦어짐", 3이 실패하면 "자체 호스팅으로 덮어도 CDN 조각이 요청됨" 행의 대응을, 5가 실패하면 §4.5·§11의 커스터마이즈 대응을 적용하고, 결과를 `CLAUDE.md`·README에 반영한다(§12). 결과표 머리에 각 컨테이너의 `Redmine::VERSION`을 적는다. 폰트 파일이 저장소에 없으므로 `docker-compose.yml`에 상시 폰트 마운트를 추가하지 않는다. 3의 시험용 폰트 파일은 시험할 때 내려받아 `.gitignore`에 넣은 경로(예: `.docker/fonts-test/`)에 두고 커밋하지 않는다(`.docker/`는 추적되는 디렉터리다). `.docker/`는 두 서비스에 `/ravnus-dev`로 읽기 전용 마운트돼 있어 컨테이너 안에서 보이지만 테마 디렉터리가 아니므로 서빙되지 않는다. 그래서 3에는 1회 실행용 마운트를 따로 준다(커밋하지 않는 compose override 파일을 `docker compose -f docker-compose.yml -f <override> up -d`로 얹는다). `custom.css` 경우는 `.docker/fonts-test`를 `/usr/src/redmine/themes/ravnus/fonts:ro`로 마운트하고(§4.4의 `themes/ravnus/fonts/` 위치), 시험용 `custom.css`는 추적 스텁을 고치지 않고 커밋하지 않는 파일을 `/usr/src/redmine/themes/ravnus/stylesheets/custom.css:ro`에 파일 단위로 마운트한다. 자식 테마 경우는 시험용 자식 테마 디렉터리(예: `.docker/theme-test/`, 안의 `stylesheets/`와, `.gitignore`에 넣은 `fonts/`)를 `/usr/src/redmine/themes/<시험 이름>:ro`로 마운트한다. 커밋할 수 있는 것은 시험용 자식 테마의 CSS뿐이다. 저장소의 테마 런타임 디렉터리(`stylesheets/` 등)에는 시험 중에도 폰트 파일을 넣지 않는다. 컨테이너 안의 `themes/ravnus/fonts/`는 위 1회 실행용 마운트로만 생긴다. 6.0.x 결과에 따라 README·`CLAUDE.md`의 테스트 문구를 고치고, 차이가 있으면 대응 항목을 해당 Phase에 추가한다 |
 | **Phase 1 기반** | 토큰 3계층, `@supports` 폴백 생성, `color-scheme`, 타이포(§7 전부), Pretendard `@font-face` 생성 스크립트와 생성 파일(§4.4), `custom.css` 빈 스텁, README의 Pretendard 크레딧·OFL 고지와 CDN 안내, CI(빌드 비교 + 명암 게이트 + 폰트 검사), 프로브 하네스와 axe-core 검사 | 모든 페이지에 body line-height가 명시된다. CI 폰트 검사(§10.2 6)가 통과한다. 컴파일된 CSS의 CDN `@font-face` 수가 생성 파일과 같고(v1.3.9는 92개), 모든 폰트 URL이 고정 버전 접두사(생성 스크립트의 버전 상수에서 만든 값, 현재 `https://cdn.jsdelivr.net/npm/pretendard@1.3.9/`)로 시작하며, 외부 스타일시트 `@import`가 없고, 주석을 뺀 첫 두 규칙이 코어·`custom.css` import 순서이며, `"Pretendard Variable"`이 `@font-face` 블록과 네 폰트 스택 토큰 값에만 나온다. 폰트가 로드된 상태와 CDN을 막은 상태 모두에서 글자가 표시된다. 입력·셀렉트·버튼의 계산 폰트가 Pretendard 스택 14px다(지금은 Arial 13.33px). 위키 `타이포그래피_샘플`이 ko·ja·zh·zh-TW UI에서 §7.1대로 대체된다(zh-TW에서 `，。`가 가운데). 일감 #8 제목이 목록과 상세에서 셀 밖으로 넘치지 않는다. 빌드로 생성한 폴백 hex가 OKLab 계산값, sRGB 프로필로 고정한 Chrome의 계산값과 같다. 기본값·프리셋 파생값이 sRGB 밖이면 빌드가 실패한다(§5.4) |
-| **Phase 2 크롬** | 상단 메뉴, 헤더, 메인 메뉴, 빠른 검색, 프로젝트 이동, 계정 드롭다운, 새 항목 버튼, 하위 메뉴, 사이드바 스킨과 위치 토큰 | 1440px에서 두 버전의 크롬 요소 위치·높이 차이가 1px 이내다(프로브 측정, 익명과 로그인 모두). 긴 한국어·일본어 프로젝트명에서 제목과 탭이 겹치지 않는다. 크롬 안 색이 모두 header·topbar 토큰에서 온다(기본 Ink와 대안 크롬 프리셋 4종, 모두 5종의 스크린샷 + 명암 게이트). 사이드바 시작 쪽 전환과 접힘이 두 버전에서, RTL(he)이 7에서 동작하고 6의 RTL 셰브런 결과를 기록한다. forced-colors에서 선택 탭이 보인다. 기본값 A와 대안 크롬 프리셋 4종의 두 버전 스크린샷을 README 프리셋 자료로 쓴다(§4.1) |
+| **Phase 2 크롬** | 상단 메뉴, 헤더, 메인 메뉴, 빠른 검색, 프로젝트 이동, 계정 드롭다운, 새 항목 버튼, 하위 메뉴, 사이드바 스킨과 위치 토큰. 흰 헤더 재칠(§8.4 12, §8.6의 모바일 헤더 부분)과 크롬 경계선(§6.2) | 1440px에서 두 버전의 크롬 요소 위치·높이 차이가 1px 이내다(프로브 측정, 익명과 로그인 모두). 긴 한국어·일본어 프로젝트명에서 제목과 탭이 겹치지 않는다. 기본값이 Signature(흰 헤더 + `#46009B` 상단 바)이고, 크롬 안 색이 모두 header·topbar 토큰에서 온다(기본 Signature와 대안 크롬 프리셋 4종 Ink·Brand-forward·Calm·Redmine Blue, 모두 5종의 스크린샷 + 명암 게이트). 기본 Signature와 Ink 프리셋을 같은 페이지(일감 목록·상세, 익명·로그인)에서 두 버전 나란히 찍어 비교한다. 흰 헤더 재칠 목록(§8.4 12, §8.6)의 모든 요소에서 계산 글자색·stroke가 header 토큰이고 header-bg와의 대비가 글자 4.5, 아이콘과 컨트롤 경계 3 이상이다(계산 스타일 assert, 두 버전, 1440·800px). 헤더 영역의 axe-core color-contrast 위반이 0건이다. 상단 바가 밝은 Calm 프리셋에서 6 `#loggedas`와 7 계정 트리거의 계산 글자색·아이콘 stroke(hover 포함)가 topbar 토큰이고 topbar-bg 대비가 글자 4.5, 아이콘 3 이상이다(assert, 두 버전, §8.4 12). 800px에서 두 버전의 모바일 헤더가 흰색(header-bg, #628db6 아님)이고 프로젝트 이동 제목·펼침 캐럿·메뉴 토글이 읽히며, 헤더 아래 경계선만 보이고 위 경계선은 없으며 헤더 높이가 64px로 유지된다(§8.6). 프로젝트 이동 목록 항목과 hover의 계산 색이 overlay 토큰이다(§8.3 `!important`). 메뉴 토글의 hover·active 계산 `text-decoration-line`이 `none`이다(테마 `#header a:hover` 밑줄이 새지 않음, §8.6). 헤더와 메뉴 바 사이, 메뉴 바와 본문 사이 경계선이 보이고(1440px, 기본과 Ink), 메뉴 바의 계산 높이가 헤더 예약 패딩(nav-height)과 같다. 헤더와 상단 바의 포커스 가능한 요소에서 포커스 링이 보인다. 헤더(accent)는 브레드크럼, 검색 레이블 링크, 검색 입력 `#q`(코어 `outline: none`을 이기는지 계산 스타일로도 확인), 모바일 토글이다. 상단 바(앰버)는 상단 메뉴 링크와 7 계정 드롭다운 트리거다. 펼친 계정 드롭다운의 항목은 흰 오버레이 위이므로 accent 링과 overlay 글자색이다. 앰버 링이 흰 헤더나 오버레이로 넘치지 않는다(1440·800px 프로브 스크린샷). 프로젝트 이동 트리거는 코어가 키보드 포커스를 주지 않으므로(§6.2) 목록에서 빼고, 펼친 뒤 `#projects-quick-search`의 focus-ring을 확인한다. 크롬 높이를 최종 CSS로 재측정해 기록한다(프로토타입 기본 120px, Ink 116px). 사이드바 시작 쪽 전환과 접힘이 두 버전에서, RTL(he)이 7에서 동작하고 6의 RTL 셰브런 결과를 기록한다. forced-colors에서 선택 탭과 크롬 경계선이 보인다. 기본값 B와 대안 크롬 프리셋 4종의 두 버전 스크린샷을 README 프리셋 자료로 쓴다(§4.1) |
 | **Phase 3 일감 목록** | 밀도, 우선순위·상태·트래커 글리프, 행 상태, 그룹 행·합계(`tr.group`, `span.count`, `span.totals`, `a.toggle-all`, `.query-totals`), 선택 행, 쿼리 필터 컨트롤, 인쇄·forced-colors 대응 | Pretendard가 로드된 상태에서 기본 행이 32±1px, Compact가 27±1px다. 흑백 스크린샷에서 우선순위 5단계, 상태(기본 2종, opt-in 4종), 기한 초과, 일정 지연(삼각형 글리프, 빗금 막대), 부모, 닫힘, 선택이 모두 구분된다. 같은 구분이 인쇄 미리보기(배경 그래픽 끔)와 forced-colors 에뮬레이션에서도 된다. 선택 행 글자가 4.5 이상, 경계가 3 이상이다. 12열 이상 쿼리에서 제목이 음절 단위로 쪼개지지 않고, 이름 열(담당자·작성자·범주)도 음절 단위로 쪼개지지 않으며, 표가 `#content` 안에서 스크롤된다. 두 버전 모두 선택 스타일이 이긴다. `custom.css`의 `tr.status-N` 매핑이 계산 스타일에 반영된다(assert). 그룹 행·합계에서 axe-core color-contrast 위반이 0건이다 |
 | **Phase 4 일감 상세·저널·편집 폼** | `div.issue`, 속성, 설명, 저널, 비공개 노트, 히스토리 탭, 하위·관련 일감 트리, sticky 헤더, 편집 폼, 주 버튼 allowlist, `.tabular` overflow 수정 | 두 버전의 `div.issue`가 같은 모습이다. 트리 제목이 keep-all + anywhere로 넘치지 않는다. 앵커로 이동할 때 sticky 헤더에 가려지지 않는다. 긴 사용자 정의 필드 레이블이 줄바꿈된다. 삭제 확인 버튼(users/bulk_destroy, projects/bulk_destroy 포함)이 주 버튼이 아니고 `.btn-alert`는 위험 스타일이다. 편집 폼 입력의 포커스 링이 잘리지 않는다(프로브 스크린샷) |
 | **Phase 5 위키·본문** | 본문 행간, 제목 체계, 문장 속 링크 밑줄(범위 감사 포함), 코드, 위키 표, 편집기와 jstoolbar(`.jstElements`, `.jstTabs`, 도움말), em 표현, 본문 폭 opt-in | ko 15/1.7, ja·zh 15/1.75가 적용된다. §7.9 대상의 링크에 상시 밑줄이 있고 밑줄 대비가 3:1 이상이다. `pre`·`code`에서 autospace가 꺼진다. 편집기와 렌더 텍스트의 크기·행간이 같다. 툴바 버튼의 hover·포커스가 토큰 색이다. em 시안 비교 후 결정을 기록한다 |
 | **Phase 6 공통 컴포넌트·플로팅** | 플래시, `#errorExplanation`, `.nodata`, `.box`, 배지(12px), 본문 탭, 로그인, 푸터, 페이지 번호, context menu, 드롭다운, 자동완성, jQuery UI | 나중에 로드되는 코어 CSS를 이기는지 계산 스타일 assert로 확인한다. 그림자가 떠 있는 레이어에만 있다. 계산 font-size가 12px 미만인 텍스트 노드가 0개다(간트 제목 열 제외). 본문 탭의 포커스 링과 글자가 잘리지 않는다(행간 덮어쓰기 포함). 핵심 화면의 axe-core color-contrast 위반이 0건이다 |
-| **Phase 7 모바일** | 800px 헤더, flyout, 쌓인 폼, 컨트롤 크기 | 두 버전 헤더가 header-bg다(#628db6 아님). 예약 패딩이 0이다. flyout이 토큰 색이다. 메뉴 이동이 정상이다. 800px에서 body와 입력의 계산 font-size가 `--ravnus-font-size-base`를 따른다(assert). iOS 입력 확대 처리 결과를 기록한다(§8.6) |
+| **Phase 7 모바일** | 800px 헤더, flyout, 쌓인 폼, 컨트롤 크기 | 두 버전 헤더가 header-bg다(#628db6 아님). 흰 모바일 헤더 위 글자와 캐럿(§8.6 표)이 header 토큰이다(Phase 2에서 확인한 것을 flyout을 연 상태까지 넓혀 다시 본다). 헤더가 어두운 프리셋(Ink)에서도 800px 프로젝트 이동 트리거의 계산 배경이 투명하고 테두리가 0이다(assert, 데스크톱 canvas 필드 표면이 새지 않음, §8.6). 예약 패딩이 0이다. 메뉴 토글("≡"·"×")에 hover·active 밑줄이 없다. flyout이 토큰 색이다(h3 띠 포함). 상단 바가 밝은 Calm 프리셋의 flyout에서 검색 입력 테두리(header-control-border)와 항목 구분선이 보이고, 입력 안 돋보기가 fg-icon이다(§8.6 "밝은 flyout"). 메뉴 이동이 정상이다. 800px에서 body와 입력의 계산 font-size가 `--ravnus-font-size-base`를 따른다(assert). iOS 입력 확대 처리 결과를 기록한다(§8.6) |
 | **Phase 8 색만 다시 칠하기** | 로드맵·버전, 활동, 시간 기록, 달력, 간트(7 `gantt.css`), 저장소·diff(`scm.css`), 관리 표·탭, 내 페이지, 프로젝트 목록·개요, 검색 | 화면마다 두 버전 스크린샷을 검토한다. 코어 hex와 칠할 수 없는 `url()` 이미지가 남아 보이는 곳을 목록으로 남긴다(Pygments 제외) |
 | **Phase 9 QA·문서·릴리스** | §10 매트릭스, README, 스크린샷, Theme_List | 매트릭스 결과표를 쓴다. README.md와 README.ko.md를 동시에 갱신한다. 스크린샷은 `.github/` 또는 별도 브랜치에 둔다. Theme_List 항목 초안을 쓰고 태그를 단다 |
 
@@ -966,15 +1066,16 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 
 1. **프로브 하네스**(Calm 방식): playwright-core와 시스템 Chrome을 쓴다. 테마 `<link>` 바로 뒤에 `<style>`을 주입하거나 빌드된 CSS를 그대로 쓴다. 1440·1024·800px에서 요소 박스와 계산 스타일을 JSON으로 남긴다. 위치는 서빙되지 않는 dot-디렉터리(예: `.docker/probe/`)다. devDependency를 추가하기 전에 의존성과 라이선스를 확인한다.
 2. **스크린샷 비교**: 같은 데이터로 코어 기본 테마와 RAVNUS를 비교하고, RAVNUS의 6과 7을 비교한다. 폰트 렌더링 차이가 있어 픽셀 diff는 참고로만 쓰고 판단은 사람이 한다.
-3. **계산 스타일 assert**: 로드 순서 위험 지점을 확인한다. 모바일 `#header` 배경, `.context-menu-selection`의 배경·링크·아이콘, 7 `.dropdown-content` 표면, 폼 컨트롤 폰트, `--fonts-main` 해석값, `custom.css`의 `tr.status-N` 매핑, 800px 컨트롤 font-size, 계산 font-size 12px 미만 텍스트 노드 수(간트 제외)다.
+3. **계산 스타일 assert**: 로드 순서 위험 지점을 확인한다. 모바일 `#header` 배경, 흰 헤더 재칠 목록(§8.4 12, §8.6)의 요소별 글자색·아이콘 stroke·컨트롤 테두리와 그 header-bg 대비(1440·800px. 코어나 플러그인의 밝은 글자가 남으면 흰 바탕에서 보이지 않으므로 목록 전체를 assert한다), 포커스된 검색 입력 `#q`의 outline(코어 `outline: none`), 헤더가 어두운 프리셋의 800px 프로젝트 이동 트리거 배경(투명), `.context-menu-selection`의 배경·링크·아이콘, 7 `.dropdown-content` 표면과 항목 글자색(상단 바 규칙이 새지 않음), Calm 프리셋에서 6 `#loggedas`와 7 `#account .dropdown-trigger`의 글자색·아이콘 stroke(hover 포함, 코어가 `#top-menu a`보다 높은 명시도로 밝은 색을 줌, §8.4 12), 800px 메뉴 토글 hover의 `text-decoration-line`(§8.6), 폼 컨트롤 폰트, `--fonts-main` 해석값, `custom.css`의 `tr.status-N` 매핑, 800px 컨트롤 font-size, 계산 font-size 12px 미만 텍스트 노드 수(간트 제외)다.
 4. **명암 CI 게이트**: §6.6. 토큰 쌍만 본다.
-5. **렌더 화면 명암**: 프로브 하네스에서 axe-core `color-contrast` 규칙을 두 버전의 핵심 화면(일감 목록·상세, 위키, 로드맵, 관리 표)에 익명과 admin으로 돌린다. 토큰 쌍 검사가 못 잡는 코어 하드코딩 색(예: 7 `tr.group span.totals` gray-5 2.07:1, `p.progress-info` gray-6 3.32:1)을 잡는다. devDependency를 추가하기 전에 의존성과 라이선스를 확인한다.
+5. **렌더 화면 명암**: 프로브 하네스에서 axe-core `color-contrast` 규칙을 두 버전의 핵심 화면(일감 목록·상세, 위키, 로드맵, 관리 표)에 익명과 admin으로 돌린다. 헤더 영역은 1440px와 800px 모두에서 돌린다. 토큰 쌍 검사가 못 잡는 코어 하드코딩 색(예: 7 `tr.group span.totals` gray-5 2.07:1, `p.progress-info` gray-6 3.32:1)을 잡는다. devDependency를 추가하기 전에 의존성과 라이선스를 확인한다.
 6. **빌드 비교 CI**: `CLAUDE.md`에 계획돼 있다. 커밋된 CSS와 소스 빌드 결과가 다르면 실패시킨다. 같은 CI에서 폰트 검사도 한다. 기대값은 문서가 아니라 저장소에서 읽는다. 버전 접두사는 생성 스크립트의 버전 상수에서 만들고, 규칙 수는 생성 파일 `src/_pretendard.scss`에서 센다. 그래서 Pretendard 버전을 올릴 때 CI를 고칠 필요가 없다(§4.4). 검사 항목은 다음과 같다(§4.4, §4.5, Phase 1).
    - 컴파일된 CSS의 CDN `@font-face` 수가 생성 파일과 같은지(v1.3.9는 92개)
    - 모든 폰트 URL이 고정 npm 접두사(현재 `https://cdn.jsdelivr.net/npm/pretendard@1.3.9/`)로 시작하는지
    - 외부(http·https) 스타일시트 `@import`가 없는지
    - 주석을 뺀 첫 두 규칙이 코어 import, `custom.css` import 순서인지(Dart Sass 동작의 회귀 검사, §4.5). 노브 안내 주석은 `_tokens.scss`에 두어 import 뒤에 출력되게 하고, 엔트리에는 `//` 주석만 쓴다
    - `"Pretendard Variable"`(따옴표 종류 무관)이 `@font-face` 블록의 `font-family`와 네 폰트 스택 토큰(`--ravnus-font-sans`·`-ja`·`-zh`·`-zh-tw`)의 값에만 나오는지. 주석은 검사에서 제외한다. 다른 규칙이 이 이름을 `font-family`나 다른 토큰에 직접 쓰면 자체 호스팅과 "시스템 폰트만 쓰기" 레시피(§4.4)로 스택을 바꿔도 CDN 조각이 요청되므로 실패시킨다.
+   - 프리셋 블록을 싣는 v0.2.0부터: README.md·README.ko.md 프리셋 블록에 `color-mix(`가 없고, 블록의 파생 리터럴(헤더가 어두운 프리셋의 상단 바, Redmine Blue의 accent 파생)이 Sass 파생 계산값과 같은지(§5.4 폴백)
 7. **흑백·색각 이상 확인**: 흑백 스크린샷으로 상태와 우선순위가 구분되는지 본다. Machado 2009 행렬 시뮬레이션은 선택 사항이다.
 8. **forced-colors·인쇄 에뮬레이션**: Playwright `emulateMedia`로 `forcedColors: 'active'`와 `media: 'print'`를 켜고 핵심 화면을 찍는다. 인쇄는 배경 그래픽을 끈 미리보기로도 확인한다.
 9. **네트워크 확인**(§4.4): 페이지별·UI 언어별 폰트 조각 수와 바이트를 잰다. 모든 폰트 요청이 고정 버전의 `cdn.jsdelivr.net` URL인지, 서빙된 테마 CSS의 폰트 URL이 생성 파일과 같은지, 폰트 요청에 실린 `Referer` 헤더가 무엇인지 본다. Playwright `page.route`로 CDN을 막았을 때(abort와 무응답 둘 다) 시스템 폰트로 그려지고 첫 페인트가 늦어지지 않는지 본다. 무응답 경우는 `waitUntil: 'domcontentloaded'`로 이동하고 window `load` 시각과 `load`에 묶인 코어 동작(일괄 편집 "지우기" 체크박스, 저장하지 않은 변경 경고)을 본다. 자체 호스팅이나 "시스템 폰트만 쓰기"로 덮었을 때 ko·en·ja·zh·zh-TW UI에서 CDN 요청이 0건인지 본다.
@@ -996,7 +1097,7 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 | 폭 | 1440, 1024, 800 |
 | UI 언어 | ko, ja, zh, zh-TW, en, he(RTL. 7은 `dir="rtl"`, 6은 `rtl.css`) |
 | 로그인 | 익명, admin |
-| 프리셋 | 기본, Compact, 시작 쪽 사이드바. 대안 크롬 프리셋 4종(Brand-forward, Signature, Calm, Redmine Blue)은 크롬이 보이는 대표 페이지에서만 |
+| 프리셋 | 기본(Signature 크롬), Compact, 시작 쪽 사이드바. 대안 크롬 프리셋 4종(Ink, Brand-forward, Calm, Redmine Blue)은 크롬이 보이는 대표 페이지에서만(1440·800px) |
 | 표시 모드 | 기본, forced-colors(에뮬레이션), 인쇄 미리보기(배경 그래픽 끔). 뒤의 둘은 일감 목록·상세와 크롬에서만 |
 | 폰트 로드 | CDN 정상(기본), CDN 차단(시스템 폰트 폴백). 차단은 크롬, 일감 목록, 위키에서만 |
 | 브라우저·OS | Chrome(자동). Firefox와 Safari는 수동으로 확인한다(keep-all + anywhere 표 동작은 Chrome에서만 측정됨). Windows(Malgun Gothic, Yu Gothic, YaHei, ClearType)와 iOS Safari(입력 확대)는 장비 확보가 필요하다 (미검증) |
@@ -1010,7 +1111,10 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 
 | 리스크 | 영향 | 대응 |
 |---|---|---|
-| 나중에 로드되는 코어 CSS(`responsive`, `dropdown`, `context_menu`, `jstoolbar`, `gantt`, `scm`)가 같은 명시도에서 이김 | 모바일 헤더와 컨트롤 크기, 선택 행, 드롭다운이 코어 값으로 돌아감 | §8.3 규칙, 계산 스타일 assert, 릴리스마다 두 버전 확인 |
+| 나중에 로드되는 코어 CSS(`responsive`, `dropdown`, `context_menu`, `jstoolbar`, `gantt`, `scm`)가 같은 명시도에서 이김 | 모바일 헤더와 컨트롤 크기, 선택 행, 드롭다운이 코어 값으로 돌아감. 흰 모바일 헤더에서는 코어의 흰 글자(프로젝트 이동 제목, 메뉴 토글)가 남아 보이지 않게 됨 | §8.3 규칙, 계산 스타일 assert, 릴리스마다 두 버전 확인 |
+| 흰 헤더(기본 Signature)가 코어의 "어두운 헤더 위 밝은 글자" 전제를 뒤집음(§4.1 결정의 받아들인 대가) | 테마가 놓친 코어 규칙은 흰 바탕에 흰 글자가 되어 헤더 링크·프로젝트 이동 제목·메뉴 토글이 보이지 않음. A(Ink)에서는 같은 누락이 색 차이에 그침 | 두 버전의 재칠 대상 규칙을 파일·행 단위로 목록화(데스크톱 §8.4 12, 모바일 §8.6). 목록 밖 자손도 따르도록 `#header`의 `color`, `#header a`, `#header svg.icon-svg`에 헤더 토큰을 명시(메뉴 바와 오버레이 제외). 어두운 헤더에서 흰 필드가 하던 경계는 header-control-border로, 흰 헤더와 메뉴 바의 경계는 header-divider로, 메뉴 바와 본문의 경계는 nav-border로 보완(§6.2). Phase 2에서 요소별 계산 스타일 assert와 헤더 axe-core를 1440·800px, 익명·로그인, 두 버전에서 돌림(§9, §10.2) |
+| 흰 헤더 재칠 규칙의 수와 유지보수 | 재칠 대상은 버전마다 데스크톱 9행(§8.4 12 표에서 "그대로 둔다"를 뺀 행, 텍스트 입력 포커스 포함)과 모바일 6행(§8.6 표의 헤더 5행과 flyout h3. flyout은 표면이 어두워 제외하되 흰 header-bg로 바뀌는 h3 띠는 코어가 `color: white`(두 버전 `responsive.css` 307행)를 주므로 포함)이다. 유지보수 위험의 근거는 행 수가 아니라 놓치면 흰 헤더에서 글자나 경계가 보이지 않게 되는 코어 선언이다. 데스크톱은 밝은 글자·경계 선언 6.1.4 `application.css` 87·91·96·342행, 7.0.1 137·145·146·186·521행이고, 헤더 색과 상관없이 검색 입력의 포커스 링을 지우는 `outline: none`(6.1.4 654행, 7.0.1 866행)이 더해진다. 모바일은 두 버전 `responsive.css`의 헤더 배경 99행(#628db6), 메뉴 토글 111행, 프로젝트 이동 제목 149행(7.0.1 147행), flyout h3 307행이다. 나머지 행(브레드크럼, `.current-project`, 검색 레이블, 헤더 아이콘, 토글 구분선, 펼침 캐럿)은 자체 밝은 선언이 없어 부모 선언을 상속하거나 장식이고, 헤더 아이콘은 코어 stroke가 어두워(#343a40, 흰 바탕 11.51:1) 흰 헤더에서도 보인다. 이 행들은 테마가 토큰으로 맞추는 대상이다. 코어가 헤더 마크업이나 규칙을 바꾸면(향후 6.2/7.1) 새 밝은 글자 선언이 목록 밖에 생겨 조용히 보이지 않게 될 수 있음 | 목록을 이 문서에 파일·행 단위로 두고, 기준 버전을 올릴 때마다 코어 `application.css`·`responsive.css`의 `#header`, `#quick-search`, `#project-jump`, `.mobile-toggle-button`, `.flyout-menu` 규칙과, Calm 프리셋의 밝은 상단 바에 걸리는 `#top-menu`·`#account` 규칙(§8.4 12)을 다시 감사해 목록과 assert를 함께 고친다(§4.12, §12). 일반 자손 규칙이 목록 밖 요소의 기본값을 잡는다. 목록 안의 회귀는 요소별 assert가, 목록 밖의 누락은 헤더 영역 axe-core 검사와 릴리스마다의 두 버전 스크린샷(1440·800px)이 드러낸다(§10.2) |
+| 헤더에 콘텐츠를 넣는 플러그인 (미검증: 개별 플러그인을 시험하지 않았다) | 플러그인이 JS·CSS로 헤더에 넣은 링크·아이콘·글자가 코어의 밝은 글자 전제에 맞춰 흰색 계열이나 흰 래스터 아이콘을 직접 쓰면 흰 헤더에서 읽히지 않음. 코어 레이아웃은 `#header` 안에 훅 출력 지점이 없으므로 주로 `view_layouts_base_html_head` 훅의 JS·CSS, `view_layouts_base_body_top`·`view_layouts_base_body_bottom` 훅의 JS, 메뉴 API로 들어온다. `html_head` 훅은 테마 스타일시트 뒤에 출력되므로(6.1.4 `base.html.erb` 18행, 7.0.1 17행) 그 CSS는 같은 명시도에서 테마 규칙을 이긴다(§8.4 12) | 테마는 헤더의 일반 자손(`#header`의 `color`, `#header a`와 hover·포커스, `#header svg.icon-svg` stroke, `#header svg.icon-svg-filled` fill)에 헤더 토큰을 명시해, 색을 직접 지정하지 않은 플러그인 콘텐츠가 흰 헤더에서 읽히게 한다. 메뉴 API로 들어온 메인 메뉴 항목은 nav 규칙이 칠한다. 플러그인이 직접 지정한 색이나 래스터 이미지, 테마보다 나중에 로드되어 같은 명시도에서 이기는 플러그인 CSS, JS가 인라인으로 준 색은 플러그인 쪽 문제라서 범위 밖이다. 그런 플러그인을 쓰는 설치는 Ink 프리셋(어두운 헤더, §6.3)을 `custom.css`나 자식 테마에 넣는다고 README에 적는다 |
 | 6/7 마크업 차이와 향후 6.2/7.1 변경 | 버전마다 모습이 갈라지거나 깨짐 | 공통 id를 쓰고 기준선을 명시적으로 리셋한다. 릴리스마다 페이지 카탈로그 스크린샷(Bleuclair 방식) |
 | 6.0.x에서 핵심 가정 불일치 (미검증) | 6.x 초기 버전 사용자에게 크롬이나 사이드바가 깨짐 | Phase 0에서 패치 버전을 고정한 `redmine:6.0.x` 태그로 확인하고, 차이가 있으면 대응을 추가하고 문서를 고친다. 지원 범위는 줄이지 않는다 |
 | 부동 이미지 태그(`redmine:6`·`redmine:7`)로 테스트 기준이 조용히 바뀜 | `docker compose pull` 뒤 결과표와 문서의 버전(6.1.4·7.0.1)이 실제 컨테이너와 달라짐 | Phase 0 전에 `redmine:6.1.4`·`redmine:7.0.1`로 고정하고, 결과표에 `Redmine::VERSION`을 적는다(§4.12). 기준을 올릴 때는 태그와 문서를 함께 고친다 |
@@ -1025,17 +1129,17 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 | 자체 호스팅으로 덮어도 CDN 조각이 요청됨 (미검증) | 폐쇄망·CSP 환경에서 불필요한 요청. CSP 환경에서는 콘솔에 CSP 위반이 기록되고, 보고 설정이 있으면 위반 보고가 전송됨 | 예약 글꼴명이 없는 다른 family 이름(예: `"RAVNUS Sans Local"`)을 쓰고 ja·zh 스택까지 바꾸게 안내한다(§4.4). 테마 CSS가 `"Pretendard Variable"`을 `@font-face`와 네 폰트 스택 토큰 밖에서 쓰지 못하게 CI가 막는다(§10.2 6). Phase 0 3에서 ko·en·ja·zh·zh-TW UI의 요청 0건을 확인한다. 요청이 남으면(Phase 0 3이 실패한 경우) 원인(남은 스택 이름, `font-family`를 따로 지정한 셀렉터 등)을 기록해 README 레시피에 바꿔야 할 곳을 더하고, 레시피로 없앨 수 없는 요청은 README에 남는 요청과 그로 인한 CSP 위반 기록으로 적는다 |
 | `custom.css`나 자식 테마 import 실패 (미검증) | 업데이트 안전 경로와 폰트 자체 호스팅 경로가 없음 | 상단 블록 수정(B)만 안내하고, 로컬 브랜치 리베이스 가이드를 둔다. 자체 호스팅은 컴파일 파일의 `--ravnus-font-sans`와 `@font-face` 수정으로 안내하고, 업데이트 때 덮인다고 적는다 |
 | 추적 중인 `custom.css`를 고친 뒤 `git pull` 거부(`pull.rebase=true`로 설정한 저장소, 로컬 git 2.52.0 확인) | 업데이트가 막혀 사용자가 파일을 지우거나 덮어씀 | README에 `git pull --autostash` 또는 로컬 커밋 후 `git pull --rebase`를 안내한다 |
-| PurpleMine 연상 (미검증: 사용자 인상) | 테마 인상이 약해짐 | PurpleMine(`#614BA6`)보다 어둡고 채도가 낮은 크롬을 쓰고, 로고를 쓰지 않는다. 브랜드 색을 쓰지 않는 Redmine Blue 프리셋(§6.3)을 둔다. 브랜드 색 사용은 소유자가 확인했다(§4.1) |
+| PurpleMine 연상 (미검증: 사용자 인상) | 테마 인상이 약해짐 | 기본 크롬 Signature는 흰 헤더에 2rem 브랜드 바이올렛 상단 바 한 줄이라 헤더 전체가 보라인 PurpleMine과 구성이 다르다. Ink 프리셋은 PurpleMine(`#614BA6`)보다 어둡고 채도가 낮다. 로고를 쓰지 않는다. 브랜드 색을 쓰지 않는 Redmine Blue 프리셋(§6.3)을 둔다. 브랜드 색 사용은 소유자가 확인했다(§4.1) |
 | 밀도 증가(25px에서 32px) | 파워 유저 불만, 화면당 행 약 22% 감소(계산) | Compact 프리셋 한 블록, Pretendard 로드 후 실측, 짧은 이름·날짜 열은 `nowrap` 유지 |
-| 크롬 높이 증가(프로토타입을 6.1.4·7.0.1에서 측정해 약 116px, 코어는 7.0.1 104px·6.1.4 107px. 미검증: Phase 2에서 최종 CSS로 재측정) | 본문 영역 감소 | rem과 min-block-size 사용, Phase 2 재측정 후 조정 |
+| 크롬 높이 증가(프로토타입을 6.1.4·7.0.1에서 측정해 기본 Signature 약 120px(상단 바 32 + 헤더 88), Ink·Calm·Redmine Blue 116px, 코어는 7.0.1 104px·6.1.4 107px. 미검증: Phase 2에서 경계선을 포함한 최종 CSS로 재측정) | 본문 영역 감소 | rem과 min-block-size 사용, 상단 바 높이 토큰 `--ravnus-topbar-height`(기본 2rem, 1.75rem으로 줄일 수 있음), Phase 2 재측정 후 조정 |
 | UI 언어와 콘텐츠 언어가 다름 | ko·en UI에서 일본어·중국어 줄바꿈이 어색하고, ja·zh UI에서 한국어가 음절 단위로 끊김 | overflow-wrap 안전망과 제목 최소 폭 토큰. 스크립트 감지는 v2에서 검토 |
 | 코어 `overflow: hidden`과 고정 높이(`.tabular p`, `#content .tabs`) | 포커스 링과 CJK 글자가 잘림(WCAG 2.4.7, 1.4.12) | §8.1 폼·탭 행의 수정, Phase 4·6 프로브 스크린샷 |
 | forced-colors와 배경 그래픽을 끈 인쇄에서 CSS 글리프 소실 | 고대비 사용자와 흑백 인쇄물에서 우선순위·상태·지연 구분 불가 | 테두리 기반 모양 우선, §8.8·§8.9 규칙, 매트릭스 에뮬레이션 |
 | 토큰 쌍 게이트가 코어 하드코딩 색을 못 잡음 | "모든 텍스트 4.5:1" 약속이 깨짐 | 렌더 화면 axe-core 검사(§10.2), 그룹 행·합계 명시 스타일(§6.5) |
 | 플러그인의 하드코딩 색, 레거시 래스터 아이콘 | 토큰을 따르지 않는 화면 | 플러그인 CSS는 v1 범위 밖이다. 일반화할 수 있는 호환 수정만 공개 저장소에 받고, 배포별 수정은 자식 테마나 `custom.css`에 둔다 |
 | 주 버튼 오지정 | 삭제 버튼이 강조됨 | allowlist와 두 버전 페이지 감사 |
-| color-mix 미지원 구형 브라우저 | 선택 행·탭 틴트가 빠짐 | 빌드로 생성한 `@supports` 폴백. README에 브라우저 하한을 적는다 |
-| 사용자가 고른 강조색의 명암 실패 | 흰 글자가 읽히지 않음 | `--ravnus-on-accent` 노브와 README 경고. CI는 프리셋만 보장한다 |
+| color-mix 미지원 구형 브라우저 | 선택 행·탭 틴트가 빠짐. 사용자 `:root`에 color-mix 식을 적으면 테마 폴백이 덮지 못해 그 속성이 무효가 됨(예: 상단 바가 투명해져 흰 페이지 위 흰 상단 메뉴 글자) | 빌드로 생성한 `@supports` 폴백. README 프리셋 블록의 파생값은 리터럴 hex로 싣고 CI가 계산값과 대조한다(§5.4, §10.2 6). README에 브라우저 하한과 "노브는 리터럴로 적는다"를 적는다 |
+| 사용자가 고른 강조색의 명암 실패 | 흰 글자가 읽히지 않음. 기본 Signature에서는 상단 바가 강조색을 따르므로, 고정값인 상단 바 보조 글자(#CAC5EA)와 앰버 링(#FEA800)의 명암도 떨어짐(예: `#0b6e4f` 위 3.78:1, 3.22:1) | `--ravnus-on-accent` 노브와 README 경고. 강조색을 바꾸면 `--ravnus-topbar-fg-muted`와 `--ravnus-topbar-focus`도 바꾼다고 §4.5 예시와 README에 적는다(§5.4 명암 한계). CI는 프리셋만 보장한다 |
 | iOS Safari 입력 확대 (미검증) | 모바일에서 입력 포커스 때 화면이 확대됨 | §8.6 열린 항목. 실기 확인 후 결정 |
 | 테마 CSS와 테마 안 자체 호스팅 폰트의 캐시 헤더 없음(로컬 컨테이너 `/assets` 응답에 `Cache-Control` 없음) | 재방문 때 다시 받음 | README에 리버스 프록시 장기 캐시 설정을 안내한다. CDN 폰트는 jsDelivr가 1년 immutable 캐시 헤더를 보낸다 |
 | Windows 일본어 Yu Gothic이 얇게 나옴 (미검증) | ja 가독성 저하 | `local()` 별칭 `@font-face`, Windows 실기 확인 |
@@ -1050,23 +1154,24 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 
 | 단계 | 범위 | 산출물 | 예상 공수 (미검증 추정) |
 |---|---|---|---|
-| 결정 (2026-09-26 완료) | 소유자 결정 6건(RAVNUS Inc. 브랜드 색 사용 확인 포함, 부록 "결정 기록") | `CLAUDE.md` "디자인 결정" 반영. 구현 단계의 문서 수정은 아래 문서 반영 규칙 | — |
+| 결정 (2026-09-26 완료, 2026-10-01 #1 변경) | 소유자 결정 6건(RAVNUS Inc. 브랜드 색 사용 확인 포함, 부록 "결정 기록"). 2026-10-01 기본 크롬을 A(Ink)에서 B(Signature)로 바꾸고 #2·#4를 다시 확인 | `CLAUDE.md` "디자인 결정" 반영. 구현 단계의 문서 수정은 아래 문서 반영 규칙 | — |
 | Phase 0 | 검증 스파이크(CDN `@font-face` 보존·차단 폴백·자체 호스팅 확인과 6.0.x 확인 포함) | 검증 결과표, 실패 항목의 대응 결정, 6.0.x 결과에 따른 문서 수정 | 2–2.5일 |
 | v0.1.0 | Phase 1 | `src/_tokens.scss` 3계층 + 프리셋 주석, `src/_typography.scss`, Pretendard `@font-face` 생성 스크립트 `src/tools/pretendard-font-face.mjs`(`npm run fonts`)와 생성 파일 `src/_pretendard.scss`(CDN `@font-face` 92개, 컴파일 결과 `stylesheets/application.css`에 포함), `stylesheets/custom.css` 빈 스텁, README.md·README.ko.md의 Pretendard 크레딧·OFL 고지와 CDN 안내(§4.4), 커스터마이즈 절(`custom.css` 방식, `git pull --autostash`), `.github/workflows/`(빌드 비교 + 명암 게이트 + 폰트 검사: CDN `@font-face` 수가 생성 파일과 같음(v1.3.9는 92개), 모든 폰트 URL이 고정 버전 접두사(생성 스크립트의 버전 상수에서 만든 값, 현재 `https://cdn.jsdelivr.net/npm/pretendard@1.3.9/`)로 시작, 외부 스타일시트 `@import` 없음, 주석을 뺀 첫 두 규칙이 코어·`custom.css` import, `"Pretendard Variable"`은 `@font-face`와 네 폰트 스택 토큰에만, §10.2), 프로브 하네스와 axe-core 검사 | 4.5일 |
-| v0.2.0 | Phase 2–3 | `src/components/_index.scss`, `_chrome.scss`, `_sidebar.scss`, `_issue-list.scss`(그룹 행, forced-colors·인쇄 포함), 기본 크롬 비교 스크린샷, README 대안 크롬 프리셋 블록과 스크린샷(§4.1) | 7일 |
+| v0.2.0 | Phase 2–3 | `src/components/_index.scss`, `_chrome.scss`(기본 Signature, 흰 헤더 재칠 목록 §8.4 12와 모바일 헤더 §8.6, 크롬 경계선), `_sidebar.scss`, `_issue-list.scss`(그룹 행, forced-colors·인쇄 포함), 흰 헤더 요소별 계산 스타일 assert, 기본 Signature와 Ink 프리셋 비교 스크린샷, README 대안 크롬 프리셋 블록(Ink, Brand-forward, Calm, Redmine Blue)과 스크린샷(§4.1), README에 헤더 플러그인과 Ink 프리셋 안내(§11), 강조색을 바꾸면 상단 바 보조 글자와 앰버 링도 바꾼다는 커스터마이즈 안내(§5.4) | 7–8일 (Phase 2 후 확정) |
 | v0.3.0 | Phase 4–5 | `_issue.scss`, `_journal.scss`, `_forms.scss`, `_wiki.scss`(jstoolbar 포함), 주 버튼 allowlist | 5.5일 |
 | v0.4.0 | Phase 6–8 | `_messages.scss`, `_overlays.scss`, `_mobile.scss`, `_misc.scss` | 5–6일 |
 | v1.0.0 | Phase 9 | README.md와 README.ko.md(설치, 재시작·precompile 트러블슈팅을 맨 앞에, 커스터마이즈 3방법, 업데이트 절차(`git pull --autostash`), 프리셋 블록, Pretendard 크레딧·OFL 고지, CDN 폰트 안내(개인정보와 Phase 0에서 관찰한 Referer, CSP `font-src`, 폐쇄망 폴백, 중국 본토), 폰트 자체 호스팅 레시피와 "시스템 폰트만 쓰기" 블록(`custom.css`·자식 테마), 테마 CSS 캐시 권장), 스크린샷(`.github/` 또는 images 브랜치), redmine.org Theme_List 항목, 태그 | 3일 |
 | v1.x | 안정화 | 일반화할 수 있는 플러그인 호환 수정, 밀도·본문 폭 기본값 조정, 사용자 피드백 반영, iOS 입력 크기 결정 반영 | 별도 |
 | v2 | 확장 | 다크 토큰 세트, Pygments 토큰화와 `url()` 이미지 대체, Pretendard JP opt-in(§4.4 CDN 방식), 테마 아이콘 스프라이트(6.1.2 이상), theme.js 기능 검토(콘텐츠 언어 감지 등. 레이아웃 변경은 제외, §4.2) | 별도 |
 
-v1.0까지 약 27–29인일로 추정한다 (미검증). 원래 Ink & Paper 추정치는 18–22인일이었고, 가져온 요소(커스터마이즈 경로, 읽기 레이어, 검증 스파이크)로 24–26인일이 됐다. 여기에 검토 반영분(6.0.x 확인, axe-core, forced-colors·인쇄, jstoolbar, 포커스 링)만큼 늘렸다. §4.2 결정(스타일만 변경)을 전제로 한 추정이다. §4.4 결정으로 폰트 번들 작업이 빠지고 생성 스크립트와 CDN 확인이 들어왔으며, 둘의 공수는 비슷하다고 보고 합계를 그대로 두었다 (미검증 추정).
+v1.0까지 약 27–30인일로 추정한다 (미검증). 원래 Ink & Paper 추정치는 18–22인일이었고, 가져온 요소(커스터마이즈 경로, 읽기 레이어, 검증 스파이크)로 24–26인일이 됐다. 여기에 검토 반영분(6.0.x 확인, axe-core, forced-colors·인쇄, jstoolbar, 포커스 링)만큼 늘렸다. §4.2 결정(스타일만 변경)을 전제로 한 추정이다. §4.4 결정으로 폰트 번들 작업이 빠지고 생성 스크립트와 CDN 확인이 들어왔으며, 둘의 공수는 비슷하다고 보고 합계를 그대로 두었다 (미검증 추정). 2026-10-01 §4.1 변경으로 v0.2.0에 다음 작업이 늘었다. 흰 헤더 재칠 대상 약 15행(데스크톱 9행, 모바일 6행, §11)을 두 버전에서 처리하는 일, 1440·800px 요소별 계산 스타일 assert, 크롬 경계선(헤더와 메뉴 바, 상단 바와 헤더, 모바일 헤더 아래, 메뉴 바와 본문, §6.2), 텍스트 입력 포커스 복원과 상단 바 드롭다운 제외 규칙, README 프리셋 블록의 리터럴 파생값과 그 CI 대조, Signature와 Ink의 두 버전 나란히 비교다. 그래서 v0.2.0을 7일에서 7–8일로, 합계를 27–29인일에서 27–30인일로 늘려 잡고, Phase 2가 끝나면 실제 공수로 확정한다 (미검증 추정).
 
-**문서 반영 규칙**: 2026-09-26 소유자 결정은 `CLAUDE.md`의 "디자인 결정"과 관련 규칙(작성 규칙, CJK 타이포그래피, Redmine 6+ 테마 동작, 남은 확인 사항)에 반영했다. 구현 단계에서 함께 고칠 것은 다음과 같다.
+**문서 반영 규칙**: 2026-09-26 소유자 결정은 `CLAUDE.md`의 "디자인 결정"과 관련 규칙(작성 규칙, CJK 타이포그래피, Redmine 6+ 테마 동작, 남은 확인 사항)에 반영했다. 2026-10-01 #1 변경(기본 크롬 Signature, Ink는 README 프리셋)은 `CLAUDE.md` "디자인 결정"의 크롬·컬러 항목에 반영했다. 구현 단계에서 함께 고칠 것은 다음과 같다.
 - Phase 0 전: `docker-compose.yml`의 이미지 태그를 `redmine:6.1.4`·`redmine:7.0.1`로 고정하고(§4.12), `CLAUDE.md` 개발 명령과 README.md·README.ko.md 테스트 환경 절에 고정 태그와 태그 갱신 절차를 적는다. README의 "`docker compose pull`로 최신 6.x / 7.x" 문장은 이 절차로 바꾼다.
 - Phase 0 후: 자식 테마 경로, `custom.css` import, 6.0.x 결과를 `CLAUDE.md`와 README에 반영한다. 지원 범위(6.x / 7.x)는 바꾸지 않는다.
 - Phase 1(v0.1.0): 파일을 만들 때 디렉터리 구조에 `src/tools/`, `src/_pretendard.scss`, `stylesheets/custom.css`를 추가한다(빈 placeholder를 만들지 않는 규칙). 작성 규칙에 "`src/_pretendard.scss`는 생성 파일이므로 직접 고치지 않고, 버전 상수를 바꿔 `npm run fonts`로 다시 만든다"를 넣고 `package.json` 설명에 `fonts` 스크립트를 적는다. 코어 import 규칙에 "`custom.css` import는 주석을 뺀 둘째 규칙"을 더하고, CI 문장에 폰트 검사를 넣는다. README의 커스터마이즈 절을 `custom.css` 방식과 `git pull --autostash` 안내로 바꾼다.
 - `_tokens.scss`를 나누면 hex 금지 문구를 고친다(§5.1).
+- 테스트 기준 버전을 올릴 때(§4.12): 흰 헤더 재칠 목록(§8.4 12, §8.6)의 대상 규칙과 행 번호를 새 코어에서 다시 읽어 고치고, 헤더 계산 스타일 assert도 함께 고친다(§11).
 
 문서 위치의 근거: Redmine은 `src`와 dot-디렉터리를 뺀 테마 하위 디렉터리를 모두 `/assets/themes/ravnus/` 아래에 서빙하고(6.1.4·7.0.1 `lib/redmine/themes.rb` 124–131행 `asset_paths`, `lib/redmine/asset_path.rb`는 확장자를 거르지 않음) 루트 파일은 서빙하지 않는다. 그래서 이 문서는 `docs/` 같은 하위 디렉터리가 아니라 저장소 루트의 `DESIGN.md`로 둔다.
 
@@ -1076,20 +1181,30 @@ v1.0까지 약 27–29인일로 추정한다 (미검증). 원래 Ink & Paper 추
 
 ## 부록: 결정 기록
 
-2026-09-26 소유자 결정 6건. 모두 최종 결정이다. 바꾸려면 이 표와 `CLAUDE.md`를 먼저 고친다. Phase 0 결과에 따라 구현 경로나 폴백은 바뀔 수 있지만 결정 자체는 바뀌지 않는다.
+2026-09-26 소유자 결정 6건. 모두 최종 결정이다. Phase 0 결과에 따라 구현 경로나 폴백은 바뀔 수 있지만, Phase 0 결과만으로는 결정이 바뀌지 않는다. 결정을 바꿀 때는 소유자가 정하고 이 표와 `CLAUDE.md`를 먼저 고친다. 그 절차로 2026-10-01 소유자가 #1을 바꾸고 #2·#4를 다시 확인했다. 아래 첫 표는 2026-09-26 원래 결정의 이력이고, 현재 결정은 두 번째 표가 우선한다.
 
 | # | 항목 | 결정 (2026-09-26) | 반영한 곳 |
 |---|---|---|---|
-| 1 | 메인 컬러·크롬 (§4.1) | A "잉크 바이올렛"이 기본값이다(헤더 `#311E5F`, 상단 바 `#1C0F3A`, 강조 `#46009B`, 링크 `#215DB3`). B Signature, C Calm, D 레드마인 블루, Brand-forward는 README 프리셋으로 제공한다. RAVNUS Inc. 브랜드 색(`#46009B`와 이를 바탕으로 만든 크롬 색)을 공개 MIT 테마의 기본값으로 쓰는 것을 소유자가 확인했으므로 선행 조건과 임시 기본값은 없다 | §1, §2, §4.1, §5.3, §6.1, §6.3, §9 Phase 2, §11 |
+| 1 | 메인 컬러·크롬 (§4.1) | A "잉크 바이올렛"이 기본값이다(헤더 `#311E5F`, 상단 바 `#1C0F3A`, 강조 `#46009B`, 링크 `#215DB3`). B Signature, C Calm, D 레드마인 블루, Brand-forward는 README 프리셋으로 제공한다. RAVNUS Inc. 브랜드 색(`#46009B`와 이를 바탕으로 만든 크롬 색)을 공개 MIT 테마의 기본값으로 쓰는 것을 소유자가 확인했으므로 선행 조건과 임시 기본값은 없다. **2026-10-01에 B 기본값으로 바뀌었다(아래 표)** | §1, §2, §4.1, §5.3, §6.1, §6.3, §9 Phase 2, §11 |
 | 2 | 레이아웃 변경 범위 (§4.2) | 기존 Redmine 레이아웃을 유지한다(영역 재배치 없음). 스타일만 바꾼다. v1에는 `javascripts/theme.js`가 없고, theme.js는 레이아웃 변경에 쓰지 않는다 | §1, §2, §4.2, §8, §8.2, §12 |
 | 3 | 사이드바 기본 위치 (§4.3) | 오른쪽 기본(코어와 같다). `--ravnus-sidebar-at-start: 1`로 인라인 시작 쪽으로 바꾼다 | §1, §4.3, §6.3 |
 | 4 | Pretendard 제공 방식 (§4.4) | jsDelivr CDN 기본(v1.3.9 고정, Pretendard Variable 동적 서브셋). CDN 스타일시트를 `@import`하지 않는다. 생성 스크립트(`npm run fonts`)가 절대 https URL과 업스트림 unicode-range로 `@font-face`(`font-weight: 45 920`, `font-display: swap`)를 담은 `src/_pretendard.scss`를 만들고, 빌드(`npm run build`)가 이를 테마 CSS에 컴파일한다. 폰트 파일·OFL 파일·폰트 마운트는 저장소에 없고, README에 Pretendard 크레딧·OFL 고지와 개인정보·CSP·폐쇄망·중국 본토 안내를 싣는다. 폐쇄망과 엄격한 CSP는 `custom.css`나 자식 테마의 자체 호스팅(예약 글꼴명이 없는 다른 family 이름 + `--ravnus-font-sans`)으로 대응한다. 업스트림 갱신은 저장소 유지관리자가 맡는다 | §1, §3, §4.4, §4.5, §5.3, §7.1, §9 Phase 0·1, §10, §11, §12 |
 | 5 | 사용자 커스터마이즈 (§4.5) | A: 토큰은 `:where(:root)`에 선언하고, 추적하는 빈 `stylesheets/custom.css` 스텁을 테마가 import하며, 자식 테마 레시피를 문서화한다. import 경로는 Phase 0에서 확인한다 | §1, §4.5, §9 Phase 0·1, §11, §12 |
 | 6 | CJK 타이포 정책 (§4.6) | F1 + K2: ja·zh·zh-TW UI는 OS 네이티브 CJK 폰트를 먼저 쓰고 Pretendard는 한글만 맡는다. keep-all은 ja·zh를 뺀 모든 UI 언어(`:root:not(:lang(ja)):not(:lang(zh))`)에 적용한다 | §1, §2, §4.6, §7.1, §7.6, §12 |
 
+**2026-10-01 변경·재확인** (소유자 결정, 최종)
+
+| # | 항목 | 결정 (2026-10-01) | 반영한 곳 |
+|---|---|---|---|
+| 1 | 메인 컬러·크롬 (§4.1) | **변경: A → B.** B "Signature"가 기본값이다. 상단 바 `--ravnus-topbar-bg` `#46009B`(최소 높이 2rem), 글자 `#FFFFFF`, 보조 글자 `#CAC5EA`, 포커스 링 앰버 `#FEA800`. 헤더는 canvas(`#FFFFFF`), 글자 fg-default(`#202026`), 보조 글자 fg-subtle(`#64626A`), 포커스 accent(`#46009B`). A "Ink"(헤더 `#311E5F`, 상단 바 `#1C0F3A`)는 C Calm, D 레드마인 블루, Brand-forward와 함께 README 프리셋이고, Signature는 더 이상 프리셋이 아니다. 메인 메뉴 바의 색·탭 표현, 강조 `#46009B`, 링크 `#215DB3`, 크롬이 아닌 기존 토큰의 값과 채택안의 나머지(배치, 타이포그래피, 목록 표현)는 그대로다. 흰 헤더와의 경계를 위해 메인 메뉴 바 위아래 헤어라인(header-divider, 새 토큰 `--ravnus-nav-border`)과 `box-sizing: border-box`만 더한다(Ink 프리셋 화면에도 적용). 브랜드 색 사용은 2026-09-26에 확인됐다. 근거: 프로토타입을 나란히 비교한 뒤의 소유자 선호(브랜드 선명도, 가벼운 크롬). 흰 헤더가 코어의 밝은 글자 전제를 뒤집는 대가는 받아들이고, 두 버전의 재칠 목록, 헤더 경계선, 요소별 assert, Ink 프리셋으로 완화한다 | 머리말, §1, §2, §3, §4.1, §4.2, §4.5, §5.2, §5.3, §5.4, §5.5, §6.1, §6.2, §6.3, §6.6, §8.1, §8.4, §8.5, §8.6, §8.7, §8.8, §9 Phase 2·7, §10, §11, §12 |
+| 2 | 레이아웃 변경 범위 (§4.2) | **재확인.** 기존 Redmine 레이아웃을 유지하고 스타일만 바꾼다. v1에 theme.js가 없다. 재배치는 작업량이 늘어난다는 이유로 받아들이지 않았다 | §1, §4.2 |
+| 4 | Pretendard 제공 방식 (§4.4) | **재확인.** jsDelivr CDN 기본(v1.3.9 고정). 나머지 내용은 2026-09-26 결정과 같다 | §1, §4.4 |
+
 ---
 
 ## 부록: 개정 이력
+
+2026-10-01 소유자 결정 반영: 기본 크롬 A(Ink) → B(Signature), Ink는 프리셋, #2·#4 재확인, 흰 헤더 재칠 목록(§8.4 12·§8.6), 헤더 경계선·컨트롤 테두리 토큰(§6.2), 헤더 assert·플러그인 위험(§9–§12) 추가.
 
 2026-09-26 소유자 결정 6건 반영. 머리말 상태, §1 표와 다음 할 일, §4 각 절을 결정으로 바꾸고, §4.4 CDN 기본 결정을 §4.5, §5.3, §7.1, §9, §10, §11, §12에 반영했다. 브랜드 색 선행 조건과 임시 기본값(D)을 없앴다. 같은 날 두 차례 교차 검토로 크롬 높이 실측값, CDN 무응답 시 위험과 Phase 0 확인 항목, OFL 근거, 폰트 생성·버전 고정 절차, CI 폰트 검사, import 순서 검사 기준, 프리셋 게재 시점을 바로잡았다. 결정 내용은 부록 "결정 기록"에 있다.
 
