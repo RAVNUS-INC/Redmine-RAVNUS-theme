@@ -2,7 +2,7 @@
   "name": "redmine-ravnus-theme",
   "version": "0.1.0",
   "private": true,
-  "description": "RAVNUS — a Redmine 6.x / 7.x theme with first-class CJK typography",
+  "description": "RAVNUS — a Redmine 7.x theme with first-class CJK typography",
   "license": "MIT",
   "author": "RAVNUS Inc.",
   "homepage": "https://github.com/RAVNUS-INC/Redmine-RAVNUS-theme#readme",

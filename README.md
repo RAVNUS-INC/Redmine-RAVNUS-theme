@@ -2,7 +2,7 @@
 
 [한국어](README.ko.md)
 
-RAVNUS is a free, open-source theme for Redmine 6.x and 7.x. Its goal is to be the most readable Redmine theme for Korean, Japanese and Chinese (CJK) users.
+RAVNUS is a free, open-source theme for Redmine 7.x. Its goal is to be the most readable Redmine theme for Korean, Japanese and Chinese (CJK) users.
 
 > **Status: early development.** The build pipeline and the test environment are ready, and the visual design is in progress. Right now the theme switches the base font to a Pretendard-first stack on top of the default Redmine look.
 
@@ -15,7 +15,7 @@ RAVNUS is a free, open-source theme for Redmine 6.x and 7.x. Its goal is to be t
 
 ## Requirements
 
-- Redmine 6.x or 7.x. Redmine 5.x and earlier are not supported.
+- Redmine 7.x. Redmine 6.x and earlier are not supported.
 
 ## Installation
 
@@ -29,6 +29,7 @@ git clone https://github.com/RAVNUS-INC/Redmine-RAVNUS-theme.git themes/ravnus
 Restart Redmine, then choose **Ravnus** in *Administration → Settings → Display → Theme*.
 
 - Redmine compiles theme assets into `public/assets` when it starts, so the user running Redmine needs write access to that directory.
+- If a restart does not pick up changed CSS (for example, files copied with old timestamps), run `touch` on the changed file and restart again. Redmine recompiles assets at boot only if some asset file is newer than its manifest.
 - To update, run `git pull` in `themes/ravnus` and restart Redmine. If you edited the stylesheet, read [Customization](#customization) first.
 
 ## Customization
@@ -57,23 +58,20 @@ Work in a separate clone, not in the `themes/ravnus` directory of a running Redm
 
 ### Test environment
 
-`docker-compose.yml` runs Redmine 6.x and 7.x side by side with this theme mounted:
+`docker-compose.yml` runs Redmine 7 (`redmine:7.0.2`) with this theme mounted:
 
 ```bash
 docker compose up -d
 ```
 
-| Redmine | URL |
-|---------|-----|
-| 6.x | http://localhost:3006 |
-| 7.x | http://localhost:3007 |
+Open http://localhost:3007.
 
 - The first start loads the Korean default configuration, creates sample projects, issues, wiki pages and news in Korean, Japanese, Chinese and English, and activates the theme. All sample people and texts are fictional.
 - Sign in with the default Redmine administrator account (`admin` / `admin`). The ports listen on 127.0.0.1 only.
 - After `npm run build`, run `docker compose restart`. Redmine recompiles theme assets when it starts.
 - `docker compose down -v` deletes the sample data; the next `docker compose up -d` seeds it again.
-- `docker compose pull` updates to the latest 6.x and 7.x images.
-- Set `REDMINE6_PORT` or `REDMINE7_PORT` to use other ports.
+- The image is pinned to a patch release. To test a newer 7.x patch, change the tag in `docker-compose.yml`.
+- Set `REDMINE_PORT` to use another port.
 
 ## License
 
