@@ -1,0 +1,58 @@
+# Local test environment for the RAVNUS theme: Redmine 6.x and 7.x side by side.
+#
+#   docker compose up -d      Redmine 6 → http://localhost:3006, Redmine 7 → http://localhost:3007
+#   docker compose restart    apply a rebuilt stylesheet (Redmine recompiles assets at boot)
+#   docker compose down -v    remove the containers and the sample data
+#
+# Only the theme's runtime directories are mounted: Redmine serves every
+# top-level theme directory except src/ and dot-directories as assets, so
+# mounting the repository root would expose node_modules/ as well.
+# Mount any new runtime directory (images/, favicon/ ...) here too.
+
+x-redmine: &redmine
+  environment:
+    RAILS_LOG_TO_STDOUT: "1"
+  # Seeds sample data on the first boot of a fresh database, then starts Rails.
+  # `bundle exec` keeps the image entrypoint in Redmine mode (database.yml,
+  # secret key and db:migrate) before running this script.
+  command:
+    - bundle
+    - exec
+    - bash
+    - -c
+    - |
+      set -e
+      if [ ! -f sqlite/.ravnus-seeded ]; then
+        bin/rails runner /ravnus-dev/seed.rb
+        touch sqlite/.ravnus-seeded
+      fi
+      exec bin/rails server -b 0.0.0.0
+
+services:
+  redmine6:
+    <<: *redmine
+    image: redmine:6
+    ports:
+      - "127.0.0.1:${REDMINE6_PORT:-3006}:3000"
+    volumes:
+      - ./stylesheets:/usr/src/redmine/themes/ravnus/stylesheets:ro
+      - ./.docker:/ravnus-dev:ro
+      - redmine6-sqlite:/usr/src/redmine/sqlite
+      - redmine6-files:/usr/src/redmine/files
+
+  redmine7:
+    <<: *redmine
+    image: redmine:7
+    ports:
+      - "127.0.0.1:${REDMINE7_PORT:-3007}:3000"
+    volumes:
+      - ./stylesheets:/usr/src/redmine/themes/ravnus/stylesheets:ro
+      - ./.docker:/ravnus-dev:ro
+      - redmine7-sqlite:/usr/src/redmine/sqlite
+      - redmine7-files:/usr/src/redmine/files
+
+volumes:
+  redmine6-sqlite:
+  redmine6-files:
+  redmine7-sqlite:
+  redmine7-files:
