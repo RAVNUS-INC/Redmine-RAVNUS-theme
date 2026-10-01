@@ -2,7 +2,7 @@
 
 [English](README.md)
 
-RAVNUS는 Redmine 6.x / 7.x용 무료 오픈소스 테마입니다. 한국어·일본어·중국어(CJK) 사용자에게 가장 읽기 좋은 Redmine 테마를 목표로 합니다.
+RAVNUS는 Redmine 7.x용 무료 오픈소스 테마입니다. 한국어·일본어·중국어(CJK) 사용자에게 가장 읽기 좋은 Redmine 테마를 목표로 합니다.
 
 > **현재 상태: 초기 개발 단계.** 빌드 파이프라인과 테스트 환경이 준비되었고 디자인 작업을 진행하고 있습니다. 지금은 기본 Redmine 화면 위에서 기본 글꼴만 Pretendard 우선 스택으로 바꿉니다.
 
@@ -15,7 +15,7 @@ RAVNUS는 Redmine 6.x / 7.x용 무료 오픈소스 테마입니다. 한국어·�
 
 ## 요구 사항
 
-- Redmine 6.x 또는 7.x (5.x 이하는 지원하지 않습니다)
+- Redmine 7.x (6.x 이하는 지원하지 않습니다)
 
 ## 설치
 
@@ -29,6 +29,7 @@ git clone https://github.com/RAVNUS-INC/Redmine-RAVNUS-theme.git themes/ravnus
 Redmine을 재시작한 뒤 *관리 → 설정 → 표시방식 → 테마*에서 **Ravnus**를 선택합니다.
 
 - Redmine은 시작할 때 테마 에셋을 `public/assets`로 컴파일하므로, Redmine 실행 유저에게 이 디렉터리 쓰기 권한이 필요합니다.
+- 재시작해도 바뀐 CSS가 반영되지 않으면(예: 옛 타임스탬프로 파일을 복사한 경우) 바꾼 파일을 `touch`한 뒤 다시 재시작합니다. Redmine은 manifest보다 새로운 에셋 파일이 있을 때만 기동 때 다시 컴파일합니다.
 - 업데이트는 `themes/ravnus`에서 `git pull` 후 Redmine을 재시작합니다. 스타일시트를 고쳤다면 먼저 [커스터마이즈](#커스터마이즈)를 읽어 주세요.
 
 ## 커스터마이즈
@@ -57,23 +58,20 @@ npm run watch   # 변경할 때마다 다시 빌드
 
 ### 테스트 환경
 
-`docker-compose.yml`은 이 테마를 마운트한 Redmine 6.x와 7.x를 함께 실행합니다.
+`docker-compose.yml`은 이 테마를 마운트한 Redmine 7(`redmine:7.0.2`)을 실행합니다.
 
 ```bash
 docker compose up -d
 ```
 
-| Redmine | 주소 |
-|---------|------|
-| 6.x | http://localhost:3006 |
-| 7.x | http://localhost:3007 |
+http://localhost:3007 로 접속합니다.
 
 - 첫 기동 때 한국어 기본 설정을 불러오고, 한국어·일본어·중국어·영어로 된 샘플 프로젝트·일감·위키·뉴스를 만든 뒤 테마를 적용합니다. 샘플의 인물과 내용은 모두 가상입니다.
 - 로그인은 Redmine 기본 관리자 계정(`admin` / `admin`)입니다. 포트는 127.0.0.1에서만 열립니다.
 - `npm run build` 후 `docker compose restart`를 실행하면 반영됩니다. Redmine이 시작할 때 테마 에셋을 다시 컴파일합니다.
 - `docker compose down -v`는 샘플 데이터를 지우고, 다음 `docker compose up -d` 때 다시 만듭니다.
-- `docker compose pull`로 최신 6.x / 7.x 이미지로 업데이트합니다.
-- 다른 포트를 쓰려면 `REDMINE6_PORT`, `REDMINE7_PORT`를 지정합니다.
+- 이미지는 패치 버전으로 고정돼 있습니다. 새 7.x 패치로 시험하려면 `docker-compose.yml`의 태그를 바꿉니다.
+- 다른 포트를 쓰려면 `REDMINE_PORT`를 지정합니다.
 
 ## 라이선스
 
