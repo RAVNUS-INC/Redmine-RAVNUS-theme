@@ -340,7 +340,7 @@ Mailer.with_deliveries(false) do
 
       ## 섞어 쓰기
 
-      RAVNUS 테마는 Redmine 6.x·7.x를 지원하며, CSS 변수 `--ravnus-font-sans`로 기본 글꼴을 바꿀 수 있습니다.
+      RAVNUS 테마는 Redmine 7.x를 지원하며, CSS 변수 `--ravnus-font-sans`로 기본 글꼴을 바꿀 수 있습니다.
 
       같은 한자도 글꼴에 따라 자형이 다릅니다: 骨 直 今 角 刃 次
 
