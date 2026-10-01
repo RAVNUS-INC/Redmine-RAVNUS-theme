@@ -77,7 +77,7 @@ Redmine 6.x / 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 �
 .
 ├── src/                          # SCSS 소스 (Redmine이 서빙하지 않음)
 │   ├── application.scss          # 엔트리: @use tokens → typography, 그다음 코어 import
-│   ├── _tokens.scss              # :root 디자인 토큰 (--ravnus-*), 다크 모드 확장 지점
+│   ├── _tokens.scss              # :where(:root) 디자인 토큰 (--ravnus-*), 다크 모드 확장 지점
 │   └── _typography.scss          # 폰트와 CJK 타이포그래피
 ├── stylesheets/application.css   # 컴파일 결과 (커밋함)
 ├── .docker/seed.rb               # 도커 테스트 환경 샘플 데이터

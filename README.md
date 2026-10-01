@@ -9,7 +9,7 @@ RAVNUS is a free, open-source theme for Redmine 6.x and 7.x. Its goal is to be t
 ## Goals
 
 - **CJK-first typography**: Pretendard as the default font, word-boundary line breaking (`word-break: keep-all`) and line heights tuned for Hangul.
-- **Customizable without a build**: design tokens are CSS custom properties (`--ravnus-*`) at the top of the compiled stylesheet.
+- **Customizable without a build**: design tokens are CSS custom properties (`--ravnus-*`). An update-safe override file is planned; for now the tokens sit at the top of the compiled stylesheet.
 - **Follows Redmine core**: the theme imports the core stylesheet and only overrides it, so core upgrades carry over.
 - **MIT licensed**: free to install, modify and redistribute.
 
@@ -29,11 +29,13 @@ git clone https://github.com/RAVNUS-INC/Redmine-RAVNUS-theme.git themes/ravnus
 Restart Redmine, then choose **Ravnus** in *Administration → Settings → Display → Theme*.
 
 - Redmine compiles theme assets into `public/assets` when it starts, so the user running Redmine needs write access to that directory.
-- To update, run `git pull` in `themes/ravnus` and restart Redmine.
+- To update, run `git pull` in `themes/ravnus` and restart Redmine. If you edited the stylesheet, read [Customization](#customization) first.
 
 ## Customization
 
-The `:root` block at the top of `stylesheets/application.css` holds the design tokens. Edit a value there and restart Redmine; no build step is needed.
+The `:where(:root)` block at the top of `stylesheets/application.css` holds the design tokens. Edit a value there and restart Redmine; no build step is needed.
+
+> **Your edits are overwritten on update.** `stylesheets/application.css` is a tracked file that changes with every release, so `git pull` stops with "local changes would be overwritten", and `git pull --autostash` can leave conflict markers in the stylesheet Redmine serves. Before updating, keep a copy of the values you changed, run `git checkout -- stylesheets/application.css && git pull`, re-apply your values and restart Redmine. An update-safe override file (`custom.css`) is planned.
 
 | Token | Purpose |
 |-------|---------|

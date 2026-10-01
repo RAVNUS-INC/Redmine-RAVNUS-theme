@@ -9,7 +9,7 @@ RAVNUS는 Redmine 6.x / 7.x용 무료 오픈소스 테마입니다. 한국어·�
 ## 목표
 
 - **CJK 우선 타이포그래피**: 기본 글꼴 Pretendard, 어절 단위 줄바꿈(`word-break: keep-all`), 한글 기준 행간
-- **빌드 없이 커스터마이즈**: 디자인 토큰을 컴파일된 스타일시트 상단의 CSS 변수(`--ravnus-*`)로 제공
+- **빌드 없이 커스터마이즈**: 디자인 토큰을 CSS 변수(`--ravnus-*`)로 제공. 업데이트해도 남는 오버라이드 파일을 준비 중이며, 지금은 컴파일된 스타일시트 상단에 있습니다
 - **Redmine 코어를 따라감**: 코어 스타일시트를 import하고 그 위에 덮어쓰므로 코어 업그레이드가 그대로 반영됨
 - **MIT 라이선스**: 누구나 무료로 설치·수정·재배포 가능
 
@@ -29,11 +29,13 @@ git clone https://github.com/RAVNUS-INC/Redmine-RAVNUS-theme.git themes/ravnus
 Redmine을 재시작한 뒤 *관리 → 설정 → 표시방식 → 테마*에서 **Ravnus**를 선택합니다.
 
 - Redmine은 시작할 때 테마 에셋을 `public/assets`로 컴파일하므로, Redmine 실행 유저에게 이 디렉터리 쓰기 권한이 필요합니다.
-- 업데이트는 `themes/ravnus`에서 `git pull` 후 Redmine을 재시작합니다.
+- 업데이트는 `themes/ravnus`에서 `git pull` 후 Redmine을 재시작합니다. 스타일시트를 고쳤다면 먼저 [커스터마이즈](#커스터마이즈)를 읽어 주세요.
 
 ## 커스터마이즈
 
-`stylesheets/application.css` 상단의 `:root` 블록이 디자인 토큰입니다. 값을 고친 뒤 Redmine을 재시작하면 되고, 빌드는 필요 없습니다.
+`stylesheets/application.css` 상단의 `:where(:root)` 블록이 디자인 토큰입니다. 값을 고친 뒤 Redmine을 재시작하면 되고, 빌드는 필요 없습니다.
+
+> **고친 내용은 업데이트할 때 덮어써집니다.** `stylesheets/application.css`는 릴리스마다 바뀌는 추적 파일입니다. 그래서 `git pull`은 "local changes would be overwritten" 오류로 멈추고, `git pull --autostash`는 Redmine이 서빙하는 스타일시트에 충돌 표시를 남길 수 있습니다. 업데이트 전에 바꾼 값을 따로 적어 두고 `git checkout -- stylesheets/application.css && git pull`을 실행한 뒤, 값을 다시 넣고 Redmine을 재시작하세요. 업데이트해도 남는 오버라이드 파일(`custom.css`)을 준비하고 있습니다.
 
 | 토큰 | 용도 |
 |------|------|

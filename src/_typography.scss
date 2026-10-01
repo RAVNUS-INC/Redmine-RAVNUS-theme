@@ -1,8 +1,9 @@
 // Typography layer: CJK-first text rendering.
 
 :root {
-  // Redmine 6.0+ core renders body text, headings and proportional wiki
-  // textareas with var(--fonts-main), so remapping it switches the base font
-  // everywhere without restating core selectors.
+  // Redmine 6.0+ core uses var(--fonts-main) for body text, headings and
+  // proportional wiki textareas, so remapping it changes their font. Form
+  // controls and jQuery UI widgets do not use it and need explicit rules
+  // (DESIGN.md §7.9). This stays on :root to beat the core :root declaration.
   --fonts-main: var(--ravnus-font-sans);
 }
