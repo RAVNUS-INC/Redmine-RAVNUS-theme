@@ -76,7 +76,15 @@ def create_issue!(project, tracker, subject, author:, created:, status: nil, pri
   issue.is_private = is_private
   issue.save!
   at = time_ago(created)
-  set_issue_times!(issue, created_on: at, updated_on: at, closed_on: issue.closed? ? at : nil)
+  if issue.closed?
+    # Close on the due date (never before creation or after now) so closed
+    # issues do not close before they start.
+    due_at = issue.due_date&.in_time_zone&.change(hour: 17)
+    closed_at = [[due_at || at, at].max, Time.current].min
+    set_issue_times!(issue, created_on: at, updated_on: closed_at, closed_on: closed_at)
+  else
+    set_issue_times!(issue, created_on: at, updated_on: at, closed_on: nil)
+  end
 end
 
 def add_journal!(issue, user, notes, days_ago:, private_notes: false, **changes)
@@ -92,7 +100,8 @@ def add_journal!(issue, user, notes, days_ago:, private_notes: false, **changes)
   # clear it before the next journal or relation callback writes into it.
   issue.clear_journal
   # Private notes combined with attribute changes are split into two journals.
-  Journal.where(journalized: issue).where('id > ?', last_journal_id).update_all(created_on: at)
+  # updated_on must equal created_on, or Redmine marks the note as "Edited".
+  Journal.where(journalized: issue).where('id > ?', last_journal_id).update_all(created_on: at, updated_on: at)
   times = { updated_on: at }
   times[:closed_on] = at if closing
   set_issue_times!(issue, times)
@@ -265,6 +274,10 @@ Mailer.with_deliveries(false) do
                               author: jihoon, created: 6, assignee: minjun, version: v20,
                               category: frontend, start: 5, due: 9, estimated: 12, parent: search)
     IssueRelation.create!(issue_from: header, issue_to: search_ui, relation_type: IssueRelation::TYPE_PRECEDES)
+    # Creating children recalculates the parent, and the precedes relation may
+    # reschedule search_ui; both re-save the issues, so stamp them again.
+    set_issue_times!(search, updated_on: time_ago(6))
+    set_issue_times!(search_ui, updated_on: time_ago(6))
 
     create_issue!(web, tracker[:feature], '다국어(한·영·일) 전환 기능',
                   author: seoyeon, created: 12, assignee: hanako, version: v20, category: content,
