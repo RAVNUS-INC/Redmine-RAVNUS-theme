@@ -4,7 +4,7 @@
 
 RAVNUS is a free, open-source theme for Redmine 7.x. Its goal is to be the most readable Redmine theme for Korean, Japanese and Chinese (CJK) users.
 
-> **Status: v0.2.0 in progress.** v0.1.0 (released 2026-10-18) added the design tokens and the CJK typography on top of the default Redmine look: font stacks per UI language, line breaking, line heights, text sizes, fonts in form controls and underlines for links in running text. The main branch also styles the chrome (top bar, header, menu bar, mobile header and flyout menu), the sidebar and the issue list (density, priority and status glyphs, row states, group rows, the selected row, print and forced colors). Colors for links, buttons, forms and the issue page come in later releases. Some gray text, the footer and avatar initials keep Redmine's own colors, which fall below WCAG AA contrast; they are recolored in later releases.
+> **Status: v0.2.0 (released 2026-10-18).** v0.1.0 added the design tokens and the CJK typography on top of the default Redmine look: font stacks per UI language, line breaking, line heights, text sizes, fonts in form controls and underlines for links in running text. v0.2.0 also styles the chrome (top bar, header, menu bar, mobile header and flyout menu), the sidebar and the issue list (density, priority and status glyphs, row states, group rows, the selected row, print and forced colors). Colors for links, buttons, forms and the issue page come in later releases. Some gray text, the footer and avatar initials keep Redmine's own colors, which fall below WCAG AA contrast; they are recolored in later releases.
 
 ## Goals
 
