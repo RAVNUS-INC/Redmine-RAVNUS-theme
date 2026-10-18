@@ -10,19 +10,20 @@
  * color-mix() in your block has no fallback for browsers without
  * color-mix(). Derived tokens (hover, active, tints) follow the knobs.
  * See the README for updating with local edits, child themes and fonts.
- * This release ships the tokens and the typography; the styles that paint
- * links, buttons, the chrome and lists with these colors come later. Knobs
+ * This release ships the tokens, the typography, the chrome (top bar,
+ * header, menu bar, mobile header and flyout) and the sidebar; the styles
+ * that paint links, buttons and lists with these colors come later. Knobs
  * marked * are read only by styles that are not in this release yet.
  *
  * 1. Brand
  *    --ravnus-accent: #46009B
- *    --ravnus-on-accent: #FFFFFF *
+ *    --ravnus-on-accent: #FFFFFF
  *    --ravnus-link: #215DB3
- *    --ravnus-topbar-bg: var(--ravnus-accent) = #46009B *
- *    --ravnus-topbar-fg-muted: #CAC5EA *
- *    --ravnus-topbar-focus: #FEA800 *
- *    --ravnus-topbar-height: 2rem *
- *    --ravnus-header-bg: var(--ravnus-bg-canvas) = #FFFFFF *
+ *    --ravnus-topbar-bg: var(--ravnus-accent) = #46009B
+ *    --ravnus-topbar-fg-muted: #CAC5EA
+ *    --ravnus-topbar-focus: #FEA800
+ *    --ravnus-topbar-height: 2rem
+ *    --ravnus-header-bg: var(--ravnus-bg-canvas) = #FFFFFF
  *    --ravnus-bg-canvas: #FFFFFF
  *    --ravnus-radius: 6px
  *    The top bar follows --ravnus-accent, but --ravnus-topbar-fg-muted and
@@ -37,7 +38,7 @@
  *    --ravnus-font-feature-settings: normal
  *    --ravnus-word-break: keep-all (left unset in ja and zh UIs, so normal there)
  * 3. Layout
- *    --ravnus-sidebar-at-start: 0 * (1 = sidebar at the inline start)
+ *    --ravnus-sidebar-at-start: 0 (1 = sidebar at the inline start)
  *    --ravnus-row-pad-y: 0.375rem *
  *    --ravnus-font-size-cell: 0.8125rem
  *    --ravnus-font-size-cell-subject: 0.875rem
@@ -266,9 +267,8 @@
  * of the dark-header presets is color-mix(in oklch, header-bg 72%, black).
  * Recompute a literal when you change the color it comes from, and do not
  * paste color-mix() itself.
- * The chrome presets (Ink, Brand-forward, Calm, Redmine Blue) need the chrome
- * styles, and Left sidebar, Compact and Classic stripes off need the sidebar
- * and issue list styles. None of these ship in this release yet.
+ * Compact and Classic stripes off need the issue list styles, which are not
+ * in this release yet.
  */
 /*
  * Preset: Ink (A). Ink violet header and top bar with light text, like the core header.
@@ -1588,4 +1588,394 @@ p.progress-info {
 
 #footer {
   font-size: max(0.9em, var(--ravnus-font-size-min));
+}
+
+:root {
+  --color-header-background: var(--ravnus-header-bg);
+  --color-top-menu-background: var(--ravnus-topbar-bg);
+}
+
+#top-menu {
+  box-sizing: border-box;
+  min-block-size: var(--ravnus-topbar-height);
+  background: var(--ravnus-topbar-bg);
+  color: var(--ravnus-topbar-fg-muted);
+}
+
+#top-menu a:not(.dropdown-content a) {
+  color: var(--ravnus-topbar-fg);
+  border-radius: var(--ravnus-radius-sm);
+}
+#top-menu a:not(.dropdown-content a):hover {
+  color: var(--ravnus-topbar-fg);
+}
+#top-menu a:not(.dropdown-content a):focus-visible {
+  outline: 2px solid var(--ravnus-topbar-focus);
+  outline-offset: -2px;
+}
+
+#top-menu svg.icon-svg:not(.dropdown-content svg),
+#top-menu a:not(.dropdown-content a):hover svg.icon-svg {
+  stroke: var(--ravnus-topbar-fg);
+}
+
+#top-menu #account .dropdown-trigger,
+#top-menu #account .dropdown-trigger:hover {
+  color: var(--ravnus-topbar-fg);
+}
+
+#top-menu #account .dropdown-trigger .icon-svg,
+#top-menu #account .dropdown-trigger:hover .icon-svg {
+  stroke: var(--ravnus-topbar-fg);
+}
+
+#top-menu #account .dropdown-content {
+  background-color: var(--ravnus-bg-overlay);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  box-shadow: var(--ravnus-shadow-overlay);
+  color: var(--ravnus-fg-default);
+  padding-block: var(--ravnus-space-050);
+}
+#top-menu #account .dropdown-content .user-info {
+  color: var(--ravnus-fg-default);
+  line-height: var(--ravnus-line-height-ui);
+}
+#top-menu #account .dropdown-content .user-login {
+  color: var(--ravnus-fg-subtle);
+}
+#top-menu #account .dropdown-content .dropdown-divider,
+#top-menu #account .dropdown-content .logout {
+  border-block-start-color: var(--ravnus-border-muted);
+}
+#top-menu #account .dropdown-content a {
+  color: var(--ravnus-fg-default);
+  line-height: var(--ravnus-line-height-ui);
+}
+#top-menu #account .dropdown-content a:hover {
+  background-color: var(--ravnus-bg-hover);
+  color: var(--ravnus-fg-default);
+}
+#top-menu #account .dropdown-content a:focus-visible {
+  outline: 2px solid var(--ravnus-focus-ring);
+  outline-offset: -2px;
+}
+#top-menu #account .dropdown-content svg.icon-svg {
+  stroke: var(--ravnus-fg-icon);
+}
+
+#header {
+  background: var(--ravnus-header-bg);
+  color: var(--ravnus-header-fg);
+  border-block-start: 1px solid var(--ravnus-header-divider);
+}
+
+body.has-main-menu #header {
+  padding-block-end: var(--ravnus-nav-height);
+}
+
+#header a:not(#main-menu a, #project-jump .drdn-content a, .mobile-toggle-button) {
+  color: var(--ravnus-header-fg-muted);
+}
+#header a:not(#main-menu a, #project-jump .drdn-content a, .mobile-toggle-button):hover {
+  color: var(--ravnus-header-fg);
+  text-decoration-line: underline;
+}
+#header a:not(#main-menu a, #project-jump .drdn-content a, .mobile-toggle-button):focus-visible {
+  outline: 2px solid var(--ravnus-header-focus);
+  outline-offset: 2px;
+  border-radius: var(--ravnus-radius-sm);
+}
+
+#header svg.icon-svg:not(#main-menu svg, #project-jump .drdn-content svg) {
+  stroke: var(--ravnus-header-icon);
+}
+
+#header svg.icon-svg-filled:not(#main-menu svg, #project-jump .drdn-content svg) {
+  fill: var(--ravnus-header-icon);
+}
+
+#header a:not(#main-menu a, #project-jump .drdn-content a):hover svg.icon-svg {
+  stroke: var(--ravnus-header-fg);
+}
+
+#header h1 {
+  margin-block: 0 0.25rem;
+  line-height: var(--ravnus-line-height-tight);
+}
+#header h1 .breadcrumbs {
+  color: var(--ravnus-header-fg-muted);
+  line-height: 1.1;
+}
+#header h1 .current-project {
+  color: var(--ravnus-header-fg);
+}
+
+#quick-search form label {
+  color: var(--ravnus-header-fg-muted);
+}
+
+#quick-search #q {
+  block-size: var(--ravnus-control-height);
+  padding-inline: var(--ravnus-space-100);
+  border: 1px solid var(--ravnus-header-control-border);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+}
+
+#quick-search #q:focus-visible {
+  outline: 2px solid var(--ravnus-header-focus);
+  outline-offset: 1px;
+}
+
+@media screen and (min-width: 900px) {
+  #project-jump .drdn-trigger {
+    display: inline-flex;
+    align-items: center;
+    block-size: var(--ravnus-control-height);
+    padding-block: 0;
+    padding-inline: var(--ravnus-space-100) var(--ravnus-space-250);
+    border: 1px solid var(--ravnus-header-control-border);
+    border-radius: var(--ravnus-radius);
+    background-color: var(--ravnus-bg-canvas);
+    color: var(--ravnus-fg-default);
+    line-height: var(--ravnus-line-height-tight);
+  }
+  #project-jump .drdn-content {
+    inset-block-start: calc(100% + var(--ravnus-space-050));
+  }
+}
+#project-jump .drdn-content {
+  background-color: var(--ravnus-bg-overlay);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  box-shadow: var(--ravnus-shadow-overlay);
+  color: var(--ravnus-fg-default);
+}
+#project-jump .drdn-content .drdn-items {
+  border-block-start-color: var(--ravnus-border-muted);
+}
+#project-jump .drdn-content .drdn-items > * {
+  color: var(--ravnus-fg-default) !important;
+  border-color: transparent;
+  line-height: var(--ravnus-line-height-ui);
+}
+#project-jump .drdn-content .drdn-items > a:hover {
+  background-color: var(--ravnus-bg-hover);
+  color: var(--ravnus-fg-default) !important;
+}
+#project-jump .drdn-content .drdn-items > :focus-visible {
+  outline: 2px solid var(--ravnus-focus-ring);
+  outline-offset: -2px;
+}
+#project-jump .drdn-content .drdn-items > span {
+  color: var(--ravnus-fg-subtle) !important;
+}
+#project-jump .drdn-content input.autocomplete:focus-visible {
+  border-color: var(--ravnus-border-control);
+  outline: 2px solid var(--ravnus-focus-ring);
+  outline-offset: 1px;
+}
+#project-jump .drdn-content svg.icon-svg {
+  stroke: var(--ravnus-fg-icon);
+}
+
+#main-menu {
+  box-sizing: border-box;
+  block-size: var(--ravnus-nav-height);
+  margin: 0;
+  inset-inline: 0;
+  inline-size: auto;
+  background: var(--ravnus-nav-bg);
+  border-block-start: 1px solid var(--ravnus-header-divider);
+  border-block-end: 1px solid var(--ravnus-nav-border);
+}
+
+#main-menu ul {
+  block-size: 100%;
+  min-block-size: 0;
+  align-items: stretch;
+}
+
+#main-menu li a {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  block-size: 100%;
+  padding-block: 0;
+  padding-inline: var(--ravnus-space-150);
+  color: var(--ravnus-fg-muted);
+  line-height: var(--ravnus-line-height-tight);
+}
+#main-menu li a:hover {
+  background-color: var(--ravnus-nav-hover-bg);
+  color: var(--ravnus-fg-default);
+}
+#main-menu li a:focus-visible {
+  outline: 2px solid var(--ravnus-focus-ring);
+  outline-offset: -2px;
+}
+
+#main-menu li a.selected,
+#main-menu li a.selected:hover {
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  box-shadow: inset 0 -3px 0 var(--ravnus-accent);
+}
+
+#main-menu li:has(> a.new-object) {
+  align-self: center;
+}
+
+#main-menu li a.new-object {
+  display: inline-flex;
+  block-size: var(--ravnus-control-height-sm);
+  margin-block: 0;
+  padding-block: 0;
+  padding-inline: var(--ravnus-space-100);
+  border: 1px solid var(--ravnus-border-control);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+}
+#main-menu li a.new-object:hover {
+  background-color: var(--ravnus-bg-hover);
+  color: var(--ravnus-fg-default);
+}
+#main-menu li a.new-object svg.icon-svg {
+  stroke: var(--ravnus-fg-icon);
+}
+
+#main-menu .menu-children {
+  padding-block: var(--ravnus-space-050);
+  background-color: var(--ravnus-bg-overlay);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  box-shadow: var(--ravnus-shadow-overlay);
+}
+#main-menu .menu-children li a {
+  display: block;
+  block-size: auto;
+  padding-block: var(--ravnus-space-075);
+  padding-inline: var(--ravnus-space-150);
+  background-color: transparent;
+  color: var(--ravnus-fg-default);
+  line-height: var(--ravnus-line-height-ui);
+}
+#main-menu .menu-children li a:hover {
+  background-color: var(--ravnus-bg-hover);
+  color: var(--ravnus-fg-default);
+}
+
+#main-menu .tabs-buttons button svg.icon-svg {
+  stroke: var(--ravnus-fg-icon);
+}
+
+@media screen and (max-width: 899px) {
+  html body #header {
+    background-color: var(--ravnus-header-bg);
+    border-block-start: 0;
+    border-block-end: 1px solid var(--ravnus-header-divider);
+  }
+  html body.has-main-menu #header {
+    padding-block-end: 0;
+  }
+  html body #header a.mobile-toggle-button {
+    color: var(--ravnus-header-fg);
+    border-inline-start-color: var(--ravnus-header-divider);
+  }
+  html body #header a.mobile-toggle-button:focus-visible {
+    outline: 2px solid var(--ravnus-header-focus);
+    outline-offset: -2px;
+  }
+  html body #project-jump .drdn-trigger {
+    color: var(--ravnus-header-fg);
+  }
+  html body #project-jump .drdn-trigger::before {
+    color: var(--ravnus-header-fg-muted);
+    opacity: 1;
+  }
+  html body .flyout-menu {
+    background-color: var(--ravnus-topbar-bg);
+    color: var(--ravnus-topbar-fg);
+  }
+  html body .flyout-menu h3 {
+    background-color: var(--ravnus-header-bg);
+    color: var(--ravnus-header-fg);
+    border-block-color: var(--ravnus-header-divider);
+  }
+  html body .flyout-menu h4,
+  html body .flyout-menu a,
+  html body .flyout-menu .flyout-menu__avatar a {
+    color: var(--ravnus-topbar-fg);
+  }
+  html body .flyout-menu a:focus-visible {
+    outline: 2px solid var(--ravnus-topbar-focus);
+    outline-offset: -2px;
+  }
+  html body .flyout-menu :is(.icon, .icon-only) svg {
+    stroke: var(--ravnus-topbar-fg);
+  }
+  html body .flyout-menu ul li a,
+  html body .flyout-menu__sidebar form > ul li,
+  html body .flyout-menu :is(#watchers ul li, ul.queries li),
+  html body .flyout-menu .flyout-menu__avatar {
+    border-block-start-color: color-mix(in srgb, currentColor 15%, transparent);
+  }
+  html body .flyout-menu .flyout-menu__search input[type=text] {
+    border: 1px solid var(--ravnus-header-control-border);
+    background-color: var(--ravnus-bg-canvas);
+    color: var(--ravnus-fg-default);
+  }
+  html body .flyout-menu .search-magnifier--flyout svg {
+    stroke: var(--ravnus-fg-icon);
+  }
+}
+@media (forced-colors: active) {
+  #main-menu li a.selected,
+  #main-menu li a.selected:hover {
+    border-block-end: 3px solid Highlight;
+  }
+}
+#sidebar {
+  order: var(--ravnus-sidebar-at-start, 0);
+  background: var(--ravnus-bg-subtle);
+  border-inline-start: 0;
+  line-height: var(--ravnus-line-height-ui);
+}
+#sidebar h3 {
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-sm);
+  font-weight: 600;
+  line-height: var(--ravnus-line-height-heading);
+}
+#sidebar hr {
+  background: var(--ravnus-border-muted);
+}
+
+#sidebar a.selected {
+  line-height: var(--ravnus-line-height-ui);
+  padding-inline-start: 3px;
+  background-color: var(--ravnus-accent-subtle);
+  color: var(--ravnus-accent);
+  box-shadow: none;
+  border-inline-start: 3px solid var(--ravnus-accent);
+}
+
+#sidebar a.selected:hover {
+  color: var(--ravnus-accent);
+}
+
+#sidebar a.selected svg.icon-svg {
+  stroke: var(--ravnus-accent) !important;
+}
+
+#sidebar-switch-button svg {
+  stroke: var(--ravnus-fg-icon);
+  scale: calc(1 - 2 * var(--ravnus-sidebar-at-start, 0)) 1;
+}
+
+#sidebar-switch-button:hover {
+  background-color: var(--ravnus-bg-hover);
 }

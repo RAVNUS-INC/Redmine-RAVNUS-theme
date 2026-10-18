@@ -138,8 +138,8 @@ div.issue div.subject h3 {
   letter-spacing: var(--ravnus-letter-spacing-heading);
 }
 
-// 22px and larger. The header h1 keeps the core 1.15 for now: the chrome
-// height depends on it and the chrome styles set it together.
+// 22px and larger. The header h1 is set with the chrome (components/_chrome.scss):
+// its fixed 2.75rem row takes the tight line height.
 #content h1,
 div.wiki h1,
 div.issue div.subject h3 {
@@ -398,8 +398,8 @@ input:is([type="submit"], [type="button"], [type="reset"]) {
 
 // ---------------------------------------------------------------------------
 // Component text sizes and weights (7.2, 7.3, 7.5). Only the typography:
-// colors, spacing and heights come with the component partials. The main
-// menu tab keeps the core 16px line height, which its 32px bar relies on.
+// colors, spacing and heights come with the component partials, which also
+// set the line heights of the main menu tabs and the header h1.
 // ---------------------------------------------------------------------------
 
 #top-menu {

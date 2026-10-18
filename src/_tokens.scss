@@ -750,19 +750,20 @@ $_rounding-margin: 0.05;
  * color-mix() in your block has no fallback for browsers without
  * color-mix(). Derived tokens (hover, active, tints) follow the knobs.
  * See the README for updating with local edits, child themes and fonts.
- * This release ships the tokens and the typography; the styles that paint
- * links, buttons, the chrome and lists with these colors come later. Knobs
+ * This release ships the tokens, the typography, the chrome (top bar,
+ * header, menu bar, mobile header and flyout) and the sidebar; the styles
+ * that paint links, buttons and lists with these colors come later. Knobs
  * marked * are read only by styles that are not in this release yet.
  *
  * 1. Brand
  *    #{_knob("accent")}
- *    #{_knob("on-accent", $reserved: true)}
+ *    #{_knob("on-accent")}
  *    #{_knob("link")}
- *    #{_knob("topbar-bg", $reserved: true)}
- *    #{_knob("topbar-fg-muted", $reserved: true)}
- *    #{_knob("topbar-focus", $reserved: true)}
- *    #{_knob("topbar-height", $reserved: true)}
- *    #{_knob("header-bg", $reserved: true)}
+ *    #{_knob("topbar-bg")}
+ *    #{_knob("topbar-fg-muted")}
+ *    #{_knob("topbar-focus")}
+ *    #{_knob("topbar-height")}
+ *    #{_knob("header-bg")}
  *    #{_knob("bg-canvas")}
  *    #{_knob("radius")}
  *    The top bar follows --ravnus-accent, but --ravnus-topbar-fg-muted and
@@ -777,7 +778,7 @@ $_rounding-margin: 0.05;
  *    #{_knob("font-feature-settings")}
  *    --ravnus-word-break: #{$_word-break} (left unset in ja and zh UIs, so normal there)
  * 3. Layout
- *    #{_knob("sidebar-at-start", $reserved: true)} (1 = sidebar at the inline start)
+ *    #{_knob("sidebar-at-start")} (1 = sidebar at the inline start)
  *    #{_knob("row-pad-y", $reserved: true)}
  *    #{_knob("font-size-cell")}
  *    #{_knob("font-size-cell-subject")}
@@ -854,9 +855,8 @@ $_rounding-margin: 0.05;
  * of the dark-header presets is color-mix(in oklch, header-bg 72%, black).
  * Recompute a literal when you change the color it comes from, and do not
  * paste color-mix() itself.
- * The chrome presets (Ink, Brand-forward, Calm, Redmine Blue) need the chrome
- * styles, and Left sidebar, Compact and Classic stripes off need the sidebar
- * and issue list styles. None of these ship in this release yet.
+ * Compact and Classic stripes off need the issue list styles, which are not
+ * in this release yet.
  */
 /*
  * Preset: #{_preset-title("ink")}. #{_preset-about("ink")}
