@@ -37,6 +37,7 @@
 // text container that does not set its own, so line boxes keep their height
 // when the web font swaps in or never arrives.
 body {
+  color: var(--ravnus-fg-default);
   font-size: var(--ravnus-font-size-base);
   line-height: var(--ravnus-line-height-ui);
   font-feature-settings: var(--ravnus-font-feature-settings);
@@ -107,6 +108,17 @@ h4,
 h5,
 h6 {
   line-height: var(--ravnus-line-height-heading);
+}
+
+// Headings in the foreground color (the core grays them, oc-gray-7). The
+// #content h1 step matches the core's own selector.
+h2,
+h3,
+h4,
+h5,
+h6,
+#content h1 {
+  color: var(--ravnus-fg-default);
 }
 
 // Type selectors like the core, so wiki and component headings keep their

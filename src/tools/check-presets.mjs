@@ -15,7 +15,7 @@
 // block.
 //
 // Checks, for each README:
-//   1. Every chrome preset (Ink, Brand-forward, Calm, Redmine Blue) has a block.
+//   1. Every chrome preset (Signature, Ink, Brand-forward, Calm, Redmine Blue) has a block.
 //   2. Every block names a preset of the compiled file and has the same
 //      declarations in the same order, so the derived literals equal the
 //      values Sass computed.
@@ -32,7 +32,7 @@ import { fileURLToPath } from "node:url";
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const COMPILED_FILE = join(ROOT, "stylesheets", "application.css");
 const READMES = ["README.md", "README.ko.md"];
-const REQUIRED = ["ink", "brand-forward", "calm", "redmine-blue"];
+const REQUIRED = ["signature", "ink", "brand-forward", "calm", "redmine-blue"];
 
 const slugOf = (title) =>
   title

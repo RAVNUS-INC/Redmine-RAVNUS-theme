@@ -324,11 +324,13 @@ body:not(.has-main-menu) #header {
   }
 }
 
+// shadcn Tabs (line variant): the selected tab keeps the bar surface and
+// shows a 2px underline in the foreground color.
 #main-menu li a.selected,
 #main-menu li a.selected:hover {
-  background-color: var(--ravnus-bg-canvas);
+  background-color: transparent;
   color: var(--ravnus-fg-default);
-  box-shadow: inset 0 -3px 0 var(--ravnus-accent);
+  box-shadow: inset 0 -2px 0 var(--ravnus-accent);
 }
 
 // The new item button: an outlined button centered in the bar. The core

@@ -107,12 +107,33 @@ export const PAIRS = [
     bg,
     min: NON_TEXT_MIN,
   })),
-  ...["progress-closed", "progress-done", "progress-behind"].map((fg) => ({
+  ...["progress-closed", "progress-done"].map((fg) => ({
     rule: "progress bar segment on its track",
     fg,
     bg: "progress-track",
     min: NON_TEXT_MIN,
   })),
+  // Status icons (decision 9) sit in an outline badge on the row surfaces.
+  ...["open", "progress", "feedback", "done", "closed", "rejected"].flatMap((status) =>
+    ["bg-canvas", "bg-subtle", "bg-hover", "accent-muted"].map((bg) => ({
+      rule: "status icon on row surfaces",
+      fg: `status-${status}-color`,
+      bg,
+      min: NON_TEXT_MIN,
+    })),
+  ),
+  // The overdue badge and the behind-schedule date are text.
+  { rule: "overdue badge text", fg: "overdue-fg", bg: "overdue-bg", min: TEXT_MIN },
+  ...["bg-canvas", "bg-hover", "accent-muted"].map((bg) => ({ rule: "behind-schedule date", fg: "behind-fg", bg, min: TEXT_MIN })),
+  // Priority icons sit on the row surfaces, selected rows included.
+  ...["low", "default", "high3", "high2", "highest"].flatMap((level) =>
+    ["bg-canvas", "bg-subtle", "bg-hover", "accent-muted"].map((bg) => ({
+      rule: "priority icon on row surfaces",
+      fg: `priority-${level}-fg`,
+      bg,
+      min: NON_TEXT_MIN,
+    })),
+  ),
 ];
 
 class GateError extends Error {}

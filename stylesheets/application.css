@@ -17,18 +17,18 @@
  * not in this release yet.
  *
  * 1. Brand
- *    --ravnus-accent: #46009B
- *    --ravnus-on-accent: #FFFFFF
- *    --ravnus-link: #215DB3
- *    --ravnus-topbar-bg: var(--ravnus-accent) = #46009B
- *    --ravnus-topbar-fg-muted: #CAC5EA
- *    --ravnus-topbar-focus: #FEA800
+ *    --ravnus-accent: #171717
+ *    --ravnus-on-accent: #FAFAFA
+ *    --ravnus-link: #2563EB
+ *    --ravnus-topbar-bg: #0A0A0A
+ *    --ravnus-topbar-fg-muted: #A3A3A3
+ *    --ravnus-topbar-focus: #FAFAFA
  *    --ravnus-topbar-height: 2rem
  *    --ravnus-header-bg: var(--ravnus-bg-canvas) = #FFFFFF
  *    --ravnus-bg-canvas: #FFFFFF
- *    --ravnus-radius: 6px
+ *    --ravnus-radius: 8px
  *    The top bar follows --ravnus-accent, but --ravnus-topbar-fg-muted and
- *    --ravnus-topbar-focus are fixed for #46009B: change them with the accent.
+ *    --ravnus-topbar-focus are fixed for #171717: change them with the accent.
  * 2. Typography
  *    --ravnus-font-sans, --ravnus-font-sans-ja, --ravnus-font-sans-zh and
  *    --ravnus-font-sans-zh-tw: UI font stacks (ja, zh and zh-TW UIs put the
@@ -43,14 +43,14 @@
  *    --ravnus-row-pad-y: 0.375rem
  *    --ravnus-font-size-cell: 0.8125rem
  *    --ravnus-font-size-cell-subject: 0.875rem
- *    --ravnus-row-stripe: var(--ravnus-bg-subtle) = #FAF9FC
- *    --ravnus-list-link: var(--ravnus-link) = #215DB3
+ *    --ravnus-row-stripe: transparent
+ *    --ravnus-list-link: var(--ravnus-link) = #2563EB
  *    --ravnus-prose-max-inline-size: none *
  *    --ravnus-subject-min-inline-size: 12em
  * 4. Domain hooks: map issue rows by status or tracker id, for example
- *    tr.status-2 {
+ *    :is(tr, div).status-2 {
  *      --ravnus-status-color: var(--ravnus-status-progress-color);
- *      --ravnus-status-fill: 0.5; --ravnus-status-check: 0;
+ *      --ravnus-status-fill: 0.5;
  *    }
  *    tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
  * 5. Advanced: every other token in the blocks below (the semantic set that
@@ -63,37 +63,37 @@
   --_ravnus-mix-dark: #000000;
   /* Surfaces */
   --ravnus-bg-canvas: #FFFFFF;
-  --ravnus-bg-subtle: #FAF9FC;
-  --ravnus-bg-inset: #F4F4F7;
-  --ravnus-bg-hover: #F0F0F6;
+  --ravnus-bg-subtle: #FAFAFA;
+  --ravnus-bg-inset: #F5F5F5;
+  --ravnus-bg-hover: #F5F5F5;
   --ravnus-bg-raised: var(--ravnus-bg-canvas);
   --ravnus-bg-overlay: var(--ravnus-bg-canvas);
   --ravnus-bg-inverse: var(--ravnus-fg-default);
-  --ravnus-accent-subtle: color-mix(in oklch, var(--ravnus-accent) 6%, var(--ravnus-bg-canvas));
-  --ravnus-accent-muted: color-mix(in oklch, var(--ravnus-accent) 12%, var(--ravnus-bg-canvas));
-  --ravnus-nav-bg: color-mix(in oklch, var(--ravnus-accent) 4%, var(--ravnus-bg-canvas));
-  --ravnus-nav-hover-bg: color-mix(in oklch, var(--ravnus-accent) 9%, var(--ravnus-bg-canvas));
-  --ravnus-em-bg: color-mix(in oklch, var(--ravnus-accent) 10%, var(--ravnus-bg-canvas));
+  --ravnus-accent-subtle: color-mix(in oklch, var(--ravnus-accent) 4%, var(--ravnus-bg-canvas));
+  --ravnus-accent-muted: color-mix(in oklch, var(--ravnus-accent) 4%, var(--ravnus-bg-canvas));
+  --ravnus-nav-bg: var(--ravnus-bg-canvas);
+  --ravnus-nav-hover-bg: var(--ravnus-bg-inset);
+  --ravnus-em-bg: color-mix(in oklch, var(--ravnus-accent) 4%, var(--ravnus-bg-canvas));
   /* Text and icons */
-  --ravnus-fg-default: #202026;
-  --ravnus-fg-muted: #53535B;
-  --ravnus-fg-subtle: #64626A;
-  --ravnus-fg-disabled: #9F9DA3;
-  --ravnus-fg-icon: #7D7C85;
+  --ravnus-fg-default: #0A0A0A;
+  --ravnus-fg-muted: #525252;
+  --ravnus-fg-subtle: #6B6B6B;
+  --ravnus-fg-disabled: #A3A3A3;
+  --ravnus-fg-icon: #737373;
   --ravnus-fg-inverse: var(--ravnus-bg-canvas);
-  --ravnus-link: #215DB3;
-  --ravnus-link-hover: color-mix(in oklch, var(--ravnus-link) 80%, var(--_ravnus-mix-dark));
+  --ravnus-link: #2563EB;
+  --ravnus-link-hover: color-mix(in oklch, var(--ravnus-link) 79%, var(--_ravnus-mix-dark));
   --ravnus-link-decoration: color-mix(in oklch, var(--ravnus-link) 75%, transparent);
   /* Accent */
-  --ravnus-accent: #46009B;
+  --ravnus-accent: #171717;
   --ravnus-accent-hover: color-mix(in oklch, var(--ravnus-accent) 86%, var(--_ravnus-mix-light));
   --ravnus-accent-active: color-mix(in oklch, var(--ravnus-accent) 85%, var(--_ravnus-mix-dark));
-  --ravnus-on-accent: #FFFFFF;
+  --ravnus-on-accent: #FAFAFA;
   --ravnus-focus-ring: var(--ravnus-accent);
   /* Borders */
-  --ravnus-border-muted: #E6E6E9;
-  --ravnus-border-default: #D9D8DD;
-  --ravnus-border-control: #7D7C85;
+  --ravnus-border-muted: #E5E5E5;
+  --ravnus-border-default: #E5E5E5;
+  --ravnus-border-control: #8A8A8A;
   --ravnus-nav-border: var(--ravnus-border-default);
   /* Roles */
   --ravnus-info-fg: #0065A4;
@@ -114,18 +114,25 @@
   --ravnus-danger-solid: var(--ravnus-danger-fg);
   --ravnus-on-solid: #FFFFFF;
   /* Domain: priority, status, progress and tags */
-  --ravnus-priority-low-fg: var(--ravnus-fg-subtle);
-  --ravnus-priority-high3-fg: var(--ravnus-warning-fg);
+  --ravnus-priority-low-fg: #2563EB;
+  --ravnus-priority-default-fg: var(--ravnus-fg-icon);
+  --ravnus-priority-high3-fg: #C46500;
   --ravnus-priority-high2-fg: #B24B0A;
   --ravnus-priority-highest-fg: var(--ravnus-danger-fg);
-  --ravnus-status-open-color: var(--ravnus-info-fg);
-  --ravnus-status-progress-color: var(--ravnus-warning-fg);
-  --ravnus-status-done-color: var(--ravnus-success-fg);
-  --ravnus-status-closed-color: var(--ravnus-fg-subtle);
-  --ravnus-progress-closed: #176E4A;
-  --ravnus-progress-done: #249163;
-  --ravnus-progress-behind: #BD7221;
-  --ravnus-progress-track: var(--ravnus-border-muted);
+  --ravnus-status-open-color: #2563EB;
+  --ravnus-status-progress-color: #B45309;
+  --ravnus-status-feedback-color: #7C3AED;
+  --ravnus-status-done-color: #15803D;
+  --ravnus-status-closed-color: #15803D;
+  --ravnus-status-rejected-color: var(--ravnus-fg-icon);
+  --ravnus-overdue-fg: #B91C1C;
+  --ravnus-overdue-bg: #FEF2F2;
+  --ravnus-overdue-border: #FECACA;
+  --ravnus-behind-fg: #B45309;
+  --ravnus-tracker-default: var(--ravnus-fg-icon);
+  --ravnus-progress-closed: var(--ravnus-accent);
+  --ravnus-progress-done: var(--ravnus-fg-icon);
+  --ravnus-progress-track: var(--ravnus-border-default);
   --ravnus-tag-red-fg: #A5292B;
   --ravnus-tag-red-bg: #FFEAE8;
   --ravnus-tag-orange-fg: #964D09;
@@ -136,13 +143,13 @@
   --ravnus-tag-blue-bg: #E4F2FF;
   --ravnus-tag-violet-fg: #5A3CA5;
   --ravnus-tag-violet-bg: #F0EDFF;
-  --ravnus-tag-gray-fg: #55545D;
-  --ravnus-tag-gray-bg: #EEEEF1;
+  --ravnus-tag-gray-fg: #525252;
+  --ravnus-tag-gray-bg: #F5F5F5;
   /* Chrome */
-  --ravnus-topbar-bg: var(--ravnus-accent);
+  --ravnus-topbar-bg: #0A0A0A;
   --ravnus-topbar-fg: var(--ravnus-on-accent);
-  --ravnus-topbar-fg-muted: #CAC5EA;
-  --ravnus-topbar-focus: #FEA800;
+  --ravnus-topbar-fg-muted: #A3A3A3;
+  --ravnus-topbar-focus: #FAFAFA;
   --ravnus-topbar-height: 2rem;
   --ravnus-header-bg: var(--ravnus-bg-canvas);
   --ravnus-header-fg: var(--ravnus-fg-default);
@@ -184,9 +191,9 @@
   --ravnus-space-250: 20px;
   --ravnus-space-300: 24px;
   --ravnus-space-400: 32px;
-  --ravnus-radius-sm: 3px;
-  --ravnus-radius: 6px;
-  --ravnus-radius-lg: 8px;
+  --ravnus-radius-sm: 4px;
+  --ravnus-radius: 8px;
+  --ravnus-radius-lg: 10px;
   --ravnus-radius-full: 9999px;
   --ravnus-control-height: 2rem;
   --ravnus-control-height-sm: 1.75rem;
@@ -194,7 +201,7 @@
   --ravnus-sticky-header-block-size: 50px;
   --ravnus-sidebar-at-start: 0;
   --ravnus-row-pad-y: 0.375rem;
-  --ravnus-row-stripe: var(--ravnus-bg-subtle);
+  --ravnus-row-stripe: transparent;
   --ravnus-list-link: var(--ravnus-link);
   --ravnus-prose-max-inline-size: none;
   --ravnus-subject-min-inline-size: 12em;
@@ -243,17 +250,15 @@
  */
 @supports not (color: color-mix(in oklch, red, blue)) {
   :where(:root) {
-    --ravnus-accent-subtle: #F2F1FA;
-    --ravnus-accent-muted: #E5E3F5;
-    --ravnus-nav-bg: #F6F6FC;
-    --ravnus-nav-hover-bg: #ECEAF8;
-    --ravnus-em-bg: #E9E8F7;
-    --ravnus-link-hover: #164384;
-    --ravnus-link-decoration: rgba(33, 93, 179, 0.75);
-    --ravnus-accent-hover: #5A38AB;
-    --ravnus-accent-active: #37007C;
-    --ravnus-shadow-raised: 0 1px 2px rgba(32, 32, 38, 0.06), 0 1px 3px rgba(32, 32, 38, 0.1);
-    --ravnus-shadow-overlay: 0 8px 24px rgba(32, 32, 38, 0.12), 0 2px 6px rgba(32, 32, 38, 0.08);
+    --ravnus-accent-subtle: #F4F4F4;
+    --ravnus-accent-muted: #F4F4F4;
+    --ravnus-em-bg: #F4F4F4;
+    --ravnus-link-hover: #1846AB;
+    --ravnus-link-decoration: rgba(37, 99, 235, 0.75);
+    --ravnus-accent-hover: #323232;
+    --ravnus-accent-active: #101010;
+    --ravnus-shadow-raised: 0 1px 2px rgba(10, 10, 10, 0.06), 0 1px 3px rgba(10, 10, 10, 0.1);
+    --ravnus-shadow-overlay: 0 8px 24px rgba(10, 10, 10, 0.12), 0 2px 6px rgba(10, 10, 10, 0.08);
   }
 }
 :root {
@@ -270,6 +275,23 @@
  * paste color-mix() itself.
  */
 /*
+ * Preset: Signature. RAVNUS violet top bar and accent over the white header (the default until v0.2).
+ * :root {
+ *   --ravnus-topbar-bg: #46009B;
+ *   --ravnus-topbar-fg-muted: #CAC5EA;
+ *   --ravnus-topbar-focus: #FEA800;
+ *   --ravnus-accent: #46009B;
+ *   --ravnus-accent-hover: #5A38AB;
+ *   --ravnus-accent-active: #37007C;
+ *   --ravnus-accent-subtle: #F6F6FC;
+ *   --ravnus-accent-muted: #F6F6FC;
+ *   --ravnus-nav-bg: #FFFFFF;
+ *   --ravnus-nav-hover-bg: #F5F5F5;
+ *   --ravnus-em-bg: #F6F6FC;
+ *   --ravnus-link: #215DB3;
+ * }
+ */
+/*
  * Preset: Ink (A). Ink violet header and top bar with light text, like the core header.
  * :root {
  *   --ravnus-header-bg: #311E5F;
@@ -282,6 +304,15 @@
  *   --ravnus-topbar-fg-muted: #D1CEE4;
  *   --ravnus-topbar-focus: #FFFFFF;
  *   --ravnus-topbar-height: 1.75rem;
+ *   --ravnus-accent: #46009B;
+ *   --ravnus-accent-hover: #5A38AB;
+ *   --ravnus-accent-active: #37007C;
+ *   --ravnus-accent-subtle: #F6F6FC;
+ *   --ravnus-accent-muted: #F6F6FC;
+ *   --ravnus-nav-bg: #FFFFFF;
+ *   --ravnus-nav-hover-bg: #F5F5F5;
+ *   --ravnus-em-bg: #F6F6FC;
+ *   --ravnus-link: #215DB3;
  * }
  */
 /*
@@ -297,6 +328,15 @@
  *   --ravnus-topbar-fg-muted: #D1CEE4;
  *   --ravnus-topbar-focus: #FFFFFF;
  *   --ravnus-topbar-height: 1.75rem;
+ *   --ravnus-accent: #46009B;
+ *   --ravnus-accent-hover: #5A38AB;
+ *   --ravnus-accent-active: #37007C;
+ *   --ravnus-accent-subtle: #F6F6FC;
+ *   --ravnus-accent-muted: #F6F6FC;
+ *   --ravnus-nav-bg: #FFFFFF;
+ *   --ravnus-nav-hover-bg: #F5F5F5;
+ *   --ravnus-em-bg: #F6F6FC;
+ *   --ravnus-link: #215DB3;
  * }
  */
 /*
@@ -325,11 +365,11 @@
  *   --ravnus-accent: #1864AB;
  *   --ravnus-accent-hover: #3F7AB8;
  *   --ravnus-accent-active: #114F89;
- *   --ravnus-accent-subtle: #F1F6FA;
- *   --ravnus-accent-muted: #E4ECF6;
- *   --ravnus-nav-bg: #F6F9FC;
- *   --ravnus-nav-hover-bg: #EAF1F8;
- *   --ravnus-em-bg: #E8EFF7;
+ *   --ravnus-accent-subtle: #F6F9FC;
+ *   --ravnus-accent-muted: #F6F9FC;
+ *   --ravnus-nav-bg: #FFFFFF;
+ *   --ravnus-nav-hover-bg: #F5F5F5;
+ *   --ravnus-em-bg: #F6F9FC;
  * }
  */
 /*
@@ -346,9 +386,9 @@
  * }
  */
 /*
- * Preset: Classic stripes off. No row stripes in lists.
+ * Preset: Striped rows. Tinted every other row in lists (no stripes by default).
  * :root {
- *   --ravnus-row-stripe: transparent;
+ *   --ravnus-row-stripe: var(--ravnus-bg-subtle);
  * }
  */
 /*
@@ -1198,6 +1238,7 @@ http://scripts.sil.org/OFL
   font-weight: 600 900;
 }
 body {
+  color: var(--ravnus-fg-default);
   font-size: var(--ravnus-font-size-base);
   line-height: var(--ravnus-line-height-ui);
   font-feature-settings: var(--ravnus-font-feature-settings);
@@ -1252,6 +1293,15 @@ h4,
 h5,
 h6 {
   line-height: var(--ravnus-line-height-heading);
+}
+
+h2,
+h3,
+h4,
+h5,
+h6,
+#content h1 {
+  color: var(--ravnus-fg-default);
 }
 
 h2 {
@@ -1820,9 +1870,9 @@ body:not(.has-main-menu) #header {
 
 #main-menu li a.selected,
 #main-menu li a.selected:hover {
-  background-color: var(--ravnus-bg-canvas);
+  background-color: transparent;
   color: var(--ravnus-fg-default);
-  box-shadow: inset 0 -3px 0 var(--ravnus-accent);
+  box-shadow: inset 0 -2px 0 var(--ravnus-accent);
 }
 
 #main-menu li:has(> a.new-object) {
@@ -1950,28 +2000,34 @@ body:not(.has-main-menu) #header {
 #sidebar h3 {
   color: var(--ravnus-fg-muted);
   font-size: var(--ravnus-font-size-sm);
-  font-weight: 600;
+  font-weight: 500;
   line-height: var(--ravnus-line-height-heading);
 }
 #sidebar hr {
   background: var(--ravnus-border-muted);
 }
 
+#sidebar {
+  border-inline-end: 1px solid var(--ravnus-border-default);
+}
+
 #sidebar a.selected {
   line-height: var(--ravnus-line-height-ui);
-  padding-inline-start: 3px;
-  background-color: var(--ravnus-accent-subtle);
-  color: var(--ravnus-accent);
+  padding-inline-start: 4px;
+  border-radius: var(--ravnus-radius-sm);
+  background-color: var(--ravnus-bg-inset);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
   box-shadow: none;
-  border-inline-start: 3px solid var(--ravnus-accent);
+  border-inline-start: 2px solid var(--ravnus-accent);
 }
 
 #sidebar a.selected:hover {
-  color: var(--ravnus-accent);
+  color: var(--ravnus-fg-default);
 }
 
 #sidebar a.selected svg.icon-svg {
-  stroke: var(--ravnus-accent) !important;
+  stroke: var(--ravnus-fg-default) !important;
 }
 
 #sidebar-switch-button svg {
@@ -1983,6 +2039,377 @@ body:not(.has-main-menu) #header {
   background-color: var(--ravnus-bg-hover);
 }
 
+:is(input:is([type=text], [type=password], [type=date], [type=number], [type=email], [type=url], [type=search], [type=tel], [type=time], :not([type])), select, textarea) {
+  border: 1px solid var(--ravnus-border-control);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+:is(input:is([type=text], [type=password], [type=date], [type=number], [type=email], [type=url], [type=search], [type=tel], [type=time], :not([type])), select) {
+  min-block-size: var(--ravnus-control-height-sm);
+  padding-inline: var(--ravnus-space-100);
+}
+
+select:not([multiple]) {
+  padding-inline-end: var(--ravnus-space-300);
+}
+
+input[type=text]:focus-visible,
+input[type=password]:focus-visible,
+input[type=date]:focus-visible,
+input[type=number]:focus-visible,
+input[type=email]:focus-visible,
+input[type=url]:focus-visible,
+input[type=search]:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--ravnus-fg-icon);
+  outline: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ravnus-focus-ring) 18%, transparent);
+}
+
+input[type=file]::file-selector-button {
+  min-block-size: var(--ravnus-control-height-sm);
+  margin-inline-end: var(--ravnus-space-100);
+  padding-inline: var(--ravnus-space-150);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font: inherit;
+  font-weight: 500;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+}
+
+input[type=file]::file-selector-button:hover {
+  background-color: var(--ravnus-bg-inset);
+}
+
+input:is([type=checkbox], [type=radio]) {
+  accent-color: var(--ravnus-accent);
+}
+
+fieldset:not(.collapsible) {
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+}
+
+fieldset.collapsible {
+  border-color: var(--ravnus-border-default);
+}
+
+legend {
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+}
+
+:is(input:is([type=submit], [type=button], [type=reset]), button):not(.icon-only, .tab-left, .tab-right, .ui-button, .ui-datepicker-trigger, .jstb_button, [class*=jstb_]) {
+  min-block-size: var(--ravnus-control-height-sm);
+  padding-block: 0;
+  padding-inline: var(--ravnus-space-150);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+:is(input:is([type=submit], [type=button], [type=reset]), button):not(.icon-only, .tab-left, .tab-right, .ui-button, .ui-datepicker-trigger, .jstb_button, [class*=jstb_]):hover {
+  background-color: var(--ravnus-bg-inset);
+}
+:is(input:is([type=submit], [type=button], [type=reset]), button):not(.icon-only, .tab-left, .tab-right, .ui-button, .ui-datepicker-trigger, .jstb_button, [class*=jstb_]):focus-visible {
+  outline: 2px solid var(--ravnus-focus-ring);
+  outline-offset: 2px;
+}
+
+body:not(.action-destroy, .action-bulk_destroy) input[type=submit][name=commit],
+#login-form #login-submit {
+  border-color: var(--ravnus-accent);
+  background-color: var(--ravnus-accent);
+  color: var(--ravnus-on-accent);
+}
+body:not(.action-destroy, .action-bulk_destroy) input[type=submit][name=commit]:hover,
+#login-form #login-submit:hover {
+  border-color: var(--ravnus-accent-hover);
+  background-color: var(--ravnus-accent-hover);
+}
+
+.btn-alert:is(input, button, a) {
+  border-color: var(--ravnus-danger-solid);
+  background-color: var(--ravnus-danger-solid);
+  color: var(--ravnus-on-solid);
+}
+.btn-alert:is(input, button, a):hover {
+  border-color: color-mix(in srgb, var(--ravnus-danger-solid) 85%, black);
+  background-color: color-mix(in srgb, var(--ravnus-danger-solid) 85%, black);
+}
+
+#content .tabs ul {
+  border-block-end-color: var(--ravnus-border-default);
+}
+
+#content .tabs ul li a {
+  border: 0;
+  border-radius: var(--ravnus-radius-sm) var(--ravnus-radius-sm) 0 0;
+  background: transparent;
+  color: var(--ravnus-fg-muted);
+  font-weight: 500;
+}
+#content .tabs ul li a:hover {
+  color: var(--ravnus-fg-default);
+  background: var(--ravnus-bg-inset);
+}
+#content .tabs ul li a:focus-visible {
+  outline: 2px solid var(--ravnus-focus-ring);
+  outline-offset: -2px;
+}
+
+#content .tabs ul li a.selected,
+#content .tabs ul li a.selected:hover {
+  border: 0;
+  background: transparent;
+  color: var(--ravnus-fg-default);
+  box-shadow: inset 0 -2px 0 var(--ravnus-accent);
+}
+
+div.issue,
+.box,
+.mypage-box,
+#login-form {
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+}
+
+div.issue {
+  padding-block: var(--ravnus-space-250);
+  padding-inline: var(--ravnus-space-300);
+}
+
+div.issue div.subject p {
+  color: var(--ravnus-fg-muted);
+}
+
+div.issue hr {
+  background: var(--ravnus-border-default);
+}
+
+#login-form {
+  padding: var(--ravnus-space-300);
+}
+
+.mypage-box {
+  padding: var(--ravnus-space-200);
+}
+
+.journals h4.journal-header {
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-subtle);
+}
+
+.journals h4.journal-header .update-info {
+  color: var(--ravnus-fg-muted);
+}
+
+.journals div:target h4.journal-header {
+  background-color: var(--ravnus-accent-subtle);
+  box-shadow: inset 0 0 0 1px var(--ravnus-border-default);
+}
+
+#errorExplanation,
+div.flash,
+.conflict,
+.warning {
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font-size: var(--ravnus-font-size-base);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+div.flash.notice svg.icon-svg {
+  stroke: var(--ravnus-success-fg);
+}
+
+div.flash.error,
+#errorExplanation {
+  border-color: var(--ravnus-danger-border);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-danger-fg);
+}
+
+div.flash.error svg.icon-svg,
+#errorExplanation svg.icon-svg {
+  stroke: var(--ravnus-danger-fg);
+}
+
+div.flash.warning,
+.conflict,
+.warning {
+  border-color: var(--ravnus-warning-border);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-warning-fg);
+}
+
+div.flash.warning svg.icon-svg,
+.conflict svg.icon-svg {
+  stroke: var(--ravnus-warning-fg);
+}
+
+.nodata {
+  border: 1px dashed var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-base);
+}
+
+.badge {
+  inset-block-end: 0;
+  padding-block: 0;
+  padding-inline: var(--ravnus-space-100);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-full);
+  background: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+  text-transform: none;
+  vertical-align: middle;
+}
+
+.badge-private {
+  border-color: var(--ravnus-danger-border);
+  background: var(--ravnus-danger-subtle);
+  color: var(--ravnus-danger-fg);
+}
+
+.badge-count,
+.badge-issues-count {
+  border-color: transparent;
+  background: var(--ravnus-bg-inset);
+  color: var(--ravnus-fg-default);
+}
+
+.badge-status-open {
+  color: var(--ravnus-fg-default);
+}
+
+.badge-status-locked {
+  color: var(--ravnus-warning-fg);
+}
+
+.badge-status-closed {
+  color: var(--ravnus-fg-muted);
+}
+
+html #context-menu ul,
+.contextual .drdn-content,
+.journal-actions .drdn-content {
+  padding: var(--ravnus-space-050);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  background: var(--ravnus-bg-overlay);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+}
+
+html #context-menu li {
+  border: 0;
+  border-radius: var(--ravnus-radius-sm);
+}
+
+html #context-menu li:hover {
+  border: 0;
+  background-color: var(--ravnus-bg-inset);
+}
+
+html #context-menu a,
+html #context-menu a:hover {
+  padding-block: var(--ravnus-space-075);
+  color: var(--ravnus-fg-default);
+}
+
+html #context-menu a.disabled,
+html #context-menu a.disabled:hover {
+  color: var(--ravnus-fg-disabled);
+}
+
+.contextual .drdn-items > a,
+.journal-actions .drdn-items > a {
+  border-radius: var(--ravnus-radius-sm);
+  color: var(--ravnus-fg-default);
+}
+
+.contextual .drdn-items > a:hover,
+.journal-actions .drdn-items > a:hover {
+  background-color: var(--ravnus-bg-inset);
+  color: var(--ravnus-fg-default);
+}
+
+.pagination ul.pages li,
+.pagination ul.pages li:first-child,
+.pagination ul.pages li:last-child {
+  margin-inline-end: var(--ravnus-space-050);
+  border: 1px solid transparent;
+  border-radius: var(--ravnus-radius);
+}
+
+.pagination ul.pages li.page:hover {
+  background-color: var(--ravnus-bg-inset);
+}
+
+.pagination ul.pages li.current {
+  border-color: var(--ravnus-border-default);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+span.pagination {
+  color: var(--ravnus-fg-muted);
+}
+
+#footer {
+  border-block-start-color: var(--ravnus-border-default);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-subtle);
+}
+
+p.other-formats,
+.journals .journal-details,
+ul.revision-info,
+.wiki-update-info {
+  color: var(--ravnus-fg-muted);
+}
+
+.journals .journal-details a,
+ul.revision-info a {
+  color: var(--ravnus-link);
+}
+
+.journals .journal-details a:hover,
+ul.revision-info a:hover {
+  color: var(--ravnus-link-hover);
+}
+
+div.autoscroll:has(> table.list) {
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+}
+
+div.autoscroll > table.list {
+  margin-block-end: 0;
+  border-block: 0;
+}
+
 table.list,
 .table-list {
   border-block-color: var(--ravnus-border-default);
@@ -1991,8 +2418,9 @@ table.list,
 table.list th,
 .table-list-header {
   padding-block: var(--ravnus-row-pad-y);
-  background-color: var(--ravnus-bg-subtle);
+  background-color: var(--ravnus-bg-canvas);
   color: var(--ravnus-fg-muted);
+  font-weight: 500;
   border-block-end: 1px solid var(--ravnus-border-default);
   line-height: var(--ravnus-line-height-cell);
 }
@@ -2007,7 +2435,7 @@ table.list th a.icon {
 
 table.list td {
   padding-block: calc(var(--ravnus-row-pad-y) - 1px) var(--ravnus-row-pad-y);
-  border-block-start-color: var(--ravnus-border-muted);
+  border-block-start-color: var(--ravnus-border-default);
 }
 
 table.list:not(.odd-even) tbody tr:nth-child(odd),
@@ -2029,7 +2457,7 @@ table.list:not(.odd-even) tbody tr:nth-child(odd):hover,
 .odd:hover,
 table.list:not(.odd-even) tbody tr:nth-child(even):hover,
 .even:hover {
-  background-color: var(--ravnus-bg-hover);
+  background-color: var(--ravnus-bg-subtle);
 }
 
 table.list td.subject {
@@ -2040,97 +2468,159 @@ table.list td:is(.assigned_to, .author, .last_updated_by, .category) {
   white-space: nowrap;
 }
 
-:where(table.list tr.issue) {
+:where(table.list tr.issue, div.issue) {
   --ravnus-status-color: var(--ravnus-status-open-color);
   --ravnus-status-fill: 0;
   --ravnus-status-check: 0;
-  --ravnus-tracker-color: var(--ravnus-fg-muted);
-  --ravnus-priority-color: transparent;
-  --ravnus-row-marker-width: 0;
-  --ravnus-row-marker-color: transparent;
+  --ravnus-status-slash: 0;
+  --ravnus-tracker-color: var(--ravnus-tracker-default);
 }
 
-:where(table.list tr.issue.closed) {
+:where(table.list tr.issue.closed, div.issue.closed) {
   --ravnus-status-color: var(--ravnus-status-closed-color);
   --ravnus-status-fill: 1;
 }
 
-:where(table.list tr.issue:is(.priority-lowest, [class*=" priority-low"])) {
-  --ravnus-priority-color: var(--ravnus-priority-low-fg);
-}
-
-:where(table.list tr.issue:is(.priority-high3, [class*=" priority-high"])) {
-  --ravnus-priority-color: var(--ravnus-priority-high3-fg);
-}
-
-:where(table.list tr.issue.priority-high2) {
-  --ravnus-priority-color: var(--ravnus-priority-high2-fg);
-  --ravnus-row-marker-width: 3px;
-  --ravnus-row-marker-color: var(--ravnus-priority-high2-fg);
-}
-
-:where(table.list tr.issue.priority-highest) {
-  --ravnus-priority-color: var(--ravnus-priority-highest-fg);
-  --ravnus-row-marker-width: 6px;
-  --ravnus-row-marker-color: var(--ravnus-priority-highest-fg);
-}
-
-table.list tr.issue > td:first-child {
+table.list tr.issue td.status {
   position: relative;
+  isolation: isolate;
+  padding-inline: calc(var(--ravnus-space-100) + 20px) var(--ravnus-space-150);
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-min);
+  font-weight: 500;
+  text-align: start;
+  white-space: nowrap;
 }
 
-table.list tr.issue > td:first-child::before {
+table.list tr.issue td.status::before {
   content: "";
   position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color);
-  pointer-events: none;
+  z-index: -1;
+  inset-block: calc(50% - 11px);
+  inset-inline-start: var(--ravnus-space-050);
+  inline-size: calc(100% - 2 * var(--ravnus-space-050));
+  max-inline-size: 8em;
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-full);
+  background-color: var(--ravnus-bg-canvas);
+}
+
+table.list tr.issue td.status::after {
+  box-sizing: border-box;
+  inline-size: 12px;
+  block-size: 12px;
+  border: max(1.5px, (var(--ravnus-status-fill) - 0.5) * 12px) solid var(--ravnus-status-color);
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ravnus-status-color) calc(var(--ravnus-status-check) * 100%), transparent) 0 2px, transparent 2.5px), linear-gradient(135deg, transparent 44%, color-mix(in srgb, var(--ravnus-status-color) calc(var(--ravnus-status-slash) * 100%), transparent) 44% 58%, transparent 58%), linear-gradient(90deg, var(--ravnus-status-color) calc(var(--ravnus-status-fill) * 100%), transparent 0);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(var(--ravnus-space-050) + 9px);
+  inset-block-start: calc(50% - 6px);
+}
+
+div.issue .attributes .status.attribute .value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ravnus-space-075);
+  padding-inline: var(--ravnus-space-100);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-full);
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-min);
+  font-weight: 500;
+  line-height: 1.8;
+}
+
+div.issue .attributes .status.attribute .value::before {
+  box-sizing: border-box;
+  inline-size: 12px;
+  block-size: 12px;
+  border: max(1.5px, (var(--ravnus-status-fill) - 0.5) * 12px) solid var(--ravnus-status-color);
+  border-radius: 50%;
+  background: radial-gradient(circle, color-mix(in srgb, var(--ravnus-status-color) calc(var(--ravnus-status-check) * 100%), transparent) 0 2px, transparent 2.5px), linear-gradient(135deg, transparent 44%, color-mix(in srgb, var(--ravnus-status-color) calc(var(--ravnus-status-slash) * 100%), transparent) 44% 58%, transparent 58%), linear-gradient(90deg, var(--ravnus-status-color) calc(var(--ravnus-status-fill) * 100%), transparent 0);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+  content: "";
+  flex: none;
+}
+
+table.list tr.issue td.tracker {
+  position: relative;
+  isolation: isolate;
+  padding-inline: var(--ravnus-space-150);
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-min);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+table.list tr.issue td.tracker::after {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  inset-block: calc(50% - 11px);
+  inset-inline-start: var(--ravnus-space-050);
+  inline-size: calc(100% - 2 * var(--ravnus-space-050));
+  max-inline-size: none;
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-full);
+  background-color: var(--ravnus-bg-canvas);
+}
+
+table.list tr.issue td.tracker::before {
+  content: "";
+  display: inline-block;
+  inline-size: 7px;
+  block-size: 7px;
+  margin-inline-end: var(--ravnus-space-075);
+  vertical-align: 1px;
+  border-radius: 50%;
+  background-color: var(--ravnus-tracker-color);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.list tr.issue td.priority {
+  color: var(--ravnus-fg-muted);
+  text-align: start;
+  white-space: nowrap;
 }
 
 table.list tr.issue td.priority::before {
   content: "";
   display: inline-block;
   inline-size: 12px;
-  block-size: 10px;
+  block-size: 12px;
   margin-inline-end: var(--ravnus-space-075);
   vertical-align: -1px;
-  background-repeat: no-repeat;
+  background-color: var(--ravnus-priority-default-fg);
+  clip-path: polygon(0 22%, 100% 22%, 100% 40%, 0 40%, 0 60%, 100% 60%, 100% 78%, 0 78%);
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
 
-table.list tr.issue.priority-default td.priority::before {
-  display: none;
-}
-
 table.list tr.issue:is(.priority-lowest, [class*=" priority-low"]) td.priority::before {
-  background-image: linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color));
-  background-size: 3px 4px;
-  background-position: 0 100%;
+  background-color: var(--ravnus-priority-low-fg);
+  clip-path: polygon(38% 0, 62% 0, 62% 55%, 90% 55%, 50% 100%, 10% 55%, 38% 55%);
 }
 
 table.list tr.issue:is(.priority-high3, [class*=" priority-high"]) td.priority::before {
-  background-image: linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color)), linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color));
-  background-size: 3px 4px, 3px 7px;
-  background-position: 0 100%, 4.5px 100%;
+  background-color: var(--ravnus-priority-high3-fg);
+  clip-path: path("M6 0 L12 5.2 L10.4 6.8 L6 3 L1.6 6.8 L0 5.2 Z M6 5.2 L12 10.4 L10.4 12 L6 8.2 L1.6 12 L0 10.4 Z");
 }
 
-table.list tr.issue:is(.priority-high2) td.priority::before {
-  background-image: linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color)), linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color)), linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color));
-  background-size: 3px 4px, 3px 7px, 3px 10px;
-  background-position: 0 100%, 4.5px 100%, 9px 100%;
+table.list tr.issue.priority-high2 td.priority::before {
+  background-color: var(--ravnus-priority-high2-fg);
+  clip-path: polygon(50% 0, 90% 45%, 62% 45%, 62% 100%, 38% 100%, 38% 45%, 10% 45%);
 }
 
 table.list tr.issue.priority-highest td.priority::before {
-  inline-size: 14px;
   block-size: 14px;
   vertical-align: -2px;
-  border-radius: var(--ravnus-radius-sm);
-  background-color: var(--ravnus-danger-solid);
-  background-image: linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid)), linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid));
-  background-size: 2px 6px, 2px 2px;
-  background-position: 6px 3px, 6px 10px;
+  background-color: var(--ravnus-priority-highest-fg);
+  clip-path: path("M7.5 0 L1 8 L5.5 8 L4 14 L11 5.5 L6.5 5.5 Z");
 }
 
 table.list tr.issue.priority-highest td.priority {
@@ -2138,101 +2628,61 @@ table.list tr.issue.priority-highest td.priority {
   font-weight: 600;
 }
 
-table.list tr.issue td.status {
+table.list tr.issue td.due_date {
   position: relative;
-  text-align: start;
-  padding-inline-start: calc(var(--ravnus-space-100) + 10px + var(--ravnus-space-075));
-}
-
-table.list tr.issue td.status::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: var(--ravnus-space-100);
-  inset-block-start: calc(50% - 5px);
-  box-sizing: border-box;
-  inline-size: 10px;
-  block-size: 10px;
-  border: max(1.5px, (var(--ravnus-status-fill) - 0.5) * 10px) solid var(--ravnus-status-color);
-  border-radius: 50%;
-  background: linear-gradient(to top, var(--ravnus-status-color) calc(var(--ravnus-status-fill) * 100%), transparent 0);
-  print-color-adjust: exact;
-  -webkit-print-color-adjust: exact;
-}
-
-table.list tr.issue td.status::after {
-  content: "";
-  position: absolute;
-  inset-inline-start: calc(var(--ravnus-space-100) + 3px);
-  inset-block-start: calc(50% - 2px);
-  inline-size: 4px;
-  block-size: 4px;
-  border: 2px solid var(--ravnus-status-color);
-  border-radius: 50%;
-  box-sizing: border-box;
-  opacity: var(--ravnus-status-check);
-  pointer-events: none;
-  print-color-adjust: exact;
-  -webkit-print-color-adjust: exact;
-}
-
-table.list tr.issue td.tracker {
-  color: var(--ravnus-tracker-color);
-}
-
-table.list tr.issue td.tracker::before {
-  content: "";
-  display: inline-block;
-  inline-size: 8px;
-  block-size: 8px;
-  margin-inline-end: var(--ravnus-space-075);
-  border: 4px solid var(--ravnus-tracker-color);
-  border-radius: 2px;
-  box-sizing: border-box;
-}
-
-table.list tr.issue.closed td {
-  color: var(--ravnus-fg-subtle);
+  isolation: isolate;
+  padding-inline: var(--ravnus-space-150);
+  white-space: nowrap;
 }
 
 table.list tr.issue.overdue td.due_date {
-  color: var(--ravnus-danger-fg);
+  color: var(--ravnus-overdue-fg);
+  font-weight: 500;
 }
 
-table.list tr.issue.overdue td.due_date::before,
-table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
+table.list tr.issue.overdue td.due_date:not(:empty)::before {
   content: "";
-  display: inline-block;
-  inline-size: 10px;
-  block-size: 10px;
-  margin-inline-end: var(--ravnus-space-050);
-  vertical-align: -1px;
-  background-repeat: no-repeat;
+  position: absolute;
+  z-index: -1;
+  inset-block: calc(50% - 11px);
+  inset-inline-start: var(--ravnus-space-050);
+  inline-size: calc(100% - 2 * var(--ravnus-space-050));
+  max-inline-size: none;
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-full);
+  background-color: var(--ravnus-bg-canvas);
+  border-color: var(--ravnus-overdue-border);
+  background-color: var(--ravnus-overdue-bg);
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
 
-table.list tr.issue.overdue td.due_date::before {
-  border-radius: 50%;
-  background-color: var(--ravnus-danger-solid);
-  background-image: linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid)), linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid));
-  background-size: 1.5px 4px, 1.5px 1.5px;
-  background-position: 4.25px 2px, 4.25px 7px;
-}
-
 table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date {
-  color: var(--ravnus-warning-fg);
+  color: var(--ravnus-behind-fg);
+  font-weight: 500;
 }
 
-table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
-  background-color: var(--ravnus-warning-solid);
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+table.list tr.issue.closed td:not(.status, .tracker) {
+  color: var(--ravnus-fg-subtle);
 }
 
 table.list table.progress td {
   padding-block: 0;
+  border-inline-end: 0;
+}
+
+table.progress {
+  border: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--ravnus-radius-full);
+  overflow: hidden;
+  background: var(--ravnus-progress-track);
 }
 
 table.progress td {
+  block-size: 8px;
+  padding: 0;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
@@ -2249,14 +2699,6 @@ table.progress td.todo {
   background: var(--ravnus-progress-track);
 }
 
-table.progress td.closed + td.done {
-  border-inline-start: 1px solid var(--ravnus-bg-canvas);
-}
-
-:is(table.list tr.issue.behind-schedule:not(.closed), div.issue.behind-schedule:not(.closed) .attributes) table.progress td.closed {
-  background: repeating-linear-gradient(45deg, var(--ravnus-progress-behind) 0 3px, color-mix(in srgb, var(--ravnus-progress-behind) 55%, var(--ravnus-bg-canvas)) 3px 6px);
-}
-
 p.percent,
 p.progress-info {
   color: var(--ravnus-fg-muted);
@@ -2266,6 +2708,14 @@ table.list tr.context-menu-selection,
 table.list tr.context-menu-selection:hover {
   background-color: var(--ravnus-accent-muted) !important;
   color: var(--ravnus-fg-default) !important;
+}
+
+table.list tr.context-menu-selection.overdue td.due_date {
+  color: var(--ravnus-overdue-fg) !important;
+}
+
+table.list tr.context-menu-selection.behind-schedule:not(.overdue, .closed) td.due_date {
+  color: var(--ravnus-behind-fg) !important;
 }
 
 table.list tr.context-menu-selection a,
@@ -2278,26 +2728,29 @@ table.list tr.context-menu-selection svg.icon-svg {
 }
 
 tr.group td {
-  padding-block: 0.8em 0.5em;
-  background-color: var(--ravnus-bg-subtle);
+  padding-block: 1.2em 0.5em;
+  background-color: var(--ravnus-bg-canvas);
   border-block-end: 1px solid var(--ravnus-border-default);
   color: var(--ravnus-fg-default);
 }
 
 table.list tbody tr.group:hover {
-  background-color: var(--ravnus-bg-subtle);
+  background-color: var(--ravnus-bg-canvas);
 }
 
 tr.group span.name {
+  color: var(--ravnus-fg-default);
   font-weight: 600;
 }
 
 tr.group span.count {
   inset-block-end: 0;
-  padding-inline: var(--ravnus-space-075);
+  padding-inline: var(--ravnus-space-100);
   border-radius: var(--ravnus-radius-full);
   background: var(--ravnus-bg-inset);
-  color: var(--ravnus-fg-muted);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+  text-transform: none;
 }
 
 tr.group span.totals,
@@ -2346,29 +2799,19 @@ tr.group .expander svg.icon-svg {
 
 @media (forced-colors: active) {
   table.list tr.issue td.priority::before,
-  table.list tr.issue td.status::before,
   table.list tr.issue td.status::after,
-  table.list tr.issue td.due_date::before,
+  div.issue .attributes .status.attribute .value::before,
+  table.list tr.issue td.tracker::before,
   table.progress td {
     forced-color-adjust: none;
   }
-  table.list tr.issue td.priority::before {
-    --ravnus-priority-color: CanvasText;
-  }
-  table.list tr.issue.priority-highest td.priority::before {
+  html body table.list tr.issue:is(*, .priority-lowest) td.priority::before,
+  table.list tr.issue td.tracker::before {
     background-color: CanvasText;
-    background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
   }
-  table.list tr.issue td.status::before,
-  table.list tr.issue td.status::after {
+  table.list tr.issue td.status::after,
+  div.issue .attributes .status.attribute .value::before {
     --ravnus-status-color: CanvasText;
-  }
-  table.list tr.issue.overdue td.due_date::before {
-    background-color: CanvasText;
-    background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
-  }
-  table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
-    background-color: CanvasText;
   }
   table.progress {
     border: 1px solid CanvasText;
@@ -2378,12 +2821,6 @@ tr.group .expander svg.icon-svg {
   }
   table.progress td:is(.closed, .done) {
     background: CanvasText;
-  }
-  table.progress td.closed + td.done {
-    border-inline-start-color: Canvas;
-  }
-  :is(table.list tr.issue.behind-schedule:not(.closed), div.issue.behind-schedule:not(.closed) .attributes) table.progress td.closed {
-    background: repeating-linear-gradient(45deg, CanvasText 0 3px, Canvas 3px 6px);
   }
 }
 @media print {
@@ -2395,15 +2832,5 @@ tr.group .expander svg.icon-svg {
   }
   table.list tr.context-menu-selection {
     background-color: transparent !important;
-  }
-  table.list tr.issue > td.checkbox.hide-when-print + td.id {
-    position: relative;
-  }
-  table.list tr.issue > td.checkbox.hide-when-print + td.id::before {
-    content: "";
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
-    border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color);
   }
 }
