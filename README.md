@@ -4,7 +4,7 @@
 
 RAVNUS is a free, open-source theme for Redmine 7.x. Its goal is to be the most readable Redmine theme for Korean, Japanese and Chinese (CJK) users.
 
-> **Status: v0.1.0 (released 2026-10-18).** This release adds the design tokens and the CJK typography on top of the default Redmine look: font stacks per UI language, line breaking, line heights, text sizes, fonts in form controls and underlines for links in running text. The chrome (top bar, header and menus) comes in v0.2.0. Colors for links, buttons and lists come in later releases. Some gray text, the footer and avatar initials keep Redmine's own colors, which fall below WCAG AA contrast; they are recolored in later releases.
+> **Status: v0.2.0 in progress.** v0.1.0 (released 2026-10-18) added the design tokens and the CJK typography on top of the default Redmine look: font stacks per UI language, line breaking, line heights, text sizes, fonts in form controls and underlines for links in running text. The main branch also styles the chrome (top bar, header, menu bar, mobile header and flyout menu) and the sidebar; the issue list follows before v0.2.0 is released. Colors for links, buttons and lists come in later releases. Some gray text, the footer and avatar initials keep Redmine's own colors, which fall below WCAG AA contrast; they are recolored in later releases.
 
 ## Goals
 
@@ -92,7 +92,7 @@ Do not edit `stylesheets/application.css`. It is the compiled stylesheet, and ev
 - Set tokens on `:root`. Derived tokens (hover, active and tinted colors) are computed where they are declared, so they follow knobs set on `:root`.
 - Write literal values. A `color-mix()` in your block has no fallback in browsers without `color-mix()`, and the theme's fallback values follow the defaults, not your knobs.
 - `custom.css` loads before the theme rules. To override a theme rule that is not a token, use a selector one step more specific than the theme's.
-- The top bar, styled from v0.2.0, follows `--ravnus-accent`. `--ravnus-topbar-fg-muted` (`#CAC5EA`) and `--ravnus-topbar-focus` (`#FEA800`, an amber focus ring) are fixed values for the default violet, so set them whenever you change the accent. On `#0b6e4f`, the default muted text would have a contrast of 3.78:1 (AA needs 4.5:1) and the amber ring 3.22:1.
+- The top bar follows `--ravnus-accent`. `--ravnus-topbar-fg-muted` (`#CAC5EA`) and `--ravnus-topbar-focus` (`#FEA800`, an amber focus ring) are fixed values for the default violet, so set them whenever you change the accent. On `#0b6e4f`, the default muted text would have a contrast of 3.78:1 (AA needs 4.5:1) and the amber ring 3.22:1.
 - Restart Redmine after every edit. Redmine recompiles assets at boot only if a file is newer than its manifest. If you copy `custom.css` with its old timestamp (`cp -p`, `rsync -a`, an archive that keeps times), `touch` it and restart again. Files saved by an editor or by `git pull` are fine.
 
 ### Updating
@@ -189,16 +189,123 @@ Put this block in `custom.css` or a child theme. With it, no font is requested f
 - Redmine rewrites `url(../fonts/PretendardVariable.woff2)` at boot to `/assets/themes/mytheme/PretendardVariable-<digest>.woff2`.
 - To self-host with `custom.css` instead, put the same `@font-face` and `:root` blocks in `custom.css` and the files in an untracked directory such as `themes/ravnus/fonts/`. Untracked files survive `git pull` but not a reinstall from a zip archive, so organizations should prefer a child theme.
 
+### Presets
+
+Copy a block into `custom.css` or a child theme and restart Redmine. The default chrome is **Signature**: a violet top bar over a white header, with a light menu bar.
+
+![Signature, the default chrome](.github/screenshots/chrome-signature.png)
+
+**Ink**: an ink violet header and top bar with light text, like the core header. Choose it when a plugin puts light text or icons into the header, which the white default header would hide.
+
+![Ink preset](.github/screenshots/chrome-ink.png)
+
+```css
+/* RAVNUS preset: ink */
+:root {
+  --ravnus-header-bg: #311E5F;
+  --ravnus-header-fg: #FFFFFF;
+  --ravnus-header-fg-muted: #D1CEE4;
+  --ravnus-header-divider: #3E3463;
+  --ravnus-header-focus: #FFFFFF;
+  --ravnus-topbar-bg: #1C0F3A;
+  --ravnus-topbar-fg: #FFFFFF;
+  --ravnus-topbar-fg-muted: #D1CEE4;
+  --ravnus-topbar-focus: #FFFFFF;
+  --ravnus-topbar-height: 1.75rem;
+}
+```
+
+**Brand-forward**: Ink with the brand violet as the header color.
+
+![Brand-forward preset](.github/screenshots/chrome-brand-forward.png)
+
+```css
+/* RAVNUS preset: brand-forward */
+:root {
+  --ravnus-header-bg: #46009B;
+  --ravnus-header-fg: #FFFFFF;
+  --ravnus-header-fg-muted: #D1CEE4;
+  --ravnus-header-divider: #3E3463;
+  --ravnus-header-focus: #FFFFFF;
+  --ravnus-topbar-bg: #2A0062;
+  --ravnus-topbar-fg: #FFFFFF;
+  --ravnus-topbar-fg-muted: #D1CEE4;
+  --ravnus-topbar-focus: #FFFFFF;
+  --ravnus-topbar-height: 1.75rem;
+}
+```
+
+**Calm**: a light top bar over the white header.
+
+![Calm preset](.github/screenshots/chrome-calm.png)
+
+```css
+/* RAVNUS preset: calm */
+:root {
+  --ravnus-topbar-bg: var(--ravnus-bg-subtle);
+  --ravnus-topbar-fg: var(--ravnus-fg-muted);
+  --ravnus-topbar-fg-muted: var(--ravnus-fg-subtle);
+  --ravnus-topbar-focus: var(--ravnus-accent);
+  --ravnus-topbar-height: 1.75rem;
+}
+```
+
+**Redmine Blue**: a blue header and accent, without the brand color.
+
+![Redmine Blue preset](.github/screenshots/chrome-redmine-blue.png)
+
+```css
+/* RAVNUS preset: redmine-blue */
+:root {
+  --ravnus-header-bg: #2B5F8A;
+  --ravnus-header-fg: #FFFFFF;
+  --ravnus-header-fg-muted: #D4E2EF;
+  --ravnus-header-divider: #3E3463;
+  --ravnus-header-focus: #FFFFFF;
+  --ravnus-topbar-bg: #183A57;
+  --ravnus-topbar-fg: #FFFFFF;
+  --ravnus-topbar-fg-muted: #D1CEE4;
+  --ravnus-topbar-focus: #FFFFFF;
+  --ravnus-topbar-height: 1.75rem;
+  --ravnus-accent: #1864AB;
+  --ravnus-accent-hover: #3F7AB8;
+  --ravnus-accent-active: #114F89;
+  --ravnus-accent-subtle: #F1F6FA;
+  --ravnus-accent-muted: #E4ECF6;
+  --ravnus-nav-bg: #F6F9FC;
+  --ravnus-nav-hover-bg: #EAF1F8;
+  --ravnus-em-bg: #E8EFF7;
+}
+```
+
+**Left sidebar**: the sidebar at the inline start (left in left-to-right UIs). It combines with any chrome preset.
+
+```css
+/* RAVNUS preset: left-sidebar */
+:root {
+  --ravnus-sidebar-at-start: 1;
+}
+```
+
+- Colors the theme derives are written as literals. The dark top bars are the header color mixed with 28% black in OKLCH; if you change `--ravnus-header-bg` in a block, compute the new top bar color and write it as a literal too, not as `color-mix()`.
+- Below 900px, the mobile header takes the header colors and the flyout menu takes the top bar colors.
+
 ### Tokens
 
 These knobs take effect in this release:
 
 | Token | Default | What it changes |
 |-------|---------|-----------------|
-| `--ravnus-accent` | `#46009B` | Marker of the selected main menu tab; base of the `em` tint |
+| `--ravnus-accent` | `#46009B` | Top bar, marker of the selected main menu tab, selected sidebar item, focus rings in the header; base of the menu bar tint and the `em` tint |
+| `--ravnus-on-accent` | `#FFFFFF` | Text and icons on the top bar |
 | `--ravnus-link` | `#215DB3` | Underline color of links in running text (the link text color comes in a later release) |
 | `--ravnus-bg-canvas` | `#FFFFFF` | Base of the tinted colors, such as the `em` tint |
-| `--ravnus-radius` | `6px` | Corners of code blocks in wiki text |
+| `--ravnus-radius` | `6px` | Corners of the header search fields, dropdowns and code blocks in wiki text |
+| `--ravnus-topbar-bg` | `var(--ravnus-accent)` | Top bar and the mobile flyout menu |
+| `--ravnus-topbar-fg-muted` | `#CAC5EA` | Text on the top bar that is not a link |
+| `--ravnus-topbar-focus` | `#FEA800` | Focus ring on the top bar and in the flyout menu |
+| `--ravnus-topbar-height` | `2rem` | Minimum height of the top bar |
+| `--ravnus-header-bg` | `var(--ravnus-bg-canvas)` | Header, mobile header and the section titles of the flyout menu |
 | `--ravnus-font-sans` | Pretendard first | UI font stack in Korean, English and other UIs |
 | `--ravnus-font-sans-ja`, `--ravnus-font-sans-zh`, `--ravnus-font-sans-zh-tw` | Native CJK fonts first, Pretendard for Hangul | UI font stacks in Japanese, Simplified Chinese and Traditional Chinese UIs |
 | `--ravnus-font-mono` | `ui-monospace, …` | Code font stack |
@@ -207,8 +314,9 @@ These knobs take effect in this release:
 | `--ravnus-font-size-cell` | `0.8125rem` | Text in list tables |
 | `--ravnus-font-size-cell-subject` | `0.875rem` | Subject column of the issue list |
 | `--ravnus-subject-min-inline-size` | `12em` | Minimum width of the subject column |
+| `--ravnus-sidebar-at-start` | `0` | `1` moves the sidebar to the inline start (see [Presets](#presets)) |
 
-- The comment at the top of `stylesheets/application.css` lists every knob. Knobs marked `*` there (top bar, header, sidebar position, row padding and stripes and others) are read only by styles that come in later releases.
+- The comment at the top of `stylesheets/application.css` lists every knob. Knobs marked `*` there (row padding and stripes, the list link color and the prose width) are read only by styles that come in later releases. The other chrome tokens (`--ravnus-topbar-fg`, `--ravnus-header-fg`, `--ravnus-header-divider` and the rest) are in the same file; the presets above show them.
 - Every other token, for example `--ravnus-font-size-base` (`0.875rem`, body and form controls) or `--ravnus-line-height-prose` (`1.7`, wiki text), is in the `:where(:root)` blocks of the same file and can be overridden the same way.
 
 ## Development
@@ -219,7 +327,7 @@ Requirements: Node.js 20.19 or later, Docker with Compose v2, and Google Chrome 
 npm install
 npm run build   # compile src/ into stylesheets/application.css
 npm run watch   # rebuild on every change
-npm run check   # the CI checks: build comparison, font check, contrast gate
+npm run check   # the CI checks: build comparison, font check, contrast gate, preset blocks
 ```
 
 Sources live in `src/` (Dart Sass with `@use` modules). Redmine serves CSS as is and does not compile Sass, so commit the compiled `stylesheets/application.css` together with your source changes. The build (`src/tools/build.mjs`) writes that file only when the compile succeeds; after an error it leaves the file as it was and exits with status 1.
@@ -243,6 +351,7 @@ The checks read the version and the rule count from the repository, so they need
 - `npm run check:build` rebuilds `stylesheets/application.css` and fails if the result differs from the version in the git index or if the file is not tracked. Stage your source and compiled changes before you run it locally.
 - `npm run check:fonts` checks the compiled CSS: the CDN `@font-face` rules match the generated file, every font URL starts with the pinned jsDelivr prefix, no stylesheet is imported from another host, the first two rules are the core import and the `custom.css` import, and `"Pretendard Variable"` appears only in `@font-face` rules and the four font stack tokens.
 - `npm run check:contrast` checks the WCAG 2.x contrast of token pairs for the defaults and every preset. Add `-- --verbose` to list every pair.
+- `npm run check:presets` checks that every preset block in README.md and README.ko.md has the same declarations as the matching preset comment in the compiled CSS (so the derived literals equal the values Sass computed) and contains no `color-mix()`. Edit presets in `src/_tokens.scss`, build, then copy the blocks from the compiled file.
 - GitHub Actions (`.github/workflows/ci.yml`) runs `npm ci` and `npm run check` for every pull request and every push to `main`. It uses no secrets.
 
 ### Probe
@@ -254,12 +363,16 @@ npm run probe -- --help
 npm run probe -- --locales ko,ja,zh,zh-TW,en --out "$TMPDIR/ravnus-probe/typography.json" @core
 npm run probe -- --block none,abort,hang --viewports 1440 @core
 npm run probe -- --autologin --axe @admin
+npm run probe -- --autologin --viewports 1440,800 --eval-file .docker/probe/chrome-check.js /projects/mobile-app/issues
 ```
 
 - It targets http://127.0.0.1:3007 by default; change it with `--base-url`. It uses the installed Google Chrome (`RAVNUS_PROBE_CHROME` for another build) and never downloads a browser.
 - `--block abort` makes requests to jsDelivr fail at once, and `--block hang` leaves them unanswered, like a network that drops packets.
 - `--autologin` logs in as admin without a password. It creates an autologin token with `bin/rails runner` in the container and deletes it when the probe ends.
 - Pretendard comes from the CDN, so measurements that depend on it need internet access.
+- `.docker/probe/chrome-check.js` checks the chrome: each color in the top bar, header, menu bar, account dropdown, mobile header and flyout menu against the token it comes from, with its contrast, plus focus rings, chrome heights and long project names. It opens the account dropdown (logged in, 900px and wider) or the flyout menu (below 900px) and leaves it open for `--screenshot`. Failed checks are listed in `.eval.failed` and fail the run (exit status 1), as does a missing chrome element.
+- To check a preset, write the presets as files with `node src/tools/check-presets.mjs --write "$TMPDIR/ravnus-presets"` and pass one with `--inject-css`.
+- `--forced-colors` emulates forced colors (Windows high contrast).
 - Write `--out` and `--screenshot` outside the repository.
 
 ### Test environment

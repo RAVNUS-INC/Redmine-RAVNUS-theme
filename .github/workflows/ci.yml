@@ -7,6 +7,8 @@
 #                   @import, "Pretendard Variable" only in @font-face and the
 #                   four font stack tokens (src/tools/check-fonts.mjs)
 #   check:contrast  token pair contrast gate (src/tools/contrast-gate.mjs)
+#   check:presets   README preset blocks equal the compiled presets, no
+#                   color-mix() (src/tools/check-presets.mjs)
 #
 # No step needs network access beyond `npm ci`, and no secrets are used.
 # The browser probe (.docker/probe/) needs Docker and Chrome and runs locally only.

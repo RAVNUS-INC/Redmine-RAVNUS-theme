@@ -1,0 +1,490 @@
+// Chrome: top bar, header, main menu, project jump, account dropdown and the
+// mobile header and flyout (DESIGN.md 6.2, 8.1, 8.4 item 12, 8.6).
+//
+// - Every color inside #top-menu, #header and the flyout comes from the
+//   --ravnus-topbar-* and --ravnus-header-* tokens, so the default Signature
+//   chrome and the chrome presets (6.3) keep their contrast. The main menu
+//   bar uses the nav tokens, and overlays and canvas fields inside the chrome
+//   use the overlay and form control tokens.
+// - The default chrome has a white header. The core paints light text for a
+//   dark header, so each core rule that sets a light color in the header or
+//   the flyout is listed here and repainted (8.4 item 12, 8.6). Missing one
+//   leaves white text on white.
+// - responsive.css and dropdown.css load after the theme, so rules that
+//   must beat them add a selector step (8.3).
+
+// Core variable bridge (6.2). Redmine 7.0.2 paints the top bar, the header,
+// the mobile header and the flyout surface and h3 band with these variables.
+// Plain :root beats the core :root, and the values only point at tokens, so
+// knobs in custom.css or a child theme flow through. 7.0.0-7.0.1 do not have
+// the variables; the background fallbacks below cover them.
+:root {
+  --color-header-background: var(--ravnus-header-bg);
+  --color-top-menu-background: var(--ravnus-topbar-bg);
+}
+
+// ---------------------------------------------------------------------------
+// Top bar
+// ---------------------------------------------------------------------------
+
+// The background repeats the bridge for 7.0.0-7.0.1. The height includes the
+// 7.0.2 .profile-menu reservation (28px).
+#top-menu {
+  box-sizing: border-box;
+  min-block-size: var(--ravnus-topbar-height);
+  background: var(--ravnus-topbar-bg);
+  color: var(--ravnus-topbar-fg-muted);
+}
+
+// Links and icons on the bar, but not inside the account dropdown, which is a
+// white overlay inside #top-menu (dropdown.css).
+#top-menu a:not(.dropdown-content a) {
+  color: var(--ravnus-topbar-fg);
+  border-radius: var(--ravnus-radius-sm);
+
+  &:hover {
+    color: var(--ravnus-topbar-fg);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ravnus-topbar-focus);
+    // Inside the link, so the amber ring stays on the bar and off the white
+    // header (1.94:1 there).
+    outline-offset: -2px;
+  }
+}
+
+#top-menu svg.icon-svg:not(.dropdown-content svg),
+#top-menu a:not(.dropdown-content a):hover svg.icon-svg {
+  stroke: var(--ravnus-topbar-fg);
+}
+
+// The core colors the account trigger and its icon above the specificity of
+// the link rule (8.4 item 12); a light top bar (Calm) needs them repainted.
+#top-menu #account .dropdown-trigger,
+#top-menu #account .dropdown-trigger:hover {
+  color: var(--ravnus-topbar-fg);
+}
+
+#top-menu #account .dropdown-trigger .icon-svg,
+#top-menu #account .dropdown-trigger:hover .icon-svg {
+  stroke: var(--ravnus-topbar-fg);
+}
+
+// Account dropdown: an overlay surface with overlay text and the accent ring.
+#top-menu #account .dropdown-content {
+  background-color: var(--ravnus-bg-overlay);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  box-shadow: var(--ravnus-shadow-overlay);
+  color: var(--ravnus-fg-default);
+  padding-block: var(--ravnus-space-050);
+
+  .user-info {
+    color: var(--ravnus-fg-default);
+    line-height: var(--ravnus-line-height-ui);
+  }
+
+  .user-login {
+    color: var(--ravnus-fg-subtle);
+  }
+
+  .dropdown-divider,
+  .logout {
+    border-block-start-color: var(--ravnus-border-muted);
+  }
+
+  a {
+    color: var(--ravnus-fg-default);
+    line-height: var(--ravnus-line-height-ui);
+
+    &:hover {
+      background-color: var(--ravnus-bg-hover);
+      color: var(--ravnus-fg-default);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--ravnus-focus-ring);
+      outline-offset: -2px;
+    }
+  }
+
+  svg.icon-svg {
+    stroke: var(--ravnus-fg-icon);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Header
+// ---------------------------------------------------------------------------
+
+// The background shorthand repeats the bridge for 7.0.0-7.0.1. The top line
+// separates the header from the top bar where their backgrounds are close
+// (Calm 1.05:1, Ink 1.26:1).
+#header {
+  background: var(--ravnus-header-bg);
+  color: var(--ravnus-header-fg);
+  border-block-start: 1px solid var(--ravnus-header-divider);
+}
+
+// The menu bar reservation, lines included (8.4 item 3).
+body.has-main-menu #header {
+  padding-block-end: var(--ravnus-nav-height);
+}
+
+// Links in the header, but not in the main menu bar (nav tokens), the project
+// jump overlay (overlay tokens) or the mobile menu toggle (8.6).
+#header a:not(#main-menu a, #project-jump .drdn-content a, .mobile-toggle-button) {
+  color: var(--ravnus-header-fg-muted);
+
+  &:hover {
+    color: var(--ravnus-header-fg);
+    text-decoration-line: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ravnus-header-focus);
+    outline-offset: 2px;
+    border-radius: var(--ravnus-radius-sm);
+  }
+}
+
+// The core has no header icons; plugins may add some.
+#header svg.icon-svg:not(#main-menu svg, #project-jump .drdn-content svg) {
+  stroke: var(--ravnus-header-icon);
+}
+
+#header svg.icon-svg-filled:not(#main-menu svg, #project-jump .drdn-content svg) {
+  fill: var(--ravnus-header-icon);
+}
+
+#header a:not(#main-menu a, #project-jump .drdn-content a):hover svg.icon-svg {
+  stroke: var(--ravnus-header-fg);
+}
+
+// The title keeps a fixed 2.75rem row (the core aligns it with the quick
+// search), so the line heights fit: 22px x 1.25 plus 13px x 1.1 plus 1px is
+// 43.8px. The breadcrumbs keep the core 1.1 for that reason. The global h1
+// bottom margin (10px) becomes the same 0.25rem as the header top padding.
+#header h1 {
+  margin-block: 0 0.25rem;
+  line-height: var(--ravnus-line-height-tight);
+
+  .breadcrumbs {
+    color: var(--ravnus-header-fg-muted);
+    line-height: 1.1;
+  }
+
+  .current-project {
+    color: var(--ravnus-header-fg);
+  }
+}
+
+#quick-search form label {
+  color: var(--ravnus-header-fg-muted);
+}
+
+// Search field: a canvas field with form control text. The id selector keeps
+// the border above the core text input focus rule (0,2,1), which also removes
+// the outline, so the focus ring is declared at (2,1,0).
+#quick-search #q {
+  block-size: var(--ravnus-control-height);
+  padding-inline: var(--ravnus-space-100);
+  border: 1px solid var(--ravnus-header-control-border);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+}
+
+#quick-search #q:focus-visible {
+  outline: 2px solid var(--ravnus-header-focus);
+  outline-offset: 1px;
+}
+
+// Project jump trigger: a canvas field on desktop only. Below 900px the core
+// turns it into a transparent title; a field surface declared there would put
+// the white title of a dark-header preset on canvas (8.4 item 12, 8.6).
+@media screen and (min-width: 900px) {
+  // inline-block, not flex: the core ellipsis for long project names only
+  // works on a block container. The line box fills the field instead.
+  #project-jump .drdn-trigger {
+    block-size: var(--ravnus-control-height);
+    padding-block: 0;
+    padding-inline: var(--ravnus-space-100) var(--ravnus-space-250);
+    border: 1px solid var(--ravnus-header-control-border);
+    border-radius: var(--ravnus-radius);
+    background-color: var(--ravnus-bg-canvas);
+    color: var(--ravnus-fg-default);
+    line-height: calc(var(--ravnus-control-height) - 2px);
+  }
+
+  // The core opens the list 25px below the top, for its 24px trigger.
+  #project-jump .drdn-content {
+    inset-block-start: calc(100% + var(--ravnus-space-050));
+  }
+}
+
+// Project jump overlay. The core list colors use !important (8.3), and its
+// hover is white on blue-7 (4.20:1).
+#project-jump .drdn-content {
+  background-color: var(--ravnus-bg-overlay);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  box-shadow: var(--ravnus-shadow-overlay);
+  color: var(--ravnus-fg-default);
+
+  .drdn-items {
+    border-block-start-color: var(--ravnus-border-muted);
+  }
+
+  .drdn-items > * {
+    color: var(--ravnus-fg-default) !important;
+    border-color: transparent;
+    line-height: var(--ravnus-line-height-ui);
+  }
+
+  .drdn-items > a:hover {
+    background-color: var(--ravnus-bg-hover);
+    color: var(--ravnus-fg-default) !important;
+  }
+
+  .drdn-items > :focus-visible {
+    outline: 2px solid var(--ravnus-focus-ring);
+    outline-offset: -2px;
+  }
+
+  .drdn-items > span {
+    color: var(--ravnus-fg-subtle) !important;
+  }
+
+  // The list search field gets the keyboard focus when the list opens. The
+  // core text input focus rule (0,2,1) removes the outline.
+  input.autocomplete:focus-visible {
+    border-color: var(--ravnus-border-control);
+    outline: 2px solid var(--ravnus-focus-ring);
+    outline-offset: 1px;
+  }
+
+  svg.icon-svg {
+    stroke: var(--ravnus-fg-icon);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Main menu bar (nav tokens whatever the chrome)
+// ---------------------------------------------------------------------------
+
+// border-box keeps both lines inside nav-height, the header reservation. The
+// top line separates the bar from a white header (1.08:1), the bottom one from
+// the content.
+#main-menu {
+  box-sizing: border-box;
+  block-size: var(--ravnus-nav-height);
+  margin: 0;
+  inset-inline: 0;
+  inline-size: auto;
+  background: var(--ravnus-nav-bg);
+  border-block-start: 1px solid var(--ravnus-header-divider);
+  border-block-end: 1px solid var(--ravnus-nav-border);
+}
+
+// Tabs fill the bar whatever their font: the height comes from the bar, not
+// from the line height and padding (7.0.1 and 7.0.2 differ there, 8.4). Only
+// the tab list: the submenu (ul.menu-children) sizes to its items.
+#main-menu > ul {
+  block-size: 100%;
+  min-block-size: 0;
+  align-items: stretch;
+}
+
+#main-menu li a {
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  block-size: 100%;
+  padding-block: 0;
+  padding-inline: var(--ravnus-space-150);
+  color: var(--ravnus-fg-muted);
+  line-height: var(--ravnus-line-height-tight);
+
+  &:hover {
+    background-color: var(--ravnus-nav-hover-bg);
+    color: var(--ravnus-fg-default);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ravnus-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+#main-menu li a.selected,
+#main-menu li a.selected:hover {
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  box-shadow: inset 0 -3px 0 var(--ravnus-accent);
+}
+
+// The new item button: an outlined button centered in the bar. The core
+// already selects this item with :has().
+#main-menu li:has(> a.new-object) {
+  align-self: center;
+}
+
+#main-menu li a.new-object {
+  display: inline-flex;
+  block-size: var(--ravnus-control-height-sm);
+  margin-block: 0;
+  padding-block: 0;
+  padding-inline: var(--ravnus-space-100);
+  border: 1px solid var(--ravnus-border-control);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+
+  &:hover {
+    background-color: var(--ravnus-bg-hover);
+    color: var(--ravnus-fg-default);
+  }
+
+  svg.icon-svg {
+    stroke: var(--ravnus-fg-icon);
+  }
+}
+
+#main-menu .menu-children {
+  block-size: auto;
+  min-block-size: 0;
+  padding-block: var(--ravnus-space-050);
+  background-color: var(--ravnus-bg-overlay);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  box-shadow: var(--ravnus-shadow-overlay);
+
+  li a {
+    display: block;
+    block-size: auto;
+    padding-block: var(--ravnus-space-075);
+    padding-inline: var(--ravnus-space-150);
+    background-color: transparent;
+    color: var(--ravnus-fg-default);
+    line-height: var(--ravnus-line-height-ui);
+  }
+
+  li a:hover {
+    background-color: var(--ravnus-bg-hover);
+    color: var(--ravnus-fg-default);
+  }
+}
+
+#main-menu .tabs-buttons button svg.icon-svg {
+  stroke: var(--ravnus-fg-icon);
+}
+
+// ---------------------------------------------------------------------------
+// Mobile header and flyout (< 900px, 8.6)
+// ---------------------------------------------------------------------------
+// Line numbers in comments are 7.0.2 responsive.css. html body raises the
+// specificity above the core rules, which load after the theme (8.3).
+
+@media screen and (max-width: 899px) {
+  // The background repeats the bridge for 7.0.0-7.0.1 (#628db6 there). The
+  // top bar is hidden here, so no top line; the bottom line separates the
+  // fixed white header from the content. The core box-sizing is border-box,
+  // so the header stays 64px. No menu reservation below 900px.
+  html body #header {
+    background-color: var(--ravnus-header-bg);
+    border-block-start: 0;
+    border-block-end: 1px solid var(--ravnus-header-divider);
+  }
+
+  html body.has-main-menu #header {
+    padding-block-end: 0;
+  }
+
+  // Menu toggle glyph (110-112) and its divider (252). It is outside the
+  // general header link rule, so no hover underline reaches it.
+  html body #header a.mobile-toggle-button {
+    color: var(--ravnus-header-fg);
+    border-inline-start-color: var(--ravnus-header-divider);
+
+    &:focus-visible {
+      outline: 2px solid var(--ravnus-header-focus);
+      outline-offset: -2px;
+    }
+  }
+
+  // Project jump title (147) and its caret (170: 60% opacity).
+  html body #project-jump .drdn-trigger {
+    color: var(--ravnus-header-fg);
+  }
+
+  html body #project-jump .drdn-trigger::before {
+    color: var(--ravnus-header-fg-muted);
+    opacity: 1;
+  }
+
+  // Flyout surface (287-288; #3e5b76 in 7.0.0-7.0.1) and text.
+  html body .flyout-menu {
+    background-color: var(--ravnus-topbar-bg);
+    color: var(--ravnus-topbar-fg);
+  }
+
+  // Section titles (307-309): header band, header text, divider lines. The
+  // 7.0.2 lines use the top bar color, which hides them on the surface.
+  html body .flyout-menu h3 {
+    background-color: var(--ravnus-header-bg);
+    color: var(--ravnus-header-fg);
+    border-block-color: var(--ravnus-header-divider);
+  }
+
+  html body .flyout-menu h4,
+  html body .flyout-menu a,
+  html body .flyout-menu .flyout-menu__avatar a {
+    color: var(--ravnus-topbar-fg);
+  }
+
+  html body .flyout-menu a:focus-visible {
+    outline: 2px solid var(--ravnus-topbar-focus);
+    outline-offset: -2px;
+  }
+
+  html body .flyout-menu :is(.icon, .icon-only) svg {
+    stroke: var(--ravnus-topbar-fg);
+  }
+
+  // Item dividers (364, 421, 440, 494): white 10% disappears on a light
+  // surface (Calm). currentColor is the top bar text there. Written without
+  // var() so browsers without color-mix() drop it and keep the core line.
+  html body .flyout-menu ul li a,
+  html body .flyout-menu__sidebar form > ul li,
+  html body .flyout-menu :is(#watchers ul li, ul.queries li),
+  html body .flyout-menu .flyout-menu__avatar {
+    border-block-start-color: color-mix(in srgb, currentColor 15%, transparent);
+  }
+
+  // Search field (474-487): canvas field with a border, which is the only
+  // edge on a light surface (Calm, 1.05:1 without it). The magnifier sits on
+  // the field, so it takes the field icon color.
+  html body .flyout-menu .flyout-menu__search input[type="text"] {
+    border: 1px solid var(--ravnus-header-control-border);
+    background-color: var(--ravnus-bg-canvas);
+    color: var(--ravnus-fg-default);
+  }
+
+  html body .flyout-menu .search-magnifier--flyout svg {
+    stroke: var(--ravnus-fg-icon);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Forced colors (8.8): the selected tab marker is a shadow, which this mode
+// drops. The chrome lines are borders and stay.
+// ---------------------------------------------------------------------------
+
+@media (forced-colors: active) {
+  #main-menu li a.selected,
+  #main-menu li a.selected:hover {
+    border-block-end: 3px solid Highlight;
+  }
+}

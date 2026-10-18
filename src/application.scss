@@ -8,12 +8,14 @@
 //      fallback, core variable bridge, preset comments (_tokens.scss)
 //   3. Pretendard CDN @font-face rules (_pretendard.scss, generated)
 //   4. Typography (_typography.scss)
+//   5. Components: chrome, sidebar (components/)
 // Write only // comments in this file: the token guide must be the first
 // comment after the imports.
 
 @use "tokens";
 @use "pretendard";
 @use "typography";
+@use "components";
 
 // Load the Redmine core stylesheet before every theme rule.
 // - Keep the url() form: Redmine rewrites url() references in theme CSS at

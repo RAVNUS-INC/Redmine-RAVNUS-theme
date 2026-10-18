@@ -84,22 +84,30 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 ```
 .
 ├── src/                              # SCSS 소스와 개발 도구 (Redmine이 서빙하지 않음)
-│   ├── application.scss              # 엔트리: @use tokens → pretendard → typography, 그다음 코어·custom.css import
+│   ├── application.scss              # 엔트리: @use tokens → pretendard → typography → components, 그다음 코어·custom.css import
 │   ├── _tokens.scss                  # 토큰 3계층(primitive map, :where(:root) --ravnus-*), color-mix 폴백, 프리셋 데이터, 다크 모드 확장 지점
 │   ├── _pretendard.scss              # 생성 파일: Pretendard CDN @font-face (npm run fonts, 직접 고치지 않음)
 │   ├── _typography.scss              # 폰트와 CJK 타이포그래피
+│   ├── components/                   # 컴포넌트 partial (_index.scss가 순서대로 @forward)
+│   │   ├── _chrome.scss              # 크롬: 코어 변수 브리지, 상단 바, 흰 헤더 재칠, 메뉴 바, 모바일 헤더·flyout, 7.0.0–7.0.1 배경 폴백
+│   │   └── _sidebar.scss             # 사이드바 스킨과 위치 토큰
 │   └── tools/                        # Node 스크립트 (CI·개발용)
 │       ├── build.mjs                 # 빌드 (npm run build / watch, 성공했을 때만 CSS를 씀)
 │       ├── pretendard-font-face.mjs  # _pretendard.scss 생성기, Pretendard 버전 상수
 │       ├── check-fonts.mjs           # 폰트 검사 (DESIGN.md §10.2 6)
-│       └── contrast-gate.mjs         # 명암 게이트 (DESIGN.md §6.6)
+│       ├── contrast-gate.mjs         # 명암 게이트 (DESIGN.md §6.6)
+│       └── check-presets.mjs         # README 프리셋 블록 검사, 프로브용 프리셋 파일 쓰기 (DESIGN.md §10.2 6)
 ├── stylesheets/
 │   ├── application.css               # 컴파일 결과 (커밋함)
 │   └── custom.css                    # 사용자 토큰용 빈 스텁 (추적함, 업스트림은 비워 둔다)
 ├── .docker/
 │   ├── seed.rb                       # 도커 테스트 환경 샘플 데이터
-│   └── probe/probe.mjs               # 프로브 하네스 (playwright-core + 설치된 Chrome, axe-core)
-├── .github/workflows/ci.yml          # CI: npm ci → npm run check
+│   └── probe/
+│       ├── probe.mjs                 # 프로브 하네스 (playwright-core + 설치된 Chrome, axe-core)
+│       └── chrome-check.js           # 크롬 계산 스타일·명암 검사 (--eval-file, DESIGN.md §10.2 3)
+├── .github/
+│   ├── workflows/ci.yml              # CI: npm ci → npm run check
+│   └── screenshots/                  # README 스크린샷 (dot-디렉터리라 Redmine이 서빙하지 않는다)
 ├── docker-compose.yml                # Redmine 7 테스트 환경 (redmine:7.0.2)
 ├── package.json                      # 스크립트 (build / watch / fonts / check / probe)
 ├── DESIGN.md                         # 디자인 기획서 (결정 사항, 토큰·색·타이포 사양, 단계별 계획)
@@ -112,17 +120,19 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 
 아직 내용이 없는 디렉터리는 만들지 않는다 (빈 placeholder 금지). 필요해지면 아래 위치에 추가한다.
 
-- 컴포넌트: `src/components/_<name>.scss`를 만들고 `src/components/_index.scss`에서 모두 `@forward`한 뒤, 엔트리에서 `@use "components";`를 typography 다음에 추가한다.
+- 컴포넌트: `src/components/_<name>.scss`를 만들고 `src/components/_index.scss`에 캐스케이드 순서대로 `@forward`를 더한다(엔트리는 이미 typography 다음에 `@use "components";`를 한다).
+- README 이미지: 테마 하위 디렉터리는 서빙되므로 `.github/screenshots/`처럼 dot-디렉터리에 둔다.
 - 런타임 디렉터리(`favicon/`, `images/` 등): `docker-compose.yml`의 서비스 볼륨에도 마운트를 추가한다. 폰트는 CDN을 쓰므로 저장소에 넣지 않는다.
 
 ## 개발 명령
 
 - 빌드: `npm install` 후 `npm run build` (1회) 또는 `npm run watch` (변경 감지)
 - 폰트 생성: `npm run fonts` (Pretendard 버전 상수를 바꿀 때만. jsDelivr에서 업스트림 CSS를 받아 검증하고 모든 폰트 URL의 200 `font/woff2`를 확인한 뒤 `src/_pretendard.scss`를 다시 쓴다)
-- 검사: `npm run check` (CI와 같다: `check:build` → `check:fonts` → `check:contrast`). 각각 따로 돌릴 수 있고, `node src/tools/contrast-gate.mjs --verbose`는 통과한 쌍도 보여 준다.
+- 검사: `npm run check` (CI와 같다: `check:build` → `check:fonts` → `check:contrast` → `check:presets`). 각각 따로 돌릴 수 있고, `node src/tools/contrast-gate.mjs --verbose`는 통과한 쌍도 보여 준다.
   - `check:build`는 git 인덱스와 비교하므로 로컬에서는 `src/`와 컴파일 결과를 stage한 뒤 돌린다. `stylesheets/application.css`를 다시 쓰므로 다른 작업이 `src/`를 고치는 중인 작업 트리에서는 돌리지 않는다.
 - 프로브: `npm run probe -- [옵션] [페이지]` (`--help`, 사용법은 `.docker/probe/probe.mjs` 머리 주석). 설치된 Google Chrome을 쓰고 기본 대상은 http://127.0.0.1:3007이다.
   - `--out`·`--screenshot`은 저장소 밖(`$TMPDIR` 등)에 쓴다.
+  - 크롬 검사: `--eval-file .docker/probe/chrome-check.js`(1440·800px, 익명·`--autologin`). 프리셋은 `node src/tools/check-presets.mjs --write <디렉터리>`로 파일을 만들어 `--inject-css`로 준다. `--forced-colors`는 강제 색 에뮬레이션이다.
   - 로그인 화면은 `--autologin`(rails runner로 만든 autologin 토큰 쿠키, 끝나면 삭제)으로만 연다. 자동 검증에서 비밀번호와 로그인 폼은 쓰지 않는다.
 - 테스트 환경: `docker compose up -d` → Redmine 7은 http://localhost:3007
   - 첫 기동 때 한국어 기본 데이터와 샘플 프로젝트를 시드하고 RAVNUS 테마를 적용한다. 로그인은 Redmine 기본 관리자 계정(admin / admin)이며, 포트는 127.0.0.1에만 열린다.
@@ -143,4 +153,5 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 ## 진행 상태
 
 - Phase 0 검증은 2026-10-01에 끝났다(Redmine 7.0.2, 결과는 `DESIGN.md` 부록 "Phase 0 검증 결과").
-- Phase 1(v0.1.0)은 구현했다(2026-10-02): 토큰 3계층과 프리셋 데이터, CJK 타이포그래피, CDN `@font-face` 생성 스크립트와 생성 파일, `custom.css` 스텁, CI(빌드 비교·폰트 검사·명암 게이트), 프로브 하네스, README의 폰트·CDN 안내와 커스터마이즈 절. `DESIGN.md` §9 Phase 1 완료 기준은 2026-10-02에 검증했다(결과는 `DESIGN.md` 부록 "Phase 1 검증 결과"). 공통 기준의 axe-core 검사는 main에도 있는 코어 하드코딩 색 위반 때문에 통과하지 못했고(회귀 없음), 2026-10-18 소유자 결정으로 v0.1.0은 이 코어 위반을 받아들인다(`DESIGN.md` §9 Phase 1, 결정 기록 #8). v0.1.0은 2026-10-18 PR #3 병합 뒤 태그했다. 그다음은 Phase 2(v0.2.0, 크롬)다.
+- Phase 1(v0.1.0)은 구현했다(2026-10-02): 토큰 3계층과 프리셋 데이터, CJK 타이포그래피, CDN `@font-face` 생성 스크립트와 생성 파일, `custom.css` 스텁, CI(빌드 비교·폰트 검사·명암 게이트), 프로브 하네스, README의 폰트·CDN 안내와 커스터마이즈 절. `DESIGN.md` §9 Phase 1 완료 기준은 2026-10-02에 검증했다(결과는 `DESIGN.md` 부록 "Phase 1 검증 결과"). 공통 기준의 axe-core 검사는 main에도 있는 코어 하드코딩 색 위반 때문에 통과하지 못했고(회귀 없음), 2026-10-18 소유자 결정으로 v0.1.0은 이 코어 위반을 받아들인다(`DESIGN.md` §9 Phase 1, 결정 기록 #8). v0.1.0은 2026-10-18 PR #3 병합 뒤 태그했다.
+- Phase 2(크롬, v0.2.0의 앞 절반)는 2026-10-18에 구현하고 완료 기준을 검증했다(결과는 `DESIGN.md` 부록 "Phase 2 검증 결과"): `_chrome.scss`(코어 변수 브리지, 흰 헤더 재칠, 메뉴 바, 모바일 헤더·flyout, 7.0.0–7.0.1 배경 폴백), `_sidebar.scss`, README 프리셋 블록과 스크린샷, 프리셋 블록 CI 검사, 크롬 검사 스크립트. 그다음은 Phase 3(일감 목록)이고, Phase 3까지 마치면 v0.2.0을 태그한다.

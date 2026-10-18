@@ -17,10 +17,11 @@
     "build": "node src/tools/build.mjs",
     "watch": "node src/tools/build.mjs --watch",
     "fonts": "node src/tools/pretendard-font-face.mjs",
-    "check": "npm run check:build && npm run check:fonts && npm run check:contrast",
+    "check": "npm run check:build && npm run check:fonts && npm run check:contrast && npm run check:presets",
     "check:build": "npm run build && git diff --exit-code -- stylesheets/application.css && git ls-files --error-unmatch stylesheets/application.css",
     "check:fonts": "node src/tools/check-fonts.mjs",
     "check:contrast": "node src/tools/contrast-gate.mjs",
+    "check:presets": "node src/tools/check-presets.mjs",
     "probe": "node .docker/probe/probe.mjs"
   },
   "devDependencies": {

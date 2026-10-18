@@ -4,7 +4,7 @@
 
 RAVNUS는 Redmine 7.x용 무료 오픈소스 테마입니다. 한국어·일본어·중국어(CJK) 사용자에게 가장 읽기 좋은 Redmine 테마를 목표로 합니다.
 
-> **현재 상태: v0.1.0 (2026-10-18 릴리스).** 이번 릴리스는 기본 Redmine 화면 위에 디자인 토큰과 CJK 타이포그래피를 더합니다. UI 언어별 글꼴 스택, 줄바꿈, 행간, 글자 크기, 폼 컨트롤 글꼴, 문장 속 링크 밑줄이 여기에 해당합니다. 크롬(상단 바, 헤더, 메뉴)은 v0.2.0에서, 링크·버튼·목록 색은 그 뒤 릴리스에서 바뀝니다. 일부 회색 글자, 바닥글, 아바타 이니셜은 Redmine 기본 색을 그대로 써서 WCAG AA 명암 기준에 못 미치며, 뒤 릴리스에서 다시 칠합니다.
+> **현재 상태: v0.2.0 진행 중.** v0.1.0(2026-10-18 릴리스)은 기본 Redmine 화면 위에 디자인 토큰과 CJK 타이포그래피를 더했습니다. UI 언어별 글꼴 스택, 줄바꿈, 행간, 글자 크기, 폼 컨트롤 글꼴, 문장 속 링크 밑줄이 여기에 해당합니다. main 브랜치는 여기에 크롬(상단 바, 헤더, 메뉴 바, 모바일 헤더와 flyout 메뉴)과 사이드바도 칠하며, 일감 목록까지 마치면 v0.2.0을 릴리스합니다. 링크·버튼·목록 색은 그 뒤 릴리스에서 바뀝니다. 일부 회색 글자, 바닥글, 아바타 이니셜은 Redmine 기본 색을 그대로 써서 WCAG AA 명암 기준에 못 미치며, 뒤 릴리스에서 다시 칠합니다.
 
 ## 목표
 
@@ -92,7 +92,7 @@ jsDelivr는 글꼴에 1년짜리 자체 캐시 헤더를 보냅니다. Redmine 7
 - 토큰은 `:root`에서 바꿉니다. 파생 토큰(hover, active, 틴트 색)은 선언된 곳에서 계산되므로 `:root`에서 바꾼 노브를 따라갑니다.
 - 리터럴 값을 씁니다. 직접 쓴 블록의 `color-mix()`는 `color-mix()`를 지원하지 않는 브라우저에서 폴백이 없고, 테마의 폴백 값은 기본값만 따르고 바꾼 노브는 따르지 않습니다.
 - `custom.css`는 테마 규칙보다 먼저 로드됩니다. 토큰이 아닌 테마 규칙을 덮으려면 테마보다 명시도가 한 단계 높은 셀렉터를 씁니다.
-- v0.2.0부터 칠하는 상단 바는 `--ravnus-accent`를 따릅니다. 그러나 `--ravnus-topbar-fg-muted`(`#CAC5EA`)와 `--ravnus-topbar-focus`(`#FEA800`, 앰버 포커스 링)는 기본 보라에 맞춘 고정값이므로, 강조색을 바꿀 때 함께 바꿉니다. `#0b6e4f` 위에서 기본 보조 글자는 명암비 3.78:1(AA 기준 4.5:1 미달), 앰버 링은 3.22:1입니다.
+- 상단 바는 `--ravnus-accent`를 따릅니다. 그러나 `--ravnus-topbar-fg-muted`(`#CAC5EA`)와 `--ravnus-topbar-focus`(`#FEA800`, 앰버 포커스 링)는 기본 보라에 맞춘 고정값이므로, 강조색을 바꿀 때 함께 바꿉니다. `#0b6e4f` 위에서 기본 보조 글자는 명암비 3.78:1(AA 기준 4.5:1 미달), 앰버 링은 3.22:1입니다.
 - 고친 뒤에는 Redmine을 재시작합니다. Redmine은 manifest보다 새로운 파일이 있을 때만 기동 때 에셋을 다시 컴파일합니다. `custom.css`를 옛 타임스탬프 그대로 복사했다면(`cp -p`, `rsync -a`, 시각을 보존하는 압축 해제) `touch`한 뒤 다시 재시작합니다. 편집기로 저장하거나 `git pull`로 받은 파일은 해당하지 않습니다.
 
 ### 업데이트
@@ -189,16 +189,123 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 - Redmine은 기동 때 `url(../fonts/PretendardVariable.woff2)`를 `/assets/themes/mytheme/PretendardVariable-<digest>.woff2`로 바꿉니다.
 - 자식 테마 대신 `custom.css`로 자체 호스팅하려면 같은 `@font-face`와 `:root` 블록을 `custom.css`에 넣고, 파일은 `themes/ravnus/fonts/`처럼 추적하지 않는 디렉터리에 둡니다. 추적하지 않는 파일은 `git pull`에는 남지만 zip으로 다시 설치하면 사라지므로, 조직 단위 설치에는 자식 테마를 권합니다.
 
+### 프리셋
+
+블록 하나를 `custom.css`나 자식 테마에 복사하고 Redmine을 재시작합니다. 기본 크롬은 **Signature**입니다. 흰 헤더 위에 보라 상단 바가 있고, 메뉴 바는 연한 색입니다.
+
+![기본 크롬 Signature](.github/screenshots/chrome-signature.png)
+
+**Ink**: 코어 헤더처럼 어두운 잉크 바이올렛 헤더와 상단 바에 밝은 글자를 씁니다. 플러그인이 헤더에 밝은 글자나 아이콘을 넣는다면 이 프리셋을 고르세요. 흰 기본 헤더에서는 그런 요소가 보이지 않습니다.
+
+![Ink 프리셋](.github/screenshots/chrome-ink.png)
+
+```css
+/* RAVNUS preset: ink */
+:root {
+  --ravnus-header-bg: #311E5F;
+  --ravnus-header-fg: #FFFFFF;
+  --ravnus-header-fg-muted: #D1CEE4;
+  --ravnus-header-divider: #3E3463;
+  --ravnus-header-focus: #FFFFFF;
+  --ravnus-topbar-bg: #1C0F3A;
+  --ravnus-topbar-fg: #FFFFFF;
+  --ravnus-topbar-fg-muted: #D1CEE4;
+  --ravnus-topbar-focus: #FFFFFF;
+  --ravnus-topbar-height: 1.75rem;
+}
+```
+
+**Brand-forward**: Ink에서 헤더를 브랜드 보라로 바꿉니다.
+
+![Brand-forward 프리셋](.github/screenshots/chrome-brand-forward.png)
+
+```css
+/* RAVNUS preset: brand-forward */
+:root {
+  --ravnus-header-bg: #46009B;
+  --ravnus-header-fg: #FFFFFF;
+  --ravnus-header-fg-muted: #D1CEE4;
+  --ravnus-header-divider: #3E3463;
+  --ravnus-header-focus: #FFFFFF;
+  --ravnus-topbar-bg: #2A0062;
+  --ravnus-topbar-fg: #FFFFFF;
+  --ravnus-topbar-fg-muted: #D1CEE4;
+  --ravnus-topbar-focus: #FFFFFF;
+  --ravnus-topbar-height: 1.75rem;
+}
+```
+
+**Calm**: 흰 헤더 위에 밝은 상단 바를 둡니다.
+
+![Calm 프리셋](.github/screenshots/chrome-calm.png)
+
+```css
+/* RAVNUS preset: calm */
+:root {
+  --ravnus-topbar-bg: var(--ravnus-bg-subtle);
+  --ravnus-topbar-fg: var(--ravnus-fg-muted);
+  --ravnus-topbar-fg-muted: var(--ravnus-fg-subtle);
+  --ravnus-topbar-focus: var(--ravnus-accent);
+  --ravnus-topbar-height: 1.75rem;
+}
+```
+
+**Redmine Blue**: 브랜드 색 없이 파란 헤더와 강조색을 씁니다.
+
+![Redmine Blue 프리셋](.github/screenshots/chrome-redmine-blue.png)
+
+```css
+/* RAVNUS preset: redmine-blue */
+:root {
+  --ravnus-header-bg: #2B5F8A;
+  --ravnus-header-fg: #FFFFFF;
+  --ravnus-header-fg-muted: #D4E2EF;
+  --ravnus-header-divider: #3E3463;
+  --ravnus-header-focus: #FFFFFF;
+  --ravnus-topbar-bg: #183A57;
+  --ravnus-topbar-fg: #FFFFFF;
+  --ravnus-topbar-fg-muted: #D1CEE4;
+  --ravnus-topbar-focus: #FFFFFF;
+  --ravnus-topbar-height: 1.75rem;
+  --ravnus-accent: #1864AB;
+  --ravnus-accent-hover: #3F7AB8;
+  --ravnus-accent-active: #114F89;
+  --ravnus-accent-subtle: #F1F6FA;
+  --ravnus-accent-muted: #E4ECF6;
+  --ravnus-nav-bg: #F6F9FC;
+  --ravnus-nav-hover-bg: #EAF1F8;
+  --ravnus-em-bg: #E8EFF7;
+}
+```
+
+**Left sidebar**: 사이드바를 인라인 시작 쪽(왼쪽에서 오른쪽으로 쓰는 UI에서는 왼쪽)에 둡니다. 어떤 크롬 프리셋과도 함께 쓸 수 있습니다.
+
+```css
+/* RAVNUS preset: left-sidebar */
+:root {
+  --ravnus-sidebar-at-start: 1;
+}
+```
+
+- 테마가 계산하는 색은 리터럴 값으로 적었습니다. 어두운 상단 바는 헤더 색에 검정 28%를 OKLCH로 섞은 색입니다. 블록에서 `--ravnus-header-bg`를 바꾸면 새 상단 바 색을 계산해 역시 리터럴로 적습니다. `color-mix()`를 그대로 쓰지 않습니다.
+- 900px 미만에서는 모바일 헤더가 헤더 색을, flyout 메뉴가 상단 바 색을 따릅니다.
+
 ### 토큰
 
 이번 릴리스에서 효과가 있는 노브입니다.
 
 | 토큰 | 기본값 | 바뀌는 곳 |
 |------|--------|-----------|
-| `--ravnus-accent` | `#46009B` | 메인 메뉴 선택 탭 표시, `em` 틴트의 바탕색 |
+| `--ravnus-accent` | `#46009B` | 상단 바, 메인 메뉴 선택 탭 표시, 사이드바 선택 항목, 헤더 안 포커스 링. 메뉴 바 틴트와 `em` 틴트의 바탕색 |
+| `--ravnus-on-accent` | `#FFFFFF` | 상단 바의 글자와 아이콘 |
 | `--ravnus-link` | `#215DB3` | 문장 속 링크의 밑줄 색 (링크 글자색은 이후 릴리스) |
 | `--ravnus-bg-canvas` | `#FFFFFF` | `em` 틴트 등 틴트 색을 섞는 바탕 |
-| `--ravnus-radius` | `6px` | 위키 본문 코드 블록의 모서리 |
+| `--ravnus-radius` | `6px` | 헤더 검색 칸, 드롭다운, 위키 본문 코드 블록의 모서리 |
+| `--ravnus-topbar-bg` | `var(--ravnus-accent)` | 상단 바와 모바일 flyout 메뉴 |
+| `--ravnus-topbar-fg-muted` | `#CAC5EA` | 상단 바에서 링크가 아닌 글자 |
+| `--ravnus-topbar-focus` | `#FEA800` | 상단 바와 flyout 메뉴의 포커스 링 |
+| `--ravnus-topbar-height` | `2rem` | 상단 바의 최소 높이 |
+| `--ravnus-header-bg` | `var(--ravnus-bg-canvas)` | 헤더, 모바일 헤더, flyout 메뉴의 절 제목 |
 | `--ravnus-font-sans` | Pretendard 우선 | 한국어·영어 등의 UI 글꼴 스택 |
 | `--ravnus-font-sans-ja`, `--ravnus-font-sans-zh`, `--ravnus-font-sans-zh-tw` | OS CJK 글꼴 우선, 한글은 Pretendard | 일본어·중국어 간체·중국어 번체 UI 글꼴 스택 |
 | `--ravnus-font-mono` | `ui-monospace, …` | 코드 글꼴 스택 |
@@ -207,8 +314,9 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 | `--ravnus-font-size-cell` | `0.8125rem` | 목록 표의 글자 |
 | `--ravnus-font-size-cell-subject` | `0.875rem` | 일감 목록의 제목 열 |
 | `--ravnus-subject-min-inline-size` | `12em` | 제목 열의 최소 폭 |
+| `--ravnus-sidebar-at-start` | `0` | `1`이면 사이드바를 인라인 시작 쪽으로 옮깁니다([프리셋](#프리셋) 참고) |
 
-- `stylesheets/application.css` 맨 위 주석에 모든 노브가 있습니다. 거기서 `*`로 표시한 노브(상단 바, 헤더, 사이드바 위치, 행 패딩·줄무늬 등)는 이후 릴리스의 스타일이 읽습니다.
+- `stylesheets/application.css` 맨 위 주석에 모든 노브가 있습니다. 거기서 `*`로 표시한 노브(행 패딩·줄무늬, 목록 링크 색, 본문 폭)는 이후 릴리스의 스타일이 읽습니다. 나머지 크롬 토큰(`--ravnus-topbar-fg`, `--ravnus-header-fg`, `--ravnus-header-divider` 등)도 같은 파일에 있고, 위 프리셋에서 쓰임을 볼 수 있습니다.
 - 그 밖의 토큰, 예를 들어 `--ravnus-font-size-base`(`0.875rem`, 본문과 폼 컨트롤)나 `--ravnus-line-height-prose`(`1.7`, 위키 본문)도 같은 파일의 `:where(:root)` 블록에 있고, 같은 방법으로 덮어쓸 수 있습니다.
 
 ## 개발
@@ -219,7 +327,7 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 npm install
 npm run build   # src/ → stylesheets/application.css 컴파일
 npm run watch   # 변경할 때마다 다시 빌드
-npm run check   # CI 검사: 빌드 비교, 폰트 검사, 명암 게이트
+npm run check   # CI 검사: 빌드 비교, 폰트 검사, 명암 게이트, 프리셋 블록
 ```
 
 소스는 `src/`에 있습니다(Dart Sass, `@use` 모듈). Redmine은 CSS를 그대로 서빙하고 Sass를 컴파일하지 않으므로, 소스를 바꾸면 컴파일된 `stylesheets/application.css`를 같은 커밋에 포함합니다. 빌드(`src/tools/build.mjs`)는 컴파일에 성공했을 때만 이 파일을 씁니다. 오류가 나면 파일을 그대로 두고 종료 코드 1로 끝납니다.
@@ -243,6 +351,7 @@ npm run check   # CI 검사: 빌드 비교, 폰트 검사, 명암 게이트
 - `npm run check:build`는 `stylesheets/application.css`를 다시 빌드해, 결과가 git 인덱스의 내용과 다르거나 파일이 추적되지 않으면 실패합니다. 로컬에서 돌릴 때는 소스와 컴파일 결과를 먼저 stage합니다.
 - `npm run check:fonts`는 컴파일된 CSS를 검사합니다. CDN `@font-face` 규칙이 생성 파일과 같은지, 모든 글꼴 URL이 고정된 jsDelivr 접두사로 시작하는지, 다른 호스트의 스타일시트를 import하지 않는지, 첫 두 규칙이 코어 import와 `custom.css` import인지, `"Pretendard Variable"`이 `@font-face` 규칙과 네 글꼴 스택 토큰에만 나오는지 봅니다.
 - `npm run check:contrast`는 기본값과 모든 프리셋의 토큰 쌍 명암비(WCAG 2.x)를 검사합니다. 모든 쌍을 보려면 `-- --verbose`를 붙입니다.
+- `npm run check:presets`는 README.md와 README.ko.md의 프리셋 블록이 컴파일된 CSS의 같은 프리셋 주석과 선언이 같은지(그래서 파생 리터럴이 Sass 계산값과 같은지), `color-mix()`가 없는지 검사합니다. 프리셋은 `src/_tokens.scss`에서 고치고 빌드한 뒤 컴파일 파일의 블록을 복사합니다.
 - GitHub Actions(`.github/workflows/ci.yml`)가 모든 PR과 `main` push마다 `npm ci`와 `npm run check`를 실행합니다. 시크릿은 쓰지 않습니다.
 
 ### 프로브
@@ -254,12 +363,16 @@ npm run probe -- --help
 npm run probe -- --locales ko,ja,zh,zh-TW,en --out "$TMPDIR/ravnus-probe/typography.json" @core
 npm run probe -- --block none,abort,hang --viewports 1440 @core
 npm run probe -- --autologin --axe @admin
+npm run probe -- --autologin --viewports 1440,800 --eval-file .docker/probe/chrome-check.js /projects/mobile-app/issues
 ```
 
 - 기본 대상은 http://127.0.0.1:3007이고 `--base-url`로 바꿉니다. 설치된 Google Chrome을 쓰고(다른 빌드는 `RAVNUS_PROBE_CHROME`), 브라우저를 내려받지 않습니다.
 - `--block abort`는 jsDelivr 요청을 바로 실패시키고, `--block hang`은 패킷을 버리는 망처럼 응답하지 않습니다.
 - `--autologin`은 비밀번호 없이 admin으로 로그인합니다. 컨테이너에서 `bin/rails runner`로 autologin 토큰을 만들고, 프로브가 끝나면 지웁니다.
 - Pretendard는 CDN에서 오므로, 이 글꼴에 기대는 측정에는 인터넷 연결이 필요합니다.
+- `.docker/probe/chrome-check.js`는 크롬을 검사합니다. 상단 바, 헤더, 메뉴 바, 계정 드롭다운, 모바일 헤더, flyout 메뉴의 색을 각각 가져와야 할 토큰과 비교하고 명암비를 재며, 포커스 링, 크롬 높이, 긴 프로젝트 이름도 봅니다. 계정 드롭다운(로그인, 900px 이상)이나 flyout 메뉴(900px 미만)를 열고, `--screenshot`을 위해 열어 둡니다. 실패한 항목은 `.eval.failed`에 나오고, 크롬 요소가 없을 때와 마찬가지로 실행을 실패(종료 코드 1)시킵니다.
+- 프리셋을 검사하려면 `node src/tools/check-presets.mjs --write "$TMPDIR/ravnus-presets"`로 프리셋 파일을 만들고 하나를 `--inject-css`로 넘깁니다.
+- `--forced-colors`는 강제 색 모드(Windows 고대비)를 흉내 냅니다.
 - `--out`과 `--screenshot`은 저장소 밖에 씁니다.
 
 ### 테스트 환경

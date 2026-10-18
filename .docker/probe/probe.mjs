@@ -154,6 +154,7 @@ const OPTIONS = {
   "--axe-include": { arg: "css", multi: true, help: "limit axe to these regions (repeatable)" },
   "--screenshot": { arg: "dir", help: "save a PNG per run in this directory" },
   "--full-page": { flag: true, help: "full-page screenshots" },
+  "--forced-colors": { flag: true, help: "emulate forced colors (Windows high contrast)" },
   "--eval": { arg: "js", help: "expression or function evaluated in the page; result in .eval" },
   "--eval-file": { arg: "file", help: "same as --eval, from a file" },
   "--autologin": { flag: true, help: "log in as admin with an autologin token made by rails runner" },
@@ -275,6 +276,7 @@ async function buildConfig(argv) {
     axe: v["--axe"] ? { rules: list(v["--axe-rules"], "color-contrast"), include: v["--axe-include"] ?? [] } : null,
     screenshotDir: v["--screenshot"] ? resolve(v["--screenshot"]) : null,
     fullPage: !!v["--full-page"],
+    forcedColors: !!v["--forced-colors"],
     evalCode,
     autologin: v["--autologin"] ? { token: autologinToken, login, cookieName: v["--cookie-name"] ?? null } : null,
     project,
@@ -412,7 +414,6 @@ function collectInPage({ selectors, properties, vars, maxElements, themeId }) {
   const timing = window.__ravnusProbe ?? { events: [], lcp: [], fontEvents: [] };
   const navEntry = performance.getEntriesByType("navigation")[0];
   const event = (type) => timing.events.find((e) => e.type === type)?.t;
-  const account = document.querySelector("#account");
   const themeLinks = [...document.querySelectorAll('link[rel~="stylesheet"]')].map((l) => l.href).filter((h) => h.includes("/assets/themes/"));
 
   return {
@@ -420,7 +421,9 @@ function collectInPage({ selectors, properties, vars, maxElements, themeId }) {
     title: document.title,
     lang: document.documentElement.lang || null,
     dir: document.documentElement.dir || null,
-    loggedIn: !!account && !account.querySelector("a.login"),
+    // Below 900px responsive.js moves the account links into the flyout and
+    // leaves #account empty; the flyout avatar is rendered for users only.
+    loggedIn: !!document.querySelector(".flyout-menu__avatar"),
     user: document.querySelector("#account .user-login, #loggedas a.user")?.textContent.trim() || null,
     themeLinks,
     themeLinked: themeLinks.some((h) => h.includes(`/assets/themes/${themeId}/`)),
@@ -525,7 +528,12 @@ async function probeOne(browser, config, shared, job) {
     ok: true,
     problems: [],
   };
-  const context = await browser.newContext({ viewport: job.viewport, locale: job.locale, deviceScaleFactor: 1 });
+  const context = await browser.newContext({
+    viewport: job.viewport,
+    locale: job.locale,
+    deviceScaleFactor: 1,
+    forcedColors: config.forcedColors ? "active" : "none",
+  });
   const held = [];
   const records = new Map();
   const pending = [];
@@ -671,6 +679,11 @@ async function probeOne(browser, config, shared, job) {
     if (config.evalCode) {
       const expression = `(async () => { const v = (${config.evalCode}\n); return typeof v === "function" ? await v() : await v; })()`;
       result.eval = await page.evaluate(expression).catch((error) => ({ evalError: String(error).split("\n")[0] }));
+      if (result.eval?.evalError) result.problems.push(`eval threw: ${result.eval.evalError}`);
+      // An eval file may report failed checks as { failed: [...] } (chrome-check.js).
+      if (Array.isArray(result.eval?.failed) && result.eval.failed.length) {
+        result.problems.push(`eval: ${result.eval.failed.length} failed check(s): ${result.eval.failed.slice(0, 5).join("; ")}`);
+      }
     }
 
     if (config.screenshotDir) {
