@@ -90,7 +90,8 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 │   ├── _typography.scss              # 폰트와 CJK 타이포그래피
 │   ├── components/                   # 컴포넌트 partial (_index.scss가 순서대로 @forward)
 │   │   ├── _chrome.scss              # 크롬: 코어 변수 브리지, 상단 바, 흰 헤더 재칠, 메뉴 바, 모바일 헤더·flyout, 7.0.0–7.0.1 배경 폴백
-│   │   └── _sidebar.scss             # 사이드바 스킨과 위치 토큰
+│   │   ├── _sidebar.scss             # 사이드바 스킨과 위치 토큰
+│   │   └── _issue-list.scss          # 일감 목록: 밀도, 우선순위·상태·트래커 글리프, 행 상태, 그룹 행, 선택 행, 필터 컨트롤, 강제 색·인쇄
 │   └── tools/                        # Node 스크립트 (CI·개발용)
 │       ├── build.mjs                 # 빌드 (npm run build / watch, 성공했을 때만 CSS를 씀)
 │       ├── pretendard-font-face.mjs  # _pretendard.scss 생성기, Pretendard 버전 상수
@@ -104,7 +105,8 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 │   ├── seed.rb                       # 도커 테스트 환경 샘플 데이터
 │   └── probe/
 │       ├── probe.mjs                 # 프로브 하네스 (playwright-core + 설치된 Chrome, axe-core)
-│       └── chrome-check.js           # 크롬 계산 스타일·명암 검사 (--eval-file, DESIGN.md §10.2 3)
+│       ├── chrome-check.js           # 크롬 계산 스타일·명암 검사 (--eval-file, DESIGN.md §10.2 3)
+│       └── list-check.js             # 일감 목록 검사 (--eval-file, DESIGN.md §9 Phase 3)
 ├── .github/
 │   ├── workflows/ci.yml              # CI: npm ci → npm run check
 │   └── screenshots/                  # README 스크린샷 (dot-디렉터리라 Redmine이 서빙하지 않는다)
@@ -133,6 +135,7 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 - 프로브: `npm run probe -- [옵션] [페이지]` (`--help`, 사용법은 `.docker/probe/probe.mjs` 머리 주석). 설치된 Google Chrome을 쓰고 기본 대상은 http://127.0.0.1:3007이다.
   - `--out`·`--screenshot`은 저장소 밖(`$TMPDIR` 등)에 쓴다.
   - 크롬 검사: `--eval-file .docker/probe/chrome-check.js`(1440·800px, 익명·`--autologin`). 프리셋은 `node src/tools/check-presets.mjs --write <디렉터리>`로 파일을 만들어 `--inject-css`로 준다. `--forced-colors`는 강제 색 에뮬레이션이다.
+  - 일감 목록 검사: `--eval-file .docker/probe/list-check.js`를 확인할 열이 있는 쿼리 URL에 준다. `--pdf <디렉터리>`는 배경 그래픽을 끈 인쇄 미리보기 PDF를 만든다.
   - 로그인 화면은 `--autologin`(rails runner로 만든 autologin 토큰 쿠키, 끝나면 삭제)으로만 연다. 자동 검증에서 비밀번호와 로그인 폼은 쓰지 않는다.
 - 테스트 환경: `docker compose up -d` → Redmine 7은 http://localhost:3007
   - 첫 기동 때 한국어 기본 데이터와 샘플 프로젝트를 시드하고 RAVNUS 테마를 적용한다. 로그인은 Redmine 기본 관리자 계정(admin / admin)이며, 포트는 127.0.0.1에만 열린다.
@@ -154,4 +157,5 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 
 - Phase 0 검증은 2026-10-01에 끝났다(Redmine 7.0.2, 결과는 `DESIGN.md` 부록 "Phase 0 검증 결과").
 - Phase 1(v0.1.0)은 구현했다(2026-10-02): 토큰 3계층과 프리셋 데이터, CJK 타이포그래피, CDN `@font-face` 생성 스크립트와 생성 파일, `custom.css` 스텁, CI(빌드 비교·폰트 검사·명암 게이트), 프로브 하네스, README의 폰트·CDN 안내와 커스터마이즈 절. `DESIGN.md` §9 Phase 1 완료 기준은 2026-10-02에 검증했다(결과는 `DESIGN.md` 부록 "Phase 1 검증 결과"). 공통 기준의 axe-core 검사는 main에도 있는 코어 하드코딩 색 위반 때문에 통과하지 못했고(회귀 없음), 2026-10-18 소유자 결정으로 v0.1.0은 이 코어 위반을 받아들인다(`DESIGN.md` §9 Phase 1, 결정 기록 #8). v0.1.0은 2026-10-18 PR #3 병합 뒤 태그했다.
-- Phase 2(크롬, v0.2.0의 앞 절반)는 2026-10-18에 구현하고 완료 기준을 검증했다(결과는 `DESIGN.md` 부록 "Phase 2 검증 결과"): `_chrome.scss`(코어 변수 브리지, 흰 헤더 재칠, 메뉴 바, 모바일 헤더·flyout, 7.0.0–7.0.1 배경 폴백), `_sidebar.scss`, README 프리셋 블록과 스크린샷, 프리셋 블록 CI 검사, 크롬 검사 스크립트. 그다음은 Phase 3(일감 목록)이고, Phase 3까지 마치면 v0.2.0을 태그한다.
+- Phase 2(크롬, v0.2.0의 앞 절반)는 2026-10-18에 구현하고 완료 기준을 검증했다(결과는 `DESIGN.md` 부록 "Phase 2 검증 결과"): `_chrome.scss`(코어 변수 브리지, 흰 헤더 재칠, 메뉴 바, 모바일 헤더·flyout, 7.0.0–7.0.1 배경 폴백), `_sidebar.scss`, README 프리셋 블록과 스크린샷, 프리셋 블록 CI 검사, 크롬 검사 스크립트. PR #5로 병합했다.
+- Phase 3(일감 목록)은 2026-10-18에 구현하고 완료 기준을 검증했다(결과는 `DESIGN.md` 부록 "Phase 3 검증 결과"). 상태 "체크"는 원 안의 점으로 바꿨고, 띄어쓰기 없는 제목의 마지막 한 음절은 한계로 남았다. Phase 3 PR이 병합되면 v0.2.0(Phase 2–3)을 태그한다. 그다음은 Phase 4(일감 상세·저널·편집 폼)다.

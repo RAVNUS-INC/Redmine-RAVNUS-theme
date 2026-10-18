@@ -4,7 +4,7 @@
 
 RAVNUS는 Redmine 7.x용 무료 오픈소스 테마입니다. 한국어·일본어·중국어(CJK) 사용자에게 가장 읽기 좋은 Redmine 테마를 목표로 합니다.
 
-> **현재 상태: v0.2.0 진행 중.** v0.1.0(2026-10-18 릴리스)은 기본 Redmine 화면 위에 디자인 토큰과 CJK 타이포그래피를 더했습니다. UI 언어별 글꼴 스택, 줄바꿈, 행간, 글자 크기, 폼 컨트롤 글꼴, 문장 속 링크 밑줄이 여기에 해당합니다. main 브랜치는 여기에 크롬(상단 바, 헤더, 메뉴 바, 모바일 헤더와 flyout 메뉴)과 사이드바도 칠하며, 일감 목록까지 마치면 v0.2.0을 릴리스합니다. 링크·버튼·목록 색은 그 뒤 릴리스에서 바뀝니다. 일부 회색 글자, 바닥글, 아바타 이니셜은 Redmine 기본 색을 그대로 써서 WCAG AA 명암 기준에 못 미치며, 뒤 릴리스에서 다시 칠합니다.
+> **현재 상태: v0.2.0 진행 중.** v0.1.0(2026-10-18 릴리스)은 기본 Redmine 화면 위에 디자인 토큰과 CJK 타이포그래피를 더했습니다. UI 언어별 글꼴 스택, 줄바꿈, 행간, 글자 크기, 폼 컨트롤 글꼴, 문장 속 링크 밑줄이 여기에 해당합니다. main 브랜치는 여기에 크롬(상단 바, 헤더, 메뉴 바, 모바일 헤더와 flyout 메뉴), 사이드바, 일감 목록(밀도, 우선순위·상태 글리프, 행 상태, 그룹 행, 선택 행, 인쇄와 강제 색 모드)도 칠합니다. 링크·버튼·폼·일감 상세 화면의 색은 그 뒤 릴리스에서 바뀝니다. 일부 회색 글자, 바닥글, 아바타 이니셜은 Redmine 기본 색을 그대로 써서 WCAG AA 명암 기준에 못 미치며, 뒤 릴리스에서 다시 칠합니다.
 
 ## 목표
 
@@ -287,8 +287,44 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 }
 ```
 
+**Compact**: 일감 목록 행을 촘촘하게 합니다(32px 대신 약 27px).
+
+```css
+/* RAVNUS preset: compact */
+:root {
+  --ravnus-row-pad-y: 0.25rem;
+  --ravnus-font-size-cell-subject: 0.8125rem;
+}
+```
+
+**Classic stripes off**: 목록의 줄무늬를 없앱니다.
+
+```css
+/* RAVNUS preset: classic-stripes-off */
+:root {
+  --ravnus-row-stripe: transparent;
+}
+```
+
 - 테마가 계산하는 색은 리터럴 값으로 적었습니다. 어두운 상단 바는 헤더 색에 검정 28%를 OKLCH로 섞은 색입니다. 블록에서 `--ravnus-header-bg`를 바꾸면 새 상단 바 색을 계산해 역시 리터럴로 적습니다. `color-mix()`를 그대로 쓰지 않습니다.
 - 900px 미만에서는 모바일 헤더가 헤더 색을, flyout 메뉴가 상단 바 색을 따릅니다.
+
+### 일감 목록의 상태·트래커 색
+
+기본으로 상태 열은 모든 설치에서 뜻이 같은 두 모양만 씁니다. 열린 일감은 빈 원, 닫힌 일감은 채운 원입니다. 상태와 트래커 id는 설치마다 다르므로 `custom.css`나 자식 테마에서 직접 매핑합니다. 닫힌 상태의 기본값(채운 원)이 남지 않도록 상태 변수 세 개를 모두 적습니다.
+
+```css
+tr.status-1 { --ravnus-status-color: var(--ravnus-status-open-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 0; }
+tr.status-2,
+tr.status-4 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; --ravnus-status-check: 0; }
+tr.status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 1; }
+tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
+```
+
+- 모양: `--ravnus-status-fill`이 `0`이면 빈 원, `0.5`면 반원, `1`이면 채운 원입니다. `--ravnus-status-check: 1`은 원 안에 점을 넣습니다(완료).
+- 색: `--ravnus-status-open-color`, `--ravnus-status-progress-color`, `--ravnus-status-done-color`, `--ravnus-status-closed-color`. 트래커는 태그 색 `--ravnus-tag-{red,orange,green,blue,violet,gray}-fg`를 씁니다.
+- 한국어 기본 상태라면 보통 신규는 open, 진행·의견은 progress, 해결은 done, 완료·거절은 closed로 매핑합니다. id는 *관리 → 일감 상태*에서 확인합니다.
+- 우선순위는 매핑할 필요가 없습니다. 테마는 Redmine이 모든 설치에 주는 위치 클래스(lowest, default, high…, highest)를 읽습니다.
 
 ### 토큰
 
@@ -314,9 +350,12 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 | `--ravnus-font-size-cell` | `0.8125rem` | 목록 표의 글자 |
 | `--ravnus-font-size-cell-subject` | `0.875rem` | 일감 목록의 제목 열 |
 | `--ravnus-subject-min-inline-size` | `12em` | 제목 열의 최소 폭 |
+| `--ravnus-row-pad-y` | `0.375rem` | 목록 행의 세로 패딩(Compact는 `0.25rem`) |
+| `--ravnus-row-stripe` | `var(--ravnus-bg-subtle)` | 목록의 한 줄 걸러 칠하는 배경(`transparent`면 줄무늬 없음) |
+| `--ravnus-list-link` | `var(--ravnus-link)` | 선택한 목록 행의 링크 |
 | `--ravnus-sidebar-at-start` | `0` | `1`이면 사이드바를 인라인 시작 쪽으로 옮깁니다([프리셋](#프리셋) 참고) |
 
-- `stylesheets/application.css` 맨 위 주석에 모든 노브가 있습니다. 거기서 `*`로 표시한 노브(행 패딩·줄무늬, 목록 링크 색, 본문 폭)는 이후 릴리스의 스타일이 읽습니다. 나머지 크롬 토큰(`--ravnus-topbar-fg`, `--ravnus-header-fg`, `--ravnus-header-divider` 등)도 같은 파일에 있고, 위 프리셋에서 쓰임을 볼 수 있습니다.
+- `stylesheets/application.css` 맨 위 주석에 모든 노브가 있습니다. 거기서 `*`로 표시한 노브(본문 폭)는 이후 릴리스의 스타일이 읽습니다. 나머지 크롬 토큰(`--ravnus-topbar-fg`, `--ravnus-header-fg`, `--ravnus-header-divider` 등)도 같은 파일에 있고, 위 프리셋에서 쓰임을 볼 수 있습니다.
 - 그 밖의 토큰, 예를 들어 `--ravnus-font-size-base`(`0.875rem`, 본문과 폼 컨트롤)나 `--ravnus-line-height-prose`(`1.7`, 위키 본문)도 같은 파일의 `:where(:root)` 블록에 있고, 같은 방법으로 덮어쓸 수 있습니다.
 
 ## 개발
@@ -372,7 +411,8 @@ npm run probe -- --autologin --viewports 1440,800 --eval-file .docker/probe/chro
 - Pretendard는 CDN에서 오므로, 이 글꼴에 기대는 측정에는 인터넷 연결이 필요합니다.
 - `.docker/probe/chrome-check.js`는 크롬을 검사합니다. 상단 바, 헤더, 메뉴 바, 계정 드롭다운, 모바일 헤더, flyout 메뉴의 색을 각각 가져와야 할 토큰과 비교하고 명암비를 재며, 포커스 링, 크롬 높이, 긴 프로젝트 이름도 봅니다. 계정 드롭다운(로그인, 900px 이상)이나 flyout 메뉴(900px 미만)를 열고, `--screenshot`을 위해 열어 둡니다. 실패한 항목은 `.eval.failed`에 나오고, 크롬 요소가 없을 때와 마찬가지로 실행을 실패(종료 코드 1)시킵니다.
 - 프리셋을 검사하려면 `node src/tools/check-presets.mjs --write "$TMPDIR/ravnus-presets"`로 프리셋 파일을 만들고 하나를 `--inject-css`로 넘깁니다.
-- `--forced-colors`는 강제 색 모드(Windows 고대비)를 흉내 냅니다.
+- `.docker/probe/list-check.js`는 일감 목록을 검사합니다. 행 높이(32px 또는 27px), 우선순위·상태·기한 초과·진행 막대 글리프 색, 행 마커, 이름·제목 줄바꿈, 가로 넘침, 그룹 행과 합계, 선택 행(행을 선택 상태로 만들어 봄)을 봅니다. 확인할 열이 있는 쿼리에 돌립니다. 예: `'/projects/website-renewal/issues?set_filter=1&status_id=*&c[]=tracker&c[]=status&c[]=priority&c[]=subject&c[]=assigned_to&c[]=due_date&c[]=done_ratio'`
+- `--forced-colors`는 강제 색 모드(Windows 고대비)를 흉내 냅니다. `--pdf <디렉터리>`는 배경 그래픽을 끈 인쇄 미리보기처럼 페이지마다 PDF를 만듭니다.
 - `--out`과 `--screenshot`은 저장소 밖에 씁니다.
 
 ### 테스트 환경

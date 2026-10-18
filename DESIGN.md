@@ -1,6 +1,6 @@
 # RAVNUS 디자인 기획서
 
-> 상태: 소유자 결정 반영 (2026-09-26, §4.1 크롬 기본값과 지원 범위는 2026-10-01 변경) · Phase 0 검증 완료 (2026-10-01, 7.0.2, 부록 "Phase 0 검증 결과") · Phase 1(v0.1.0) 구현·검증 (2026-10-02, 부록 "Phase 1 검증 결과"). axe-core 코어 위반은 v0.1.0에서 수용 (2026-10-18 소유자 결정, §9) · Phase 2(크롬) 구현·검증 (2026-10-18, 부록 "Phase 2 검증 결과") · 대상: Redmine 7.x 전용 (테스트 기준 7.0.2, §4.12)
+> 상태: 소유자 결정 반영 (2026-09-26, §4.1 크롬 기본값과 지원 범위는 2026-10-01 변경) · Phase 0 검증 완료 (2026-10-01, 7.0.2, 부록 "Phase 0 검증 결과") · Phase 1(v0.1.0) 구현·검증 (2026-10-02, 부록 "Phase 1 검증 결과"). axe-core 코어 위반은 v0.1.0에서 수용 (2026-10-18 소유자 결정, §9) · Phase 2(크롬) 구현·검증 (2026-10-18, 부록 "Phase 2 검증 결과") · Phase 3(일감 목록) 구현·검증 (2026-10-18, 부록 "Phase 3 검증 결과") · 대상: Redmine 7.x 전용 (테스트 기준 7.0.2, §4.12)
 > 위치: 공개 저장소 루트의 `DESIGN.md`. Redmine은 테마 루트의 하위 디렉터리(`src`와 dot-디렉터리 제외)를 모두 에셋으로 서빙하지만 루트 파일은 서빙하지 않으므로 `docs/`가 아니라 루트에 둔다(§12). 배포 환경별 서버·계정·플러그인 정보는 적지 않는다.
 > 근거 자료: 작성 과정의 작업 자료(조사 4건: 코어 UI 해부, 테마 지형과 브랜드, CJK 타이포그래피, 디자인 시스템 · 디자인 방향 3건 · 심사 3건: 구현·업그레이드 안전성, CJK 가독성·접근성, 제품·채택 · 검토 의견 23건)는 저장소에 싣지 않는다. 검토 의견의 반영 내용은 부록 "개정 이력"에 요약하고, 소유자 결정(2026-09-26 6건, 2026-10-01 변경·재확인과 지원 범위)은 부록 "결정 기록"에, Phase 0 도커 검증 결과는 부록 "Phase 0 검증 결과"에, Phase 1 완료 기준 검증 결과는 부록 "Phase 1 검증 결과"에 적는다.
 
@@ -46,7 +46,7 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 | 사용자 커스터마이즈 (§4.5) | `:where(:root)` 토큰 + 추적하는 빈 `custom.css` 스텁 + 자식 테마 문서화 | **결정** (2026-09-26). import 경로는 Phase 0 확인(7.0.2, 부록) |
 | CJK 타이포 정책 (§4.6) | F1 + K2. 폰트: ko와 그 밖의 UI는 Pretendard, ja·zh·zh-TW UI는 OS 네이티브 우선(Pretendard는 한글만). keep-all: ja·zh를 뺀 모든 UI 언어 | **결정** (2026-09-26) |
 | 아이콘 | 코어 Tabler SVG 스프라이트를 토큰으로 다시 칠하기만 한다 | 추천 |
-| 밀도 | 일감 목록 행 약 32px. Compact 프리셋은 약 27px | 추천 (코어 실측 완료(Pretendard 로드 상태 25px, §4.8), 테마 행은 Phase 3에서 측정) |
+| 밀도 | 일감 목록 행 약 32px. Compact 프리셋은 약 27px | 추천 (코어 실측 완료(Pretendard 로드 상태 25px, §4.8). 테마 행은 Phase 3에서 32.3px, Compact 26.84px로 측정, 부록 "Phase 3 검증 결과") |
 | 테스트 기준 버전 (§4.12) | `redmine:7.0.2` 도커 한 개(패치 버전 태그로 고정). 크롬 배경 변수가 없는 7.0.0–7.0.1은 7.0.1 spot check(§10.4)로 확인 | **규칙** (2026-10-01, 지원 범위 결정에 따른 프로젝트 규칙이며 소유자 결정이 아니다. `CLAUDE.md` "지원 범위", `docker-compose.yml`) |
 
 **바로 다음 할 일**
@@ -54,6 +54,7 @@ Redmine의 배치(상단 메뉴, 헤더, 메인 메뉴 바, 오른쪽 사이드�
 2. Phase 1(v0.1.0)은 2026-10-02에 구현하고 완료 기준(§9)을 검증했다(부록 "Phase 1 검증 결과"). Phase 0에서 넘긴 두 확인(실제 네 스택 테마로 덮기 매트릭스 재측정, CDN 차단 전후 텍스트 컨테이너 높이)도 했다. 공통 기준의 axe-core 검사는 코어 하드코딩 색 위반이 main과 같게 남아 통과하지 못했다. 2026-10-18 소유자가 (가)를 골라 v0.1.0은 이 코어 위반을 받아들인다(§9 Phase 1, 부록 "결정 기록" #8). 그다음은 Phase 2(v0.2.0)다.
 3. v0.1.0부터 README.md와 README.ko.md에 Pretendard 크레딧·OFL 고지와 CDN 안내(개인정보, CSP, 폐쇄망, 중국 본토)를 함께 싣는다. 설치 절 첫머리에는 브라우저가 `cdn.jsdelivr.net`에 닿는지 확인하고 닿지 않으면 폐쇄망 항목으로 가는 단계를, 폐쇄망 항목에는 요청을 응답 없이 버리는 망에서 "시스템 폰트만 쓰기"나 자체 호스팅이 필수라는 것과 그 증상을, 커스터마이즈 절에는 자식 테마 import 형식과 실패 형식, 자식 테마와 `custom.css`의 우선순위를 적는다(§4.4, §4.5, §12). 2026-10-02 v0.1.0 README에 반영했다.
 4. Phase 2(크롬)는 2026-10-18에 구현하고 완료 기준(§9)을 검증했다(부록 "Phase 2 검증 결과"). README에 대안 크롬 프리셋 블록과 스크린샷을 싣고, 프리셋 블록 CI 검사(`check:presets`)를 더했다. 그다음은 Phase 3(일감 목록)이고, Phase 2와 3을 묶어 v0.2.0으로 릴리스한다(§12).
+5. Phase 3(일감 목록)은 2026-10-18에 구현하고 완료 기준(§9)을 검증했다(부록 "Phase 3 검증 결과"). 상태 "체크"는 10px에서 알아볼 수 없어 원 안의 점으로 바꿨다(§6.5). 띄어쓰기 없는 제목의 마지막 한 음절은 CSS로 막을 수 없는 한계로 남았다(§7.6). v0.2.0(Phase 2–3)을 릴리스할 수 있다(§12).
 
 ---
 
@@ -391,7 +392,7 @@ tr.status-2 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravn
 
 Phase 0 8(7.0.2, 일감 목록, ko, 1440px, 폰트 19/19 로드와 `td.subject`의 Pretendard 사용을 확인한 뒤 모든 행 측정)에서 Pretendard를 로드해도 코어 본문 행은 25px(첫 행만 위 테두리 때문에 25.5px), 머리 행은 27.5px였다. 셀은 13px, 위아래 패딩 3px, 위 테두리 1px다. 행 높이를 정하는 것은 글자 줄(15px)이 아니라 `td.buttons`의 18px 아이콘 링크다(18 + 3 + 3 + 1). 시스템 폰트(CDN 차단)는 25/28px, 코어 Noto Sans는 25.86/28.95px였다.
 - 32px 목표는 행마다 7px를 더하므로 화면당 행 수가 약 22% 줄어든다(계산).
-- Phase 3에서 행 높이를 정할 때 `td.buttons` 아이콘(18px)과 셀 패딩을 함께 계산한다. 32px와 Compact 27px 모두 이 아이콘이 만드는 바닥보다 크다.
+- Phase 3에서 행 높이를 정할 때 `td.buttons` 아이콘(18px)과 셀 패딩을 함께 계산한다. 32px와 Compact 27px 모두 이 아이콘이 만드는 바닥보다 크다. 구현(Phase 3): 셀 패딩은 위 `calc(row-pad-y − 1px)`, 아래 row-pad-y다. 1px 행 구분선을 행 높이 안에 넣으려는 것이다(그대로 두면 33.3px). 기본 행 32.3px(14px × 1.45 + 5 + 6 + 1), 머리 행 31.84px, Compact 행 26.84px, 머리 행 27.84px(부록 "Phase 3 검증 결과").
 - Calm 프로토타입 33px의 측정 조건은 기록이 없다 (미검증).
 
 ### 4.9 상태·우선순위·트래커 표현 (추천)
@@ -529,7 +530,7 @@ Pretendard와 대부분의 CJK 폰트에는 이탤릭이 없어 브라우저가 
 - 테마의 행 단위 기본값(`--ravnus-status-color`·`-fill`·`-check`, `--ravnus-tracker-color`, `--ravnus-priority-color`, `--ravnus-row-marker-width`·`-color`)은 모두 `:where(table.list tr.issue)`, `:where(table.list tr.issue.closed)`처럼 명시도 0으로 선언한다. 명시도가 같으므로 소스에서 뒤에 오는 규칙이 이긴다. 그래서 `tr.issue.closed` 기본값과 우선순위 위치 클래스 기본값은 일반 행 기본값보다 **뒤에** 둔다.
 - 우선순위 위치 클래스의 기본값도 같은 방식으로 선언해, 사용자가 `tr.priority-high2 { … }`로 덮을 수 있게 한다.
 - 이 변수를 **읽는** 규칙(`table.list td.status::before { … var(--ravnus-status-color) … }`)은 평소 명시도로 둔다.
-- Phase 3에서 `custom.css`의 `tr.status-N` 매핑이 계산 스타일에 반영되는지 assert한다.
+- Phase 3에서 `custom.css`의 `tr.status-N` 매핑이 계산 스타일에 반영되는지 assert했다(`custom.css`에 status-2·3, tracker-1 매핑을 넣고 재시작, 매핑 값이 이겼다, 부록 "Phase 3 검증 결과").
 
 ---
 
@@ -708,7 +709,7 @@ raised와 overlay는 라이트에서 canvas와 같다. 다크 세트에서 떠 �
 - 행 마커는 우선순위 열이 숨겨졌을 때를 위한 것이다. box-shadow가 아니라 첫 셀의 `border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color)`(또는 `inset-inline-start`로 놓은 가상 요소)로 그린다.
   - 논리 속성이라 RTL 로캘(코어 7은 `<html dir="rtl">`을 준다, §10.4)에서 `[dir=rtl]` 셀렉터 없이 자동으로 뒤집힌다.
   - 테두리는 forced-colors에서도 남는다(box-shadow는 사라진다).
-  - `border-collapse` 표에서 두꺼운 테두리가 행 구분선과 셀 정렬에 주는 영향을 보고 Phase 3에서 둘 중 하나로 정한다 (미검증).
+  - Phase 3에서 가상 요소로 정했다. 첫 셀을 `position: relative`로 두고 `::before`(`inset-block: 0; inset-inline-start: 0`)에 `border-inline-start`를 준다. 첫 셀에 직접 두꺼운 테두리를 주면 `border-collapse` 표에서 행마다 테두리 폭이 달라 열 정렬이 흔들리기 때문이다. 테두리라 forced-colors와 인쇄에 남는다. 인쇄에서는 첫 칸(체크박스, `hide-when-print`)이 숨으므로 그다음 칸에 같은 마커를 그린다.
 
 ### 6.5 상태·트래커·행 상태 표현
 
@@ -728,15 +729,15 @@ raised와 overlay는 라이트에서 canvas와 같다. 다크 세트에서 떠 �
   - 색 토큰(`:where(:root)`): `--ravnus-status-open-color`(= info-fg), `--ravnus-status-progress-color`(= warning-fg), `--ravnus-status-done-color`(= success-fg), `--ravnus-status-closed-color`(= fg-subtle).
   - 행 변수: `--ravnus-status-color`, `--ravnus-status-fill`(0 빈 원, 0.5 반원, 1 채운 원), `--ravnus-status-check`(0 또는 1). 기본값은 `:where(table.list tr.issue)`가 open 색·0·0, `:where(table.list tr.issue.closed)`가 closed 색·1이다(§5.6).
   - `td.status::before`: 10px 원, 테두리 두께 `max(1.5px, (fill − 0.5) × 10px)`. 그래서 fill 1은 5px 테두리로 속까지 채워진다. 반원은 `linear-gradient`의 정지점 `fill × 100%`로 칠한다.
-  - 체크는 `td.status::after`에 두 테두리를 45° 돌려 그리고 `opacity: var(--ravnus-status-check)`로 켠다.
-- 빈 원, 채운 원, 체크는 테두리로만 그리므로 forced-colors와 배경 그래픽을 끈 인쇄에서도 구분될 것으로 본다 (미검증: Phase 3에서 에뮬레이션과 인쇄 미리보기로 확인). 그라디언트로 칠하는 반원은 §8.8·§8.9 규칙을 따른다.
+  - 체크는 `td.status::after`에 그리고 `opacity: var(--ravnus-status-check)`로 켠다. **Phase 3 변경**: 두 테두리를 45° 돌린 체크는 1배율 화면의 10px 원 안에서 사선(⊘)처럼 보여 알아볼 수 없었다. 그래서 원 안의 4px 점(◉)으로 바꿨다. 변수 이름 `--ravnus-status-check`는 매핑 호환을 위해 그대로 둔다. 원과 점은 둘 다 칸 가운데를 기준으로 절대 위치에 놓아 폰트와 상관없이 겹치고, 상태 칸은 이 때문에 가운데 대신 시작 쪽 정렬이다.
+- 빈 원, 채운 원, 점은 테두리로만 그리므로 forced-colors와 배경 그래픽을 끈 인쇄에서도 구분된다(Phase 3에서 에뮬레이션과 PDF 인쇄 미리보기로 확인, 부록 "Phase 3 검증 결과"). 그라디언트로 칠하는 반원은 §8.8·§8.9 규칙을 따른다.
 - opt-in은 `custom.css`에서 행 커스텀 속성으로 매핑한다. id 개수 제한이 없고 빌드가 필요 없다. 테마 기본값이 명시도 0이므로 이 예시가 이긴다(§5.6). 닫힌 상태에 매핑할 때 기본값(fill 1)이 남지 않도록 세 변수를 모두 적는다.
   ```css
   tr.status-2 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; --ravnus-status-check: 0; }
   tr.status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 1; }
   ```
 - README에는 기본 상태의 예시 매핑을 싣는다: 신규는 open, 진행·의견은 progress, 해결은 done, 완료·거절은 closed. id는 설치마다 다르므로 규칙을 기본으로 싣지는 않는다.
-- 10px에서 체크 모양이 알아볼 만한지는 확인 전이다 (미검증).
+- 10px에서 체크 모양은 알아볼 수 없었다(Phase 3, 1배율 스크린샷). 점(◉)으로 바꿨다(위).
 - 일감 상세의 실제 `span.badge-status-open/closed/locked`는 알약 모양이다. radius full, 12px 이상, 각각 info 틴트 / 중립(bg-inset, fg-muted) / warning 틴트다.
 
 **트래커**: 기본은 중립 fg-muted 글자다(`:where(table.list tr.issue) { --ravnus-tracker-color: var(--ravnus-fg-muted); }`). opt-in으로 `tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }`를 주면 `td.tracker` 글자색과 앞의 8px 사각 점이 바뀐다. 알약은 쓰지 않는다.
@@ -860,7 +861,7 @@ raised와 overlay는 라이트에서 canvas와 같다. 다크 세트에서 떠 �
 | 배지가 있는 `#relations p` | 21 → 21.52px (+0.52) | Phase 6: `.badge`에 `vertical-align: middle` 또는 고정 줄 상자 |
 | `#quick-search` form, `#project-jump` | 24 → 24.31px (+0.31) | Phase 2에서 처리함: 높이를 control-height(2rem)로 고정하고 트리거를 flex로 정렬해 ko·en·ja·zh-TW 모두 차이 0(부록 "Phase 2 검증 결과") |
 | 저널 머리글 span(`h4.journal-header` 안) | +0.05px | Phase 4: 저널 머리글을 flex 정렬 |
-| 일감 목록 `th` | −0.016px (29.797 → 29.781px) | Phase 3에서 다시 잰다 |
+| 일감 목록 `th` | −0.016px (29.797 → 29.781px) | Phase 3에서 처리함: 정렬 아이콘 링크(`a.sort.icon`, 18px)가 `vertical-align: middle`이라 폰트 x-height에 따라 줄 상자가 바뀌었다(Phase 3 첫 측정 31.97 → 32.95px). 위쪽 정렬로 바꿔 ko·en·ja·zh-TW 모두 31.84px로 같다(부록 "Phase 3 검증 결과") |
 
 이 차이가 쌓여 `/issues/4`의 `#sidebar`는 1.7px(1147.34 → 1149.03px) 길어졌다. 각 단계는 해당 partial에서 폰트 지표에 기대지 않는 정렬을 주고, 완료 기준에서 차단 전후 높이를 다시 비교한다(§9).
 
@@ -914,8 +915,8 @@ div.wiki p { text-wrap: pretty; } /* 점진적 향상 */
 - **한계**: 기준은 콘텐츠 언어가 아니라 UI 언어다. ko·en 등 UI에서 일본어·중국어 일감은 overflow-wrap으로만 줄이 바뀌어 어색한 위치에서 끊길 수 있다. ja·zh UI의 한국어 일감은 음절 단위로 끊긴다. 스크립트 감지에는 theme.js가 필요해 v2 이후에 검토한다.
 - **zh**: 기본값(`word-break: normal`, `line-break: auto`)에 긴 글 셀 `anywhere`만 더한다.
 - keep-all + anywhere의 표 동작은 Chrome에서만 측정했다. Firefox·Safari는 확인 전이다 (미검증).
-- **Phase 1 회귀 (Phase 3에서 처리)**: ko UI 1440px 일감 목록에서 담당자 셀(`td.assigned_to`)의 "Admin Redmine"이 두 줄로 바뀌었다(18·19행, main에서는 한 줄, 2026-10-02 Chrome 154). 제목 셀이 14px이 되고 `overflow-wrap: anywhere`가 붙자, 자동 표 레이아웃이 남는 폭 대부분을 max-content가 아주 큰 제목 셀(일감 #8)에 주기 때문이다. 이름 열은 위 규칙대로 음절 단위로 쪼개지지 않고 어절 사이에서만 줄이 바뀐다. Phase 3 밀도 작업에서 이름 열에 최소 폭(`min-inline-size`)을 주거나, 이 절을 고쳐 짧은 이름 셀에 `white-space: nowrap`을 주는 방법 중에서 정한다.
-- **Phase 1 회귀: 일감 #8 제목 (Phase 3에서 처리)**: 같은 ko UI 1440px 일감 목록에서 공백 없는 일감 #8 제목이 두 줄로 바뀌어 둘째 줄에 "감" 한 음절만 남았다(main에서는 한 줄, 2026-10-02 재검증 스크린샷 검토). 셀 밖으로 넘치지는 않아 Phase 1 기준은 통과한다. 원인은 위 "Admin Redmine"과 같다(14px·500 제목, `overflow-wrap: anywhere`, 자동 표 레이아웃). Phase 3에서 이름 열 최소 폭과 함께 `table.list td.subject`에 `text-wrap: pretty`를 더해 한 음절만 남는 마지막 줄을 피하고, 프로브로 1440·1024·800px에서 다시 확인한다. `anywhere`로 생긴 줄바꿈 위치에도 `pretty`가 듣는지는 확인 전이다 (미검증).
+- **Phase 1 회귀 (Phase 3에서 처리함)**: ko UI 1440px 일감 목록에서 담당자 셀(`td.assigned_to`)의 "Admin Redmine"이 두 줄로 바뀌었다(18·19행, main에서는 한 줄, 2026-10-02 Chrome 154). 제목 셀이 14px이 되고 `overflow-wrap: anywhere`가 붙자, 자동 표 레이아웃이 남는 폭 대부분을 max-content가 아주 큰 제목 셀(일감 #8)에 주기 때문이다. 이름 열은 위 규칙대로 음절 단위로 쪼개지지 않고 어절 사이에서만 줄이 바뀐다. Phase 3 밀도 작업에서 이름 열에 최소 폭(`min-inline-size`)을 주거나, 이 절을 고쳐 짧은 이름 셀에 `white-space: nowrap`을 주는 방법 중에서 정한다. **결정(Phase 3)**: 이름 열(`assigned_to`·`author`·`last_updated_by`·`category`)에 `white-space: nowrap`을 준다. 열이 많아 표가 넓어지면 코어의 `div.autoscroll` 안에서 가로로 스크롤되고 페이지는 넘치지 않는다. 1440·1024·800px와 16열 쿼리에서 이름이 한 줄이었다(부록 "Phase 3 검증 결과").
+- **Phase 1 회귀: 일감 #8 제목 (Phase 3에서 일부 처리, 한계 남음)**: 같은 ko UI 1440px 일감 목록에서 공백 없는 일감 #8 제목이 두 줄로 바뀌어 둘째 줄에 "감" 한 음절만 남았다(main에서는 한 줄, 2026-10-02 재검증 스크린샷 검토). 셀 밖으로 넘치지는 않아 Phase 1 기준은 통과한다. 원인은 위 "Admin Redmine"과 같다(14px·500 제목, `overflow-wrap: anywhere`, 자동 표 레이아웃). Phase 3에서 이름 열 최소 폭과 함께 `table.list td.subject`에 `text-wrap: pretty`를 더해 한 음절만 남는 마지막 줄을 피하고, 프로브로 1440·1024·800px에서 다시 확인한다. `anywhere`로 생긴 줄바꿈 위치에도 `pretty`가 듣는지는 확인 전이다 (미검증). **Phase 3 결과**: `text-wrap: pretty`를 더했다. 띄어쓰기가 있는 제목은 모든 측정에서 마지막 줄에 한 음절만 남지 않았다. 그러나 띄어쓰기가 전혀 없는 제목(일감 #8, ko UI의 일본어 제목 `ログイン画面の日本語メッセージを見直す`)은 정상 줄바꿈 지점이 없어 `overflow-wrap: anywhere`의 비상 줄바꿈만 생기고, Chrome의 `text-wrap: pretty`와 `balance`는 비상 줄바꿈을 조정하지 않았다(둘 다 시험). 그래서 폭에 따라 한 음절(글자)만 남는다(기본 쿼리 800px, 그룹 쿼리 800px, Compact 1440·1024px 등). CSS로 막을 방법을 찾지 못해 한계로 둔다. 검사 스크립트는 이 경우를 실패가 아니라 "known limit"으로 보고한다(부록 "Phase 3 검증 결과").
 
 ### 7.7 문자 사이 간격
 
@@ -1128,7 +1129,7 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 - 행 마커와 인라인 시작선은 처음부터 테두리로 그린다(§6.4, §8.1). 테두리는 이 모드에서도 남는다.
 - 메인 메뉴 선택 탭은 `inset` 그림자 대신 `border-block-end: 3px solid Highlight`를 준다.
 - 이 모드에서는 상단 바·헤더·메뉴 바 배경이 모두 시스템 배경색이 된다. 크롬 경계선(header-divider, nav-border, §6.2)은 테두리로 그리므로 남아 영역을 나눈다. Phase 2에서 Playwright 에뮬레이션으로 확인했다(선택 탭 3px Highlight 테두리, 헤더 위 선, 메뉴 바 위아래 선, 모바일 헤더 아래 선, 부록 "Phase 2 검증 결과"). 실제 Windows 고대비는 확인하지 않았다 (미검증).
-- 상태의 빈 원, 채운 원, 체크는 테두리로 그리므로 이 모드에서도 같은 모양일 것으로 본다(§6.5) (미검증: Phase 3).
+- 상태의 빈 원, 채운 원, 점은 테두리로 그리므로 이 모드에서도 같은 모양이다(Phase 3 에뮬레이션, 부록 "Phase 3 검증 결과").
 - 그라디언트나 배경으로 채우는 글리프(우선순위 막대, 우선순위 "!" 사각형, 기한 초과 "!" 원, 반원, 일정 지연 삼각형, 진행 막대 구간과 빗금)는 `forced-color-adjust: none`을 주고 시스템색(`CanvasText`, `Canvas`, `Highlight`)으로 다시 그린다.
 - 포커스 링은 `outline`이라 남는다. 확인만 한다.
 - 확인: Playwright `emulateMedia({ forcedColors: 'active' })`로 일감 목록, 메인 메뉴, 진행 막대, 선택 행을 본다(§10.4). 이 에뮬레이션이 실제 Windows 고대비 모드와 같은 강제 색을 적용하는지는 확인 전이다 (미검증). Windows 실기 확인은 §10.4 장비 항목에 둔다.
@@ -1136,10 +1137,10 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 ### 8.9 인쇄
 
 코어 `@media print`(7.0.2 2619행)는 크롬만 숨긴다. `print-color-adjust`의 초기값 `economy`는 인쇄 때 배경을 빼는 것을 허용하고(CSS Color Adjust 명세), 브라우저 인쇄 대화상자의 "배경 그래픽"을 끄면 배경색과 그라디언트로 그린 우선순위 막대, 우선순위 "!" 사각형, 기한 초과 "!" 원, 반원, 일정 지연 삼각형, 진행 막대 구간과 빗금이 인쇄물에서 사라진다. 흑백 인쇄는 색 외 단서가 가장 필요한 상황이다.
-- 글리프 가상 요소와 진행 막대 셀에 `print-color-adjust: exact`와 `-webkit-print-color-adjust: exact`를 함께 준다. 테두리로 그린 모양은 배경 그래픽 설정과 상관없이 인쇄될 것으로 본다 (미검증: Phase 3 인쇄 미리보기).
+- 글리프 가상 요소와 진행 막대 셀에 `print-color-adjust: exact`와 `-webkit-print-color-adjust: exact`를 함께 준다. 테두리로 그린 모양은 배경 그래픽 설정과 상관없이 인쇄된다. Phase 3에서 배경 그래픽을 끈 PDF로 확인했다(부록 "Phase 3 검증 결과").
 - 줄무늬, hover, 선택 행, 틴트 배경은 인쇄에서 뺀다(`--ravnus-row-stripe: transparent` 등).
 - 문장 속 링크 밑줄은 유지한다.
-- 확인: 일감 목록 인쇄 미리보기(배경 그래픽 끔)에서 우선순위 5단계, 상태, 기한 초과, 일정 지연이 구분되는지 본다(Phase 3).
+- 확인: 일감 목록 인쇄 미리보기(배경 그래픽 끔)에서 우선순위 5단계, 상태, 기한 초과, 일정 지연이 구분되는지 본다(Phase 3). Phase 3에서 프로브 `--pdf`(배경 그래픽 끔)로 확인했다(부록 "Phase 3 검증 결과").
 
 ---
 
@@ -1157,7 +1158,7 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 | **Phase 0 검증 스파이크 (완료, 2026-10-01)** | 1. CDN `@font-face` 보존: `redmine:7.0.2` 기동 후(컨테이너의 `Redmine::VERSION`을 결과표에 적는다, §4.12) `/assets`로 서빙된 테마 CSS를 받아 절대 https `url()` 92개의 URL 문자열이 생성 파일과 글자 그대로 같은지 비교하고, 폰트 요청이 고정 버전의 `cdn.jsdelivr.net` URL로 가서 200 `font/woff2`를 받는지, 폰트 요청에 실린 `Referer` 헤더 값이 무엇인지 기록(§4.4 README 개인정보 문구의 근거) · 2. CDN 차단 시 폴백과 렌더링: Playwright `page.route`로 `cdn.jsdelivr.net` 요청을 abort했을 때와 응답 없이 붙잡아 둘 때(폐쇄망의 연결 시간 초과 흉내) 글자가 §7.1 시스템 폰트로 그려지는지, 첫 페인트가 차단 전후로 늦어지지 않고 첫 글자 표시가 `swap`의 짧은 block 기간(§4.4)보다 더 늦어지지 않는지, 테마 CSS 말고 기다리는 스타일시트 요청이 없는지. 무응답 경우에는 `page.goto`를 `waitUntil: 'domcontentloaded'`로 부르고(기본값 `'load'`로는 시험이 멈출 수 있다) window `load` 이벤트 시각을 재며, 그동안 일괄 편집의 "지우기" 체크박스가 필드를 비활성화하는지와 저장하지 않은 변경 경고가 등록되는지 본다(둘 다 `load`에 묶여 있다, §4.4) · 3. 덮었을 때 CDN 미요청: 시험용 자식 테마와 `custom.css`에 (가) §4.4의 `"RAVNUS Sans Local"` `@font-face`와 네 폰트 스택(`--ravnus-font-sans`·`-ja`·`-zh`·`-zh-tw`), (나) "시스템 폰트만 쓰기" 블록을 각각 넣고 ko·en·ja·zh·zh-TW UI에서 `cdn.jsdelivr.net` 요청이 0건인지 네트워크 탭으로 확인. 자식 테마의 `url(../fonts/…)` 재작성도 함께 본다 · 4. 페이지별 폰트 조각 수와 바이트: /issues, /projects, 일감 상세, 위키 `타이포그래피_샘플`을 ko·ja·zh UI에서 잰다(작업 자료의 487/307/257KB 재측정) · 5. `custom.css` 스텁 import, 자식 테마 `url(../ravnus/application.css)`와 `url(/themes/ravnus/application.css)` · 6. import 순서: Dart Sass 동작은 로컬 빌드로 확인했으므로(§4.5) 1에서 받은 서빙된 테마 CSS의 주석을 뺀 첫 두 규칙이 코어·`custom.css` import 순서인지만 함께 본다 · 7. 로그인 상태 크롬과 저널·히스토리 마크업: 7.0.2에서 로그인 상태의 상단 바(`#account` 드롭다운 트리거와 아바타, `.profile-menu`의 28px 예약)와 저널·반응·히스토리 탭 마크업을 캡처해 Phase 2·4의 기준으로 기록하고, 익명과 로그인의 상단 바 높이를 잰다. 로그인은 로그인 폼과 비밀번호를 쓰지 않는다. `rails runner`는 `docker compose exec -T -u redmine`으로 실행해 새로 생기는 파일의 소유자를 서버 실행 유저와 맞춘다. 이것으로 `Setting.autologin`(일 수, 기본 0이면 자동 로그인이 꺼져 있다)을 켜고, `Token.create!(user: admin, action: "autologin")`로 만든 토큰 값을 브라우저 쿠키 `autologin`으로 넣는다(쿠키 이름은 `Redmine::Configuration['autologin_cookie_name']` 기본값, `app/controllers/application_controller.rb` 188–202행). admin의 `generate_autologin_token`(`app/models/user.rb` 476행)을 거치는 경로는 시험하지 않았다 (미검증). 토큰 값은 결과표·로그·커밋에 남기지 않고, 시험이 끝나면 `delete_autologin_token`으로 지우거나 `docker compose down -v`로 데이터와 함께 지운다 · 8. Pretendard 로드 상태의 코어 행 높이 재측정 · 9. UI 언어 전환을 하네스에 연결: 익명과 로그인 화면 모두 Playwright `locale`(Accept-Language)로 바꾼다. 시드의 admin 언어가 비어 있어 로그인 화면도 Accept-Language를 따른다. admin 언어 설정은 Accept-Language보다 우선하므로 사용자 언어를 따로 정한 경우를 시험할 때만 바꾸고, DB에 남으므로 시험이 끝나면 비운다(§10.4) · 10. 7.0.2 코어 변수 브리지: 시험용 테마 CSS(§4.5의 크롬 배경 변수 `:root` 재매핑. 실제로는 흰 헤더 재칠과 함께 Phase 2에 싣는다)로 1440px에서 `#header`·`nav.top-menu`, 800px에서 모바일 `#header`·`.flyout-menu`·`.flyout-menu h3`의 계산 배경이 header-bg·topbar-bg인지 확인한다. 배경 셀렉터 폴백을 뺀 시험 CSS로도 같은지(변수만으로 칠해지는지), `custom.css`에서 `--ravnus-header-bg`·`--ravnus-topbar-bg`를 바꾸면 그 변수를 쓰는 다섯 곳의 계산 배경이 따라오는지(여섯째 사용처인 h3 선은 셀렉터로 덮음, §6.2), 변수가 덮지 않는 글자색(메뉴 토글, 프로젝트 이동 제목, flyout 글자·h3 글자)은 셀렉터가 칠하는지, flyout h3 위아래 선의 계산 색이 header-divider인지(7.0.2 코어 값 topbar-bg를 셀렉터가 덮음) 본다. 7.0.1 이미지를 1회 실행해(커밋하지 않는 compose override로 이미지만 바꾼다) 시험 CSS의 폴백만으로 같은 크롬 배경(데스크톱 헤더·상단 바, 800px 모바일 헤더·flyout·h3 띠)이 되는지 미리 본다. 크롬 높이는 최종 CSS가 있어야 비교할 수 있으므로 Phase 2의 7.0.1 spot check(§10.4)에서 잰다 | **완료(`7.0.2.stable`, 결과표는 부록 "Phase 0 검증 결과").** 실패는 2의 `load` 지연과 그에 묶인 저장하지 않은 변경 경고뿐이라 §11 "CDN 차단 때 렌더링이나 `load`가 늦어짐"의 `load` 대응을 적용했다. 1·3·5·6·8·9·10a는 통과했고(5b에서 수정 시각 조건을 새로 찾았다, §4.5), 4는 측정(§4.4), 7은 캡처(§8.4 1·9)다. 실패 시 대응으로 적어 둔 §11 행은 해당 없음으로 기록했다. 실제 네 스택 테마의 덮기 매트릭스와 CDN 차단 전후 텍스트 높이는 Phase 1로, 10b(테마 CSS 안의 브리지 선언, `custom.css` 추종, 글자 셀렉터)와 7.0.1 배경 폴백은 Phase 2로 넘겼다. 결과는 이 문서, `CLAUDE.md`, README 설치 절에 반영했다. 아래는 Phase 1 재측정에 쓸 방법이다(Phase 0은 저장소 밖 임시 디렉터리를 같은 방식의 1회 override로 마운트했다). 폰트 파일이 저장소에 없으므로 `docker-compose.yml`에 상시 폰트 마운트를 추가하지 않는다. 3의 시험용 폰트 파일은 시험할 때 내려받아 `.gitignore`에 추가한 경로(예: `.docker/fonts-test/`)에 두고 커밋하지 않는다(`.docker/`는 추적되는 디렉터리다). `.docker/`는 서비스에 `/ravnus-dev`로 읽기 전용 마운트돼 있어 컨테이너 안에서 보이지만 테마 디렉터리가 아니므로 서빙되지 않는다. 그래서 3에는 1회 실행용 마운트를 따로 준다(커밋하지 않는 compose override 파일을 `docker compose -f docker-compose.yml -f <override> up -d`로 얹는다). `custom.css` 경우는 `.docker/fonts-test`를 `/usr/src/redmine/themes/ravnus/fonts:ro`로 마운트하고(§4.4의 `themes/ravnus/fonts/` 위치), 시험용 `custom.css`는 추적 스텁을 고치지 않고 커밋하지 않는 파일을 `/usr/src/redmine/themes/ravnus/stylesheets/custom.css:ro`에 파일 단위로 마운트한다. 자식 테마 경우는 시험용 자식 테마 디렉터리(예: `.docker/theme-test/`, 안의 `stylesheets/`와, `.gitignore`에 추가한 `fonts/`)를 `/usr/src/redmine/themes/<시험 이름>:ro`로 마운트한다. 커밋할 수 있는 것은 시험용 자식 테마의 CSS뿐이다. 저장소의 테마 런타임 디렉터리(`stylesheets/` 등)에는 시험 중에도 폰트 파일을 넣지 않는다. 컨테이너 안의 `themes/ravnus/fonts/`는 위 1회 실행용 마운트로만 생긴다. 기본 compose 프로젝트와 섞이지 않도록 1회 실행은 별도 프로젝트 이름(`docker compose -p <이름>`)과 다른 포트(`REDMINE_PORT`)로 띄우고, 끝나면 `docker compose -p <이름> down -v`로 지운다 |
 | **Phase 1 기반 (구현·검증, 2026-10-02. axe 코어 위반은 수용, 2026-10-18 결정)** | 토큰 3계층, `@supports` 폴백 생성, `color-scheme`, 타이포(§7 전부), 코어 의미 변수 재매핑 중 `--fonts-main`·`--color-current-marker`만(크롬 배경 변수 둘의 재매핑은 흰 헤더 재칠과 함께 Phase 2, §4.5), Pretendard `@font-face` 생성 스크립트와 생성 파일(§4.4), `custom.css` 빈 스텁, README의 Pretendard 크레딧·OFL 고지와 CDN 안내, CI(빌드 비교 + 명암 게이트 + 폰트 검사), 프로브 하네스와 axe-core 검사 | 모든 페이지에 body line-height가 명시된다. CI 폰트 검사(§10.2 6)가 통과한다. 컴파일된 CSS의 CDN `@font-face` 수가 생성 파일과 같고(v1.3.9는 92개), 모든 폰트 URL이 고정 버전 접두사(생성 스크립트의 버전 상수에서 만든 값, 현재 `https://cdn.jsdelivr.net/npm/pretendard@1.3.9/`)로 시작하며, 외부 스타일시트 `@import`가 없고, 주석을 뺀 첫 두 규칙이 코어·`custom.css` import 순서이며, `"Pretendard Variable"`이 `@font-face` 블록과 네 폰트 스택 토큰 값에만 나온다. 폰트가 로드된 상태와 CDN을 막은 상태 모두에서 글자가 표시된다. CDN을 막기 전후로 텍스트 컨테이너(본문 문단, 메뉴 탭, 제목, 표 셀)의 높이가 같다(Phase 0 2b에서는 `line-height: normal`인 코어 요소만 1–3px 바뀌었다, §7.3). 실제 네 스택 테마로 Phase 0 3의 덮기 매트릭스(`custom.css` 자체 호스팅, "시스템 폰트만 쓰기", 자식 테마 자체 호스팅 × ko·en·ja·zh·zh-TW × 4페이지)를 다시 돌려 모든 경우에 CDN 요청이 0건이고, §4.4 폰트 전송량 표의 ja·zh 값을 다시 잰다(Phase 0은 `custom.css`로 흉내 냈다). 입력·셀렉트·버튼의 계산 폰트가 Pretendard 스택 14px다(지금은 Arial 13.33px). 위키 `타이포그래피_샘플`이 ko·ja·zh·zh-TW UI에서 §7.1대로 대체된다(zh-TW에서 `，。`가 가운데). 일감 #8 제목이 목록과 상세에서 셀 밖으로 넘치지 않는다. 빌드로 생성한 폴백 hex가 OKLab 계산값, sRGB 프로필로 고정한 Chrome의 계산값과 같다. 기본값·프리셋 파생값이 sRGB 밖이면 빌드가 실패한다(§5.4). **검증 결과**(부록 "Phase 1 검증 결과"): 위 기준은 통과했다. 검증에서 찾은 `.contextual` 안 컨트롤 11.7px은 고친 뒤 다시 확인했다(§7.9). 예외는 셋이다. (1) CDN 차단 전후 높이는 이름 붙인 컨테이너는 같고, ko·en에서 기준선 정렬 컨테이너 몇 곳에 0.016–1.03px 차이가 남았다(Phase 2·4·6에서 처리, §7.3). (2) 폴백 hex는 기본값 9개가 모두 같고, Redmine Blue accent-muted만 Chrome이 R 1 차이로 그린다(§5.4 반올림 경계 예외). (3) 공통 기준의 axe-core 검사는 통과하지 못했다. 위반은 모두 main에도 있는 코어 하드코딩 색이다(`#footer` #ADB5BD 2.07:1, 흰 바탕의 `.items`·`p.other-formats`·`.wiki-update-info`·`p.progress-info`·`.journal-details` #868E96 3.32:1, #F8F9FA 바탕의 `#toggle-completed-versions .icon-label`·`em.info` #868E96 3.15:1, 아바타 이니셜의 흰 글자(배경 #FD7E14 2.57:1, #F06595 2.99:1, #F03E3E 3.84:1, #1C7ED6 4.19:1)). 익명(6페이지)과 admin(15페이지) 모두 1440·800px의 실행마다 위반 수가 main과 같아 회귀는 없다. 이 색은 Phase 4·6·8에서 다시 칠한다. **소유자 결정 (2026-10-18, 부록 "결정 기록" #8)**: (가)를 택했다. v0.1.0은 위 (3)의 코어 위반을 받아들이고 릴리스한다. 받아들인 위반은 다음이 전부다. `#footer`(#ADB5BD), 흰 바탕의 `.items`·`p.other-formats`·`.wiki-update-info`·`p.progress-info`·`.journal-details`(#868E96), #F8F9FA 바탕의 `#toggle-completed-versions .icon-label`·`em.info`(#868E96), 아바타 이니셜의 흰 글자(배경 #FD7E14·#F06595·#F03E3E·#1C7ED6). 이 목록 밖의 color-contrast 위반이 생기거나 같은 페이지·폭에서 위반 수가 main보다 늘면 회귀로 보고 기준 실패다. 받아들인 색은 Phase 4·6·8에서 다시 칠한다 |
 | **Phase 2 크롬 (구현·검증, 2026-10-18)** | 상단 메뉴, 헤더, 메인 메뉴, 빠른 검색, 프로젝트 이동, 계정 드롭다운, 새 항목 버튼, 하위 메뉴, 사이드바 스킨과 위치 토큰. 흰 헤더 재칠(§8.4 12)과 §8.6 재칠 전체(모바일 헤더, flyout 글자·링크·h4·아이콘·사용자 링크, flyout h3 글자와 위아래 선, 항목 구분선, 검색 입력, "밝은 flyout" 규칙. 브리지가 flyout 표면과 h3 띠를 칠하므로 같은 릴리스에 싣는다, §4.5), 코어 변수 브리지(크롬 배경 변수 재매핑. 재칠과 같은 릴리스에서 처음 싣는다, §4.5)와 7.0.0–7.0.1 배경 폴백(§6.2, §8.4 "7.0.0–7.0.1 대응"), 크롬 경계선(§6.2), 메인 메뉴 탭과 `#header h1`의 행간(v0.1.0은 메인 메뉴 탭(`line-height: 16px`, 32px 바)과 `#header h1`(1.15)의 코어 행간을 유지했다. nav·header 치수와 함께 정한다, §7.3) | 1440px에서 익명과 로그인의 크롬 요소 위치·높이 차이가 1px 이내다(프로브 측정. 7.0.2 코어의 `.profile-menu` 28px 예약이 테마 상단 바 높이 안에 든다). 7.0.2에서 테마 CSS 안의 브리지 선언으로 코어 변수 재매핑의 계산값(`--color-header-background`·`--color-top-menu-background`)이 header-bg·topbar-bg이고, 그 변수를 쓰는 다섯 곳의 계산 배경이 토큰이다(여섯째 사용처인 h3 선은 셀렉터로 덮음, 1440·800px, §6.2). `custom.css`에서 `--ravnus-header-bg`·`--ravnus-topbar-bg`를 바꾸면 그 다섯 곳의 계산 배경이 따라온다(두 확인은 Phase 0 10b에서 넘겼다. Phase 0은 `<style>` 주입으로만 확인했다). 800px에서 flyout h3 위아래 선의 계산 색이 header-divider다(7.0.2 코어 값 topbar-bg를 셀렉터가 덮음, §8.6). 7.0.1 spot check(§10.4)에서 배경과 높이가 7.0.2와 같다(§8.4 "7.0.0–7.0.1 대응"). 긴 한국어·일본어 프로젝트명에서 제목과 탭이 겹치지 않는다. 기본값이 Signature(흰 헤더 + `#46009B` 상단 바)이고, 크롬 안 색이 모두 header·topbar 토큰에서 온다(기본 Signature와 대안 크롬 프리셋 4종 Ink·Brand-forward·Calm·Redmine Blue, 모두 5종의 스크린샷 + 명암 게이트). 기본 Signature와 Ink 프리셋을 같은 페이지(일감 목록·상세, 익명·로그인)에서 나란히 찍어 비교한다. §8.4 12 표의 행과 §8.6의 헤더 5행·flyout h3에서는 계산 글자색·stroke가 header 토큰이고 header-bg와의 대비가 글자 4.5, 아이콘과 컨트롤 경계 3 이상이다. §8.6의 나머지 flyout 행(검색 입력 행 제외)에서는 topbar 토큰이고 topbar-bg와의 대비가 같은 기준 이상이다(장식선인 토글 구분선과 flyout 항목 구분선은 대비 기준에서 빼고 계산 색만 확인한다: header-divider, currentColor 15%). 검색 입력 행은 표면이 canvas 필드라 따로 본다. 테두리(header-control-border)와 canvas의 대비(4.12), Calm 프리셋에서 테두리와 flyout 표면 bg-subtle의 대비(3.93)가 3 이상이고, 어두운 flyout에서는 canvas 필드와 topbar-bg의 대비(Signature 12.11)가 3 이상이다(계산 스타일 assert, 7.0.2, 1440·800px, 800px은 flyout을 연 상태 포함). 800px에서 flyout을 연 상태로 h3 글자색이 header-fg이고, Calm 프리셋의 flyout 글자·링크·아이콘이 topbar-fg, 검색 입력 테두리가 header-control-border, 입력 안 돋보기가 fg-icon이다(§8.6 "밝은 flyout"). 헤더 영역의 axe-core color-contrast 위반이 0건이다. 상단 바가 밝은 Calm 프리셋에서 계정 트리거의 계산 글자색·아이콘 stroke(hover 포함)가 topbar 토큰이고 topbar-bg 대비가 글자 4.5, 아이콘 3 이상이다(assert, §8.4 12). 800px에서 모바일 헤더가 흰색(header-bg. 7.0.2 코어 기본 #3A78A3이나 7.0.1의 #628db6이 아님)이고 프로젝트 이동 제목·펼침 캐럿·메뉴 토글이 읽히며, 헤더 아래 경계선만 보이고 위 경계선은 없으며 헤더 높이가 64px로 유지된다(§8.6). 프로젝트 이동 목록 항목과 hover의 계산 색이 overlay 토큰이다(§8.3 `!important`). 메뉴 토글의 hover·active 계산 `text-decoration-line`이 `none`이다(테마 `#header a:hover` 밑줄이 새지 않음, §8.6). 헤더와 메뉴 바 사이, 메뉴 바와 본문 사이 경계선이 보이고(1440px, 기본과 Ink), 메뉴 바의 계산 높이가 헤더 예약 패딩(nav-height)과 같다. 헤더와 상단 바의 포커스 가능한 요소에서 포커스 링이 보인다. 헤더(accent)는 브레드크럼, 검색 레이블 링크, 검색 입력 `#q`(코어 `outline: none`을 이기는지 계산 스타일로도 확인), 모바일 토글이다. 상단 바(앰버)는 상단 메뉴 링크와 계정 드롭다운 트리거다. 펼친 계정 드롭다운의 항목은 흰 오버레이 위이므로 accent 링과 overlay 글자색이다. 앰버 링이 흰 헤더나 오버레이로 넘치지 않는다(1440·800px 프로브 스크린샷). 프로젝트 이동 트리거는 코어가 키보드 포커스를 주지 않으므로(§6.2) 목록에서 빼고, 펼친 뒤 `#projects-quick-search`의 focus-ring을 확인한다. 크롬 높이를 최종 CSS로 재측정해 기록한다(프로토타입 기본 120px, Ink 116px, 7.0.2 코어 118px). 사이드바 시작 쪽 전환과 접힘, RTL(he) 셰브런이 7.0.2에서 동작한다. forced-colors에서 선택 탭과 크롬 경계선이 보인다. 기본값 B와 대안 크롬 프리셋 4종의 7.0.2 스크린샷을 README 프리셋 자료로 쓴다(§4.1). CDN을 막기 전후로 `#quick-search` form과 `#project-jump`의 높이가 같다(Phase 1에서는 ko·en에서 +0.31px, §7.3). 메인 메뉴 탭과 `#header h1`의 행간을 nav·header 치수와 함께 정해 §7.3에 적고, 두 요소의 계산 line-height가 명시된 값이며 CDN을 막기 전후로 높이가 같다. **검증 결과**(부록 "Phase 2 검증 결과"): 위 기준을 통과했다. 메뉴 토글 hover의 밑줄은 hover 상태의 계산 값이 아니라 규칙 구조(토글을 헤더 링크 규칙에서 뺌)로 확인했다. 800px flyout 안의 앰버 링은 스크린샷이 아니라 `outline-offset: -2px` 규칙으로만 확인했다. 헤더(`#header`)의 axe 위반은 0건이고, 상단 바의 1건은 로그인 아바타 이니셜(흰 글자/#FD7E14 2.57:1)로 v0.1.0에서 받아들인 코어 위반이다(결정 기록 #8) |
-| **Phase 3 일감 목록** | 밀도, 우선순위·상태·트래커 글리프, 행 상태, 그룹 행·합계(`tr.group`, `span.count`, `span.totals`, `a.toggle-all`, `.query-totals`), 선택 행, 쿼리 필터 컨트롤, 인쇄·forced-colors 대응 | Pretendard가 로드된 상태에서 기본 행이 32±1px, Compact가 27±1px다(코어 25px 바닥은 `td.buttons`의 18px 아이콘과 셀 패딩이 만들므로 함께 계산한다, §4.8). 흑백 스크린샷에서 우선순위 5단계, 상태(기본 2종, opt-in 4종), 기한 초과, 일정 지연(삼각형 글리프, 빗금 막대), 부모, 닫힘, 선택이 모두 구분된다. 같은 구분이 인쇄 미리보기(배경 그래픽 끔)와 forced-colors 에뮬레이션에서도 된다. 선택 행 글자가 4.5 이상, 경계가 3 이상이다. 12열 이상 쿼리에서 제목이 음절 단위로 쪼개지지 않고, 이름 열(담당자·작성자·범주)도 음절 단위로 쪼개지지 않으며, 표가 `#content` 안에서 스크롤된다. 선택 스타일이 코어 `context_menu.css`를 이긴다. `custom.css`의 `tr.status-N` 매핑이 계산 스타일에 반영된다(assert). 그룹 행·합계에서 axe-core color-contrast 위반이 0건이다. ko UI 1440px 일감 목록에서 담당자 "Admin Redmine"이 한 줄이다(Phase 1 회귀, §7.6). `table.list td.subject`에 `text-wrap: pretty`를 더하고, 일감 #8 제목의 마지막 줄에 한 음절만 남지 않는지 프로브로 1440·1024·800px에서 확인한다(Phase 1 회귀, §7.6). CDN을 막기 전후로 `th` 높이가 같다(§7.3). |
+| **Phase 3 일감 목록 (구현·검증, 2026-10-18)** | 밀도, 우선순위·상태·트래커 글리프, 행 상태, 그룹 행·합계(`tr.group`, `span.count`, `span.totals`, `a.toggle-all`, `.query-totals`), 선택 행, 쿼리 필터 컨트롤, 인쇄·forced-colors 대응 | Pretendard가 로드된 상태에서 기본 행이 32±1px, Compact가 27±1px다(코어 25px 바닥은 `td.buttons`의 18px 아이콘과 셀 패딩이 만들므로 함께 계산한다, §4.8). 흑백 스크린샷에서 우선순위 5단계, 상태(기본 2종, opt-in 4종), 기한 초과, 일정 지연(삼각형 글리프, 빗금 막대), 부모, 닫힘, 선택이 모두 구분된다. 같은 구분이 인쇄 미리보기(배경 그래픽 끔)와 forced-colors 에뮬레이션에서도 된다. 선택 행 글자가 4.5 이상, 경계가 3 이상이다. 12열 이상 쿼리에서 제목이 음절 단위로 쪼개지지 않고, 이름 열(담당자·작성자·범주)도 음절 단위로 쪼개지지 않으며, 표가 `#content` 안에서 스크롤된다. 선택 스타일이 코어 `context_menu.css`를 이긴다. `custom.css`의 `tr.status-N` 매핑이 계산 스타일에 반영된다(assert). 그룹 행·합계에서 axe-core color-contrast 위반이 0건이다. ko UI 1440px 일감 목록에서 담당자 "Admin Redmine"이 한 줄이다(Phase 1 회귀, §7.6). `table.list td.subject`에 `text-wrap: pretty`를 더하고, 일감 #8 제목의 마지막 줄에 한 음절만 남지 않는지 프로브로 1440·1024·800px에서 확인한다(Phase 1 회귀, §7.6). CDN을 막기 전후로 `th` 높이가 같다(§7.3). **검증 결과**(부록 "Phase 3 검증 결과"): 위 기준을 통과했다. 예외: 일감 #8처럼 띄어쓰기가 전혀 없는 제목은 폭에 따라 마지막 줄에 한 음절이 남는다(§7.6, CSS로 막을 수 없는 한계). 상태의 "체크"는 10px에서 읽히지 않아 원 안의 점으로 바꿨다(§6.5) |
 | **Phase 4 일감 상세·저널·편집 폼** | `div.issue`, 속성, 설명, 저널, 비공개 노트, 히스토리 탭, 하위·관련 일감 트리, sticky 헤더, 편집 폼, 주 버튼 allowlist, `.tabular` overflow 수정 | `div.issue`가 §8.1 카드 사양대로다(코어 기준선, §8.4 8을 모두 덮음). 트리 제목이 keep-all + anywhere로 넘치지 않는다. 앵커로 이동할 때 sticky 헤더에 가려지지 않는다(인라인 편집으로 이동할 때 포함. 7.0.2 코어에서는 가린다, §8.4 9). 저널·히스토리 탭 스타일은 Phase 0 7b에서 캡처한 7.0.2 셀렉터(§8.4 9)를 기준으로 한다. 긴 사용자 정의 필드 레이블이 줄바꿈된다. 삭제 확인 버튼(users/bulk_destroy, projects/bulk_destroy 포함)이 주 버튼이 아니고 `.btn-alert`는 위험 스타일이다. 편집 폼 입력의 포커스 링이 잘리지 않는다(프로브 스크린샷). CDN을 막기 전후로 `.contextual`과 저널 머리글의 높이가 같다(Phase 1에서는 ko·en에서 `.contextual` +1.03px, 저널 머리글 +0.05px, §7.3). |
 | **Phase 5 위키·본문** | 본문 행간, 제목 체계, 문장 속 링크 밑줄(범위 감사 포함), 코드, 위키 표, 편집기와 jstoolbar(`.jstElements`, `.jstTabs`, 도움말), em 표현, 본문 폭 opt-in | ko 15/1.7, ja·zh 15/1.75가 적용된다. §7.9 대상의 링크에 상시 밑줄이 있고 밑줄 대비가 3:1 이상이다. `pre`·`code`에서 autospace가 꺼진다. 편집기와 렌더 텍스트의 크기·행간이 같다. 툴바 버튼의 hover·포커스가 토큰 색이다. em 시안 비교 후 결정을 기록한다 |
 | **Phase 6 공통 컴포넌트·플로팅** | 플래시, `#errorExplanation`, `.nodata`, `.box`, 배지(12px), 본문 탭, 로그인, 푸터, 페이지 번호, context menu, 드롭다운, 자동완성, jQuery UI | 나중에 로드되는 코어 CSS를 이기는지 계산 스타일 assert로 확인한다. 그림자가 떠 있는 레이어에만 있다. 계산 font-size가 12px 미만인 텍스트 노드가 0개다(간트 제목 열 제외). 본문 탭의 포커스 링과 글자가 잘리지 않는다(행간 덮어쓰기 포함). 핵심 화면의 axe-core color-contrast 위반이 0건이다. CDN을 막기 전후로 배지가 있는 줄의 높이가 같다(Phase 1에서는 ko·en의 `#relations p`가 +0.52px, §7.3). |
@@ -1275,7 +1276,7 @@ JS가 DOM을 건드리면 `responsive.js`가 리사이즈 때마다 하는 detac
 | 결정 (2026-09-26 완료, 2026-10-01 #1·#7 변경) | 소유자 결정 6건(RAVNUS Inc. 브랜드 색 사용 확인 포함, 부록 "결정 기록"). 2026-10-01 기본 크롬을 A(Ink)에서 B(Signature)로 바꾸고 #2·#4를 다시 확인했으며, 지원 범위를 Redmine 7.x 전용으로 바꿈(#7) | `CLAUDE.md` "디자인 결정"·"지원 범위"·"Redmine 7 테마 동작"(7.0.0–7.0.1 폴백 범위 포함)·"진행 상태" 반영. 구현 단계의 문서 수정은 아래 문서 반영 규칙 | — |
 | Phase 0 (완료, 2026-10-01) | 검증 스파이크(CDN `@font-face` 보존·차단 폴백·자체 호스팅 확인, 7.0.2 로그인 크롬 캡처, 7.0.2 코어 변수 브리지 확인, 7.0.1 변수 부재 확인) | 검증 결과표(부록 "Phase 0 검증 결과"), 실패 항목(`load` 지연)의 대응(§11) | 1.5–2일(추정) |
 | v0.1.0 (구현·검증, 2026-10-02. axe 코어 위반 수용, 2026-10-18, §9) | Phase 1 | `src/_tokens.scss` 3계층 + 프리셋 주석, `src/_typography.scss`, 코어 의미 변수 재매핑(`--fonts-main`·`--color-current-marker`만. 크롬 배경 변수는 v0.2.0, §4.5), Pretendard `@font-face` 생성 스크립트 `src/tools/pretendard-font-face.mjs`(`npm run fonts`)와 생성 파일 `src/_pretendard.scss`(CDN `@font-face` 92개, 컴파일 결과 `stylesheets/application.css`에 포함), `stylesheets/custom.css` 빈 스텁, README.md·README.ko.md의 Pretendard 크레딧·OFL 고지와 CDN 안내(§4.4. 개인정보는 Phase 0에서 관찰한 Referer·Origin, 폐쇄망은 요청을 버리는 망의 필수 절차와 증상, 설치 절 첫머리의 `cdn.jsdelivr.net` 접속 확인 단계), 커스터마이즈 절(`custom.css` 방식, `git pull --autostash`, 자식 테마 `@import url(../ravnus/application.css);`와 실패 형식 경고, 자식 테마 `:root`가 부모 `custom.css`를 이긴다는 우선순위, 폰트 블록은 네 폰트 토큰을 모두 바꿈, §4.5), `.github/workflows/`(빌드 비교 + 명암 게이트 + 폰트 검사: CDN `@font-face` 수가 생성 파일과 같음(v1.3.9는 92개), 모든 폰트 URL이 고정 버전 접두사(생성 스크립트의 버전 상수에서 만든 값, 현재 `https://cdn.jsdelivr.net/npm/pretendard@1.3.9/`)로 시작, 외부 스타일시트 `@import` 없음, 주석을 뺀 첫 두 규칙이 코어·`custom.css` import, `"Pretendard Variable"`은 `@font-face`와 네 폰트 스택 토큰에만, §10.2), 프로브 하네스와 axe-core 검사 | 4–4.5일 |
-| v0.2.0 (Phase 2 구현·검증 2026-10-18, Phase 3 남음) | Phase 2–3 | `src/components/_index.scss`, `_chrome.scss`(기본 Signature, 코어 변수 브리지(크롬 배경 변수 재매핑. 흰 헤더 재칠과 같은 릴리스에만 싣고 v0.1.0에는 넣지 않는다, §4.5)와 7.0.0–7.0.1 배경 폴백 §8.4 "7.0.0–7.0.1 대응", 흰 헤더 재칠 목록 §8.4 12와 §8.6 전체(모바일 헤더, flyout 글자·h3 글자와 선·구분선·검색 입력, "밝은 flyout" 규칙. 브리지가 flyout 표면과 h3 띠를 칠하므로 함께 싣는다, §4.5), 크롬 경계선), `_sidebar.scss`, `_issue-list.scss`(그룹 행, forced-colors·인쇄 포함), 흰 헤더 요소별 계산 스타일 assert(800px은 flyout을 연 상태 포함), 기본 Signature와 Ink 프리셋 비교 스크린샷, README 대안 크롬 프리셋 블록(Ink, Brand-forward, Calm, Redmine Blue)과 스크린샷(§4.1), README에 헤더 플러그인과 Ink 프리셋 안내(§11), 강조색을 바꾸면 상단 바 보조 글자와 앰버 링도 바꾼다는 커스터마이즈 안내(§5.4) | 6.5–7.5일 (Phase 2 후 확정) |
+| v0.2.0 (Phase 2·3 구현·검증 2026-10-18) | Phase 2–3 | `src/components/_index.scss`, `_chrome.scss`(기본 Signature, 코어 변수 브리지(크롬 배경 변수 재매핑. 흰 헤더 재칠과 같은 릴리스에만 싣고 v0.1.0에는 넣지 않는다, §4.5)와 7.0.0–7.0.1 배경 폴백 §8.4 "7.0.0–7.0.1 대응", 흰 헤더 재칠 목록 §8.4 12와 §8.6 전체(모바일 헤더, flyout 글자·h3 글자와 선·구분선·검색 입력, "밝은 flyout" 규칙. 브리지가 flyout 표면과 h3 띠를 칠하므로 함께 싣는다, §4.5), 크롬 경계선), `_sidebar.scss`, `_issue-list.scss`(그룹 행, forced-colors·인쇄 포함), 흰 헤더 요소별 계산 스타일 assert(800px은 flyout을 연 상태 포함), 기본 Signature와 Ink 프리셋 비교 스크린샷, README 대안 크롬 프리셋 블록(Ink, Brand-forward, Calm, Redmine Blue)과 스크린샷(§4.1), README에 헤더 플러그인과 Ink 프리셋 안내(§11), 강조색을 바꾸면 상단 바 보조 글자와 앰버 링도 바꾼다는 커스터마이즈 안내(§5.4) | 6.5–7.5일 (Phase 2 후 확정) |
 | v0.3.0 | Phase 4–5 | `_issue.scss`, `_journal.scss`, `_forms.scss`, `_wiki.scss`(jstoolbar 포함), 주 버튼 allowlist | 5일 |
 | v0.4.0 | Phase 6–8 | `_messages.scss`, `_overlays.scss`, `_mobile.scss`, `_misc.scss` | 4–5일 |
 | v1.0.0 | Phase 9 | README.md와 README.ko.md(설치(첫머리의 CDN 접속 확인 다음에 재시작·precompile 트러블슈팅), 커스터마이즈 3방법, 업데이트 절차(`git pull --autostash`), 프리셋 블록, Pretendard 크레딧·OFL 고지, CDN 폰트 안내(개인정보와 Phase 0에서 관찰한 Referer, CSP `font-src`, 폐쇄망 폴백, 중국 본토), 폰트 자체 호스팅 레시피와 "시스템 폰트만 쓰기" 블록(`custom.css`·자식 테마), 테마 CSS 캐시 권장), 스크린샷(`.github/` 또는 images 브랜치), redmine.org Theme_List 항목, 태그 | 2.5–3일 |
@@ -1412,6 +1413,45 @@ v1.0까지 약 24–27인일로 추정한다 (미검증). 원래 Ink & Paper 추
 
 ---
 
+## 부록: Phase 3 검증 결과 (2026-10-18, Redmine 7.0.2)
+
+> 환경: 로컬 도커 `redmine:7.0.2`(127.0.0.1 전용), 설치된 Google Chrome headless, `npm run probe`와 `.docker/probe/list-check.js`. 로컬 측정이며 운영 검증이 아니다.
+> 쿼리: 상태 전체 + 유형·상태·우선순위·제목·담당자·완료일·진척도·변경 열(이하 "목록 쿼리"), 시드 기본 쿼리, 담당자별 그룹 + 추정시간 합계(이하 "그룹 쿼리"), 16열 쿼리(프로젝트부터 등록일까지). 프리셋은 컴파일된 프리셋 주석을 `--inject-css`로 넣었다.
+
+| 항목 | 결과 | 조건 | 비고 |
+|---|---|---|---|
+| 목록 검사 전체 | 통과(리뷰 반영 뒤 66회, 2,525항목, 실패 0) | 기본·Compact·Redmine Blue·Ink × 1440·1024·800px × 익명·admin(목록 쿼리와 시드 기본 쿼리), 그룹 쿼리 1440·1024·800px, 16열 쿼리, README 상태·트래커 매핑을 넣은 목록 쿼리 1440·800px, CDN 차단 전후, 크롬 회귀 | 아래 항목과 "known limit" 보고(띄어쓰기 없는 제목)만 남았다 |
+| 행 높이(§4.8) | 기본 32.3px, 머리 행 31.84px. Compact 26.84px, 머리 행 27.84px | Pretendard 로드, 한 줄 행 전부 | 목표 32±1, 27±1. 첫 구현은 행 구분선 1px가 더해져 33.3px였고, 위 패딩에서 1px를 뺐다(§4.8) |
+| 우선순위 글리프(§6.4) | 통과 | 위 매트릭스 | lowest 막대 1개, high3 2개, high2 3개와 3px 행 마커, highest 14px 사각형(danger-solid)·셀 글자 danger-fg·6px 행 마커, default 글리프 없음. 시드에 모든 위치가 있다 |
+| 상태 글리프(§6.5) | 통과 | 위 매트릭스 | 열린 행 빈 원(1.5px는 1배율에서 1px로 그려진다), 닫힌 행 채운 원(5px 테두리), 닫힌 행 글자 fg-subtle. 체크는 10px에서 읽히지 않아 원 안 점으로 바꿨다 |
+| `custom.css` 행 매핑(§5.6) | 통과 | `custom.css`에 status-2(반원), status-3(점), tracker-1(빨강)을 넣고 재시작 | 매핑 값이 테마 기본값을 이겼다. 시험 뒤 `custom.css`를 비웠다 |
+| 기한 초과·일정 지연·진행 막대 | 통과 | 위 매트릭스 | 기한 초과 danger-fg와 "!" 원(danger-solid), 일정 지연 warning-fg와 삼각형(clip-path), 완료 구간 progress-closed(트랙 대비 3 이상), 지연 행 완료 구간 빗금, 트랙 progress-track. 진행 막대 13px(목록 셀 패딩이 안쪽 표에 걸리던 문제를 고친 뒤) |
+| 선택 행(§6.5) | 통과 | 열린·닫힌·기한 초과·일정 지연·highest 행을 선택 상태로 만듦 | 배경 accent-muted가 코어 `context_menu.css`를 이기고, 링크 list-link와 모든 글자 칸이 4.5 이상, border-control 대 accent-muted 3 이상(Redmine Blue 포함) |
+| 그룹 행·합계 | 통과, axe 0건 | 그룹 쿼리 1440·1024·800px, axe 범위 `table.list`·`.query-totals` | 그룹 배경 bg-subtle, 이름 fg-default, 개수 배지 bg-inset 위 fg-muted, 합계 fg-muted·값 fg-default 600, 모두 펼치기 링크 link |
+| 이름 열 줄바꿈 | 통과 | 1440·1024·800px, 16열 쿼리 | "Admin Redmine"을 포함해 이름이 모두 한 줄이다 |
+| 넓은 쿼리 | 통과 | 16열, 1440·1024·800px | 표(1,575–1,609px)가 `div.autoscroll` 안에서 스크롤되고 페이지 가로 넘침이 없다. 제목 열은 최소 폭(12em) 이상 |
+| 제목 마지막 줄 | 띄어쓰기 있는 제목 통과. 띄어쓰기 없는 제목은 한계 | 위 매트릭스 | 일감 #8과 ko UI의 일본어 제목이 일부 폭(기본 800px, 그룹 800px, Compact 1440·1024px)에서 한 음절(글자)로 끝난다. `text-wrap: pretty`·`balance` 모두 비상 줄바꿈에는 듣지 않았다(§7.6) |
+| CDN 차단 전후 높이 | 차이 0 | ko·en·ja·zh-TW × 1440px, 목록 쿼리 | 행 32.3px, 머리 행 31.84px. 처음에는 머리 행이 차단 때 32.95px(+0.98)였고, 정렬 아이콘 링크를 위쪽 정렬로 바꿔 고쳤다(§7.3) |
+| forced-colors(에뮬레이션) | 통과(화면 검토) | 1440px, 목록 쿼리 | 우선순위 막대·사각형, 상태 원·점, 기한 초과·지연 글리프, 진행 막대(트랙 테두리와 빗금), 행 마커가 모두 보인다. 이 모드에서는 색 비교 검사가 의미 없어 화면으로 판단했다. 실제 Windows 고대비는 확인하지 않았다 (미검증) |
+| 인쇄(배경 그래픽 끔) | 통과(PDF 검토) | `--pdf`, 1440px, 목록 쿼리 | 글리프·진행 막대·행 마커가 인쇄된다. 처음에는 체크박스 열이 인쇄에서 숨어 행 마커가 사라졌고, 인쇄에서는 `#` 칸(모든 일감 쿼리에 있다)에 그리도록 고쳤다. 인쇄 미디어에서 줄무늬 행 배경이 투명인 것을 계산 스타일로 확인했다(배경 그래픽을 켜고 인쇄해도 줄무늬가 빠진다) |
+| 흑백 | 통과(화면 검토) | `filter: grayscale(1)` 주입, 1440px | 우선순위 단계, 상태, 기한 초과, 일정 지연, 부모(굵게), 닫힘이 모양과 굵기로 구분된다 |
+| 크롬 회귀 | 통과 | `chrome-check.js` 1440·800px, admin | Phase 2 크롬 검사 실패 0 |
+| CI 검사 | 통과 | `npm run check` | 프리셋 블록이 영·한 각 7개(Compact, Classic stripes off 추가) |
+
+| 독립 리뷰 뒤 수정 | 수정 후 재검증 통과 | 위 전체 검사, 인쇄 미디어 계산 스타일, `/issues/14`(늦은 부모와 하위 일감) | (1) 상세 화면에서 늦은 부모의 빗금이 하위·관련 일감 막대에 번지던 셀렉터를 `div.issue.behind-schedule .attributes`로 좁혔다. `/issues/14`에서 부모와 늦은 하위 일감만 빗금이다. (2) 일감 목록(`table.list.odd-even`)의 `.odd`/`.even` 줄무늬가 인쇄 규칙에 빠져 있었다. (3) 인쇄 행 마커를 `#` 칸으로 한정해 다른 칸의 `::before` 글리프와 겹치지 않게 했다. (4) 목록 셀 패딩이 그룹 행의 코어 간격(0.8em 0.5em)을 덮어 다시 선언했다. (5) forced-colors에서 진행 막대 두 구간 사이 선을 `Canvas`로 했다. (6) 코어와 같은 기한 초과 규칙의 중복을 지웠다. (7) 프로브 `--pdf` 실패를 실패로 센다. (8) 검사 스크립트가 상태·트래커 매핑이 있으면 오탐하던 것과 행 높이 목표 판단을 고쳤다 |
+
+**구현 메모**(설계와 다르거나 설계가 정하지 않은 것)
+- 상태 칸은 원과 점을 칸 가운데 기준 절대 위치로 그리느라 가운데 정렬 대신 시작 쪽 정렬이다(머리 칸은 코어대로 가운데).
+- 트래커 칸은 매핑이 없어도 8px 사각 점을 fg-muted로 그린다. 매핑하면 점과 글자가 함께 바뀐다.
+- 쿼리 필터 컨트롤은 일감 목록 범위(`#query_form_content`)에서만 높이 1.75rem, border-control 테두리, radius, 포커스 링을 준다. 다른 폼은 Phase 4다.
+- 프로브에 `--pdf`(배경 그래픽을 끈 PDF 인쇄)를 더했다.
+
+**남은 것**
+- v0.2.0 릴리스(Phase 2–3).
+- 재지 않은 것 (미검증): Firefox·Safari, 실제 Windows 고대비와 실제 인쇄, 2배율 화면, ja·zh UI의 목록 스크린샷 검토, 간트·로드맵 화면의 진행 막대(색만 바뀜, Phase 8).
+
+---
+
 ## 부록: 결정 기록
 
 2026-09-26 소유자 결정 6건. 모두 최종 결정이다. Phase 0 결과는 구현 경로나 폴백만 바꿀 수 있고 결정은 바꾸지 않는다는 원칙에 따라, 2026-10-01 Phase 0은 결정을 바꾸지 않았고, #4의 구현에 요청을 버리는 폐쇄망의 필수 절차만 더했다(부록 "Phase 0 검증 결과", §11). 결정을 바꿀 때는 소유자가 정하고 이 표와 `CLAUDE.md`를 먼저 고친다. 그 절차로 2026-10-01 소유자가 #1을 바꾸고 #2·#4를 다시 확인했으며, 지원 범위를 바꿨다(#7). 아래 첫 표는 2026-09-26 원래 결정의 이력이고, 현재 결정은 두 번째 표가 우선한다.
@@ -1443,6 +1483,8 @@ v1.0까지 약 24–27인일로 추정한다 (미검증). 원래 Ink & Paper 추
 ---
 
 ## 부록: 개정 이력
+
+2026-10-18 Phase 3(일감 목록) 구현·검증 반영: 부록 "Phase 3 검증 결과" 추가, 머리말·§1 다음 할 일·§9 Phase 3·§12의 상태, §1 표와 §4.8 행 높이 측정값과 패딩 계산, §5.6 매핑 확인, §6.4 행 마커를 가상 요소 테두리로 결정, §6.5 체크를 원 안 점으로 변경, §7.3 `th` 높이 처리, §7.6 이름 열 nowrap 결정과 띄어쓰기 없는 제목의 한계, §8.8·§8.9 확인.
 
 2026-10-18 Phase 2(크롬) 구현·검증 반영: 부록 "Phase 2 검증 결과" 추가, 머리말·§1 다음 할 일·§9 Phase 2·§12의 상태, §4.1·§8.5 크롬 높이 측정값, §4.3·§8.4 "7.0.0–7.0.1 대응"·§8.6·§8.8의 Phase 2 확인, §7.3 메인 메뉴 탭과 헤더 h1 행간 결정과 CDN 차단 전후 높이 표, §8.6 메뉴 토글 구현, 부록 "Phase 1 검증 결과"의 axe 결정 표시.
 

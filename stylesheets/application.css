@@ -11,9 +11,10 @@
  * color-mix(). Derived tokens (hover, active, tints) follow the knobs.
  * See the README for updating with local edits, child themes and fonts.
  * This release ships the tokens, the typography, the chrome (top bar,
- * header, menu bar, mobile header and flyout) and the sidebar; the styles
- * that paint links, buttons and lists with these colors come later. Knobs
- * marked * are read only by styles that are not in this release yet.
+ * header, menu bar, mobile header and flyout), the sidebar and the issue
+ * list; the styles that paint links, buttons, forms and the issue page with
+ * these colors come later. Knobs marked * are read only by styles that are
+ * not in this release yet.
  *
  * 1. Brand
  *    --ravnus-accent: #46009B
@@ -39,14 +40,14 @@
  *    --ravnus-word-break: keep-all (left unset in ja and zh UIs, so normal there)
  * 3. Layout
  *    --ravnus-sidebar-at-start: 0 (1 = sidebar at the inline start)
- *    --ravnus-row-pad-y: 0.375rem *
+ *    --ravnus-row-pad-y: 0.375rem
  *    --ravnus-font-size-cell: 0.8125rem
  *    --ravnus-font-size-cell-subject: 0.875rem
- *    --ravnus-row-stripe: var(--ravnus-bg-subtle) = #FAF9FC *
- *    --ravnus-list-link: var(--ravnus-link) = #215DB3 *
+ *    --ravnus-row-stripe: var(--ravnus-bg-subtle) = #FAF9FC
+ *    --ravnus-list-link: var(--ravnus-link) = #215DB3
  *    --ravnus-prose-max-inline-size: none *
  *    --ravnus-subject-min-inline-size: 12em
- * 4. Domain hooks *: map issue rows by status or tracker id, for example
+ * 4. Domain hooks: map issue rows by status or tracker id, for example
  *    tr.status-2 {
  *      --ravnus-status-color: var(--ravnus-status-progress-color);
  *      --ravnus-status-fill: 0.5; --ravnus-status-check: 0;
@@ -267,8 +268,6 @@
  * of the dark-header presets is color-mix(in oklch, header-bg 72%, black).
  * Recompute a literal when you change the color it comes from, and do not
  * paste color-mix() itself.
- * Compact and Classic stripes off need the issue list styles, which are not
- * in this release yet.
  */
 /*
  * Preset: Ink (A). Ink violet header and top bar with light text, like the core header.
@@ -1978,4 +1977,429 @@ body.has-main-menu #header {
 
 #sidebar-switch-button:hover {
   background-color: var(--ravnus-bg-hover);
+}
+
+table.list,
+.table-list {
+  border-block-color: var(--ravnus-border-default);
+}
+
+table.list th,
+.table-list-header {
+  padding-block: var(--ravnus-row-pad-y);
+  background-color: var(--ravnus-bg-subtle);
+  color: var(--ravnus-fg-muted);
+  border-block-end: 1px solid var(--ravnus-border-default);
+  line-height: var(--ravnus-line-height-cell);
+}
+
+table.list th a {
+  color: inherit;
+}
+
+table.list th a.icon {
+  vertical-align: top;
+}
+
+table.list td {
+  padding-block: calc(var(--ravnus-row-pad-y) - 1px) var(--ravnus-row-pad-y);
+  border-block-start-color: var(--ravnus-border-muted);
+}
+
+table.list:not(.odd-even) tbody tr:nth-child(odd),
+.odd {
+  background-color: var(--ravnus-bg-canvas);
+}
+
+table.list:not(.odd-even) tbody tr:nth-child(even),
+.even {
+  background-color: var(--ravnus-row-stripe);
+}
+
+.box table.list:not(.odd-even) tbody tr:nth-child(even),
+.box .even {
+  background-color: var(--ravnus-bg-canvas);
+}
+
+table.list:not(.odd-even) tbody tr:nth-child(odd):hover,
+.odd:hover,
+table.list:not(.odd-even) tbody tr:nth-child(even):hover,
+.even:hover {
+  background-color: var(--ravnus-bg-hover);
+}
+
+table.list td.subject {
+  text-wrap: pretty;
+}
+
+table.list td:is(.assigned_to, .author, .last_updated_by, .category) {
+  white-space: nowrap;
+}
+
+:where(table.list tr.issue) {
+  --ravnus-status-color: var(--ravnus-status-open-color);
+  --ravnus-status-fill: 0;
+  --ravnus-status-check: 0;
+  --ravnus-tracker-color: var(--ravnus-fg-muted);
+  --ravnus-priority-color: transparent;
+  --ravnus-row-marker-width: 0;
+  --ravnus-row-marker-color: transparent;
+}
+
+:where(table.list tr.issue.closed) {
+  --ravnus-status-color: var(--ravnus-status-closed-color);
+  --ravnus-status-fill: 1;
+}
+
+:where(table.list tr.issue:is(.priority-lowest, [class*=" priority-low"])) {
+  --ravnus-priority-color: var(--ravnus-priority-low-fg);
+}
+
+:where(table.list tr.issue:is(.priority-high3, [class*=" priority-high"])) {
+  --ravnus-priority-color: var(--ravnus-priority-high3-fg);
+}
+
+:where(table.list tr.issue.priority-high2) {
+  --ravnus-priority-color: var(--ravnus-priority-high2-fg);
+  --ravnus-row-marker-width: 3px;
+  --ravnus-row-marker-color: var(--ravnus-priority-high2-fg);
+}
+
+:where(table.list tr.issue.priority-highest) {
+  --ravnus-priority-color: var(--ravnus-priority-highest-fg);
+  --ravnus-row-marker-width: 6px;
+  --ravnus-row-marker-color: var(--ravnus-priority-highest-fg);
+}
+
+table.list tr.issue > td:first-child {
+  position: relative;
+}
+
+table.list tr.issue > td:first-child::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color);
+  pointer-events: none;
+}
+
+table.list tr.issue td.priority::before {
+  content: "";
+  display: inline-block;
+  inline-size: 12px;
+  block-size: 10px;
+  margin-inline-end: var(--ravnus-space-075);
+  vertical-align: -1px;
+  background-repeat: no-repeat;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.list tr.issue.priority-default td.priority::before {
+  display: none;
+}
+
+table.list tr.issue:is(.priority-lowest, [class*=" priority-low"]) td.priority::before {
+  background-image: linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color));
+  background-size: 3px 4px;
+  background-position: 0 100%;
+}
+
+table.list tr.issue:is(.priority-high3, [class*=" priority-high"]) td.priority::before {
+  background-image: linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color)), linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color));
+  background-size: 3px 4px, 3px 7px;
+  background-position: 0 100%, 4.5px 100%;
+}
+
+table.list tr.issue:is(.priority-high2) td.priority::before {
+  background-image: linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color)), linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color)), linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color));
+  background-size: 3px 4px, 3px 7px, 3px 10px;
+  background-position: 0 100%, 4.5px 100%, 9px 100%;
+}
+
+table.list tr.issue.priority-highest td.priority::before {
+  inline-size: 14px;
+  block-size: 14px;
+  vertical-align: -2px;
+  border-radius: var(--ravnus-radius-sm);
+  background-color: var(--ravnus-danger-solid);
+  background-image: linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid)), linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid));
+  background-size: 2px 6px, 2px 2px;
+  background-position: 6px 3px, 6px 10px;
+}
+
+table.list tr.issue.priority-highest td.priority {
+  color: var(--ravnus-priority-highest-fg);
+  font-weight: 600;
+}
+
+table.list tr.issue td.status {
+  position: relative;
+  text-align: start;
+  padding-inline-start: calc(var(--ravnus-space-100) + 10px + var(--ravnus-space-075));
+}
+
+table.list tr.issue td.status::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: var(--ravnus-space-100);
+  inset-block-start: calc(50% - 5px);
+  box-sizing: border-box;
+  inline-size: 10px;
+  block-size: 10px;
+  border: max(1.5px, (var(--ravnus-status-fill) - 0.5) * 10px) solid var(--ravnus-status-color);
+  border-radius: 50%;
+  background: linear-gradient(to top, var(--ravnus-status-color) calc(var(--ravnus-status-fill) * 100%), transparent 0);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.list tr.issue td.status::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(var(--ravnus-space-100) + 3px);
+  inset-block-start: calc(50% - 2px);
+  inline-size: 4px;
+  block-size: 4px;
+  border: 2px solid var(--ravnus-status-color);
+  border-radius: 50%;
+  box-sizing: border-box;
+  opacity: var(--ravnus-status-check);
+  pointer-events: none;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.list tr.issue td.tracker {
+  color: var(--ravnus-tracker-color);
+}
+
+table.list tr.issue td.tracker::before {
+  content: "";
+  display: inline-block;
+  inline-size: 8px;
+  block-size: 8px;
+  margin-inline-end: var(--ravnus-space-075);
+  border: 4px solid var(--ravnus-tracker-color);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+table.list tr.issue.closed td {
+  color: var(--ravnus-fg-subtle);
+}
+
+table.list tr.issue.overdue td.due_date {
+  color: var(--ravnus-danger-fg);
+}
+
+table.list tr.issue.overdue td.due_date::before,
+table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+  content: "";
+  display: inline-block;
+  inline-size: 10px;
+  block-size: 10px;
+  margin-inline-end: var(--ravnus-space-050);
+  vertical-align: -1px;
+  background-repeat: no-repeat;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.list tr.issue.overdue td.due_date::before {
+  border-radius: 50%;
+  background-color: var(--ravnus-danger-solid);
+  background-image: linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid)), linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid));
+  background-size: 1.5px 4px, 1.5px 1.5px;
+  background-position: 4.25px 2px, 4.25px 7px;
+}
+
+table.list tr.issue.behind-schedule:not(.overdue) td.due_date {
+  color: var(--ravnus-warning-fg);
+}
+
+table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+  background-color: var(--ravnus-warning-solid);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+table.list table.progress td {
+  padding-block: 0;
+}
+
+table.progress td {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.progress td.closed {
+  background: var(--ravnus-progress-closed);
+}
+
+table.progress td.done {
+  background: var(--ravnus-progress-done);
+}
+
+table.progress td.todo {
+  background: var(--ravnus-progress-track);
+}
+
+table.progress td.closed + td.done {
+  border-inline-start: 1px solid var(--ravnus-bg-canvas);
+}
+
+:is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
+  background: repeating-linear-gradient(45deg, var(--ravnus-progress-behind) 0 3px, color-mix(in srgb, var(--ravnus-progress-behind) 55%, var(--ravnus-bg-canvas)) 3px 6px);
+}
+
+p.percent,
+p.progress-info {
+  color: var(--ravnus-fg-muted);
+}
+
+table.list tr.context-menu-selection,
+table.list tr.context-menu-selection:hover {
+  background-color: var(--ravnus-accent-muted) !important;
+  color: var(--ravnus-fg-default) !important;
+}
+
+table.list tr.context-menu-selection a,
+table.list tr.context-menu-selection a:hover {
+  color: var(--ravnus-list-link) !important;
+}
+
+table.list tr.context-menu-selection svg.icon-svg {
+  stroke: currentColor !important;
+}
+
+tr.group td {
+  padding-block: 0.8em 0.5em;
+  background-color: var(--ravnus-bg-subtle);
+  border-block-end: 1px solid var(--ravnus-border-default);
+  color: var(--ravnus-fg-default);
+}
+
+table.list tbody tr.group:hover {
+  background-color: var(--ravnus-bg-subtle);
+}
+
+tr.group span.name {
+  font-weight: 600;
+}
+
+tr.group span.count {
+  inset-block-end: 0;
+  padding-inline: var(--ravnus-space-075);
+  border-radius: var(--ravnus-radius-full);
+  background: var(--ravnus-bg-inset);
+  color: var(--ravnus-fg-muted);
+}
+
+tr.group span.totals,
+.query-totals {
+  color: var(--ravnus-fg-muted);
+}
+
+tr.group span.totals .value,
+.query-totals .value {
+  color: var(--ravnus-fg-default);
+  font-weight: 600;
+}
+
+tr.group a.toggle-all {
+  color: var(--ravnus-link);
+}
+tr.group a.toggle-all:hover {
+  color: var(--ravnus-link-hover);
+  text-decoration-line: underline;
+}
+
+tr.group .expander svg.icon-svg {
+  stroke: var(--ravnus-fg-icon);
+}
+
+#query_form_content :is(input[type=text], input[type=date], input[type=number], select) {
+  min-block-size: var(--ravnus-control-height-sm);
+  border: 1px solid var(--ravnus-border-control);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+}
+
+#query_form_content :is(input[type=text], input[type=date], input[type=number], select):focus-visible {
+  outline: 2px solid var(--ravnus-focus-ring);
+  outline-offset: 1px;
+}
+
+#query_form_content input[type=checkbox] {
+  accent-color: var(--ravnus-accent);
+}
+
+#query_form_content legend {
+  color: var(--ravnus-fg-default);
+}
+
+@media (forced-colors: active) {
+  table.list tr.issue td.priority::before,
+  table.list tr.issue td.status::before,
+  table.list tr.issue td.status::after,
+  table.list tr.issue td.due_date::before,
+  table.progress td {
+    forced-color-adjust: none;
+  }
+  table.list tr.issue td.priority::before {
+    --ravnus-priority-color: CanvasText;
+  }
+  table.list tr.issue.priority-highest td.priority::before {
+    background-color: CanvasText;
+    background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
+  }
+  table.list tr.issue td.status::before,
+  table.list tr.issue td.status::after {
+    --ravnus-status-color: CanvasText;
+  }
+  table.list tr.issue.overdue td.due_date::before {
+    background-color: CanvasText;
+    background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
+  }
+  table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+    background-color: CanvasText;
+  }
+  table.progress {
+    border: 1px solid CanvasText;
+  }
+  table.progress td.todo {
+    background: Canvas;
+  }
+  table.progress td:is(.closed, .done) {
+    background: CanvasText;
+  }
+  table.progress td.closed + td.done {
+    border-inline-start-color: Canvas;
+  }
+  :is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
+    background: repeating-linear-gradient(45deg, CanvasText 0 3px, Canvas 3px 6px);
+  }
+}
+@media print {
+  html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)),
+  html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)):hover,
+  html body table.list tbody tr:is(.odd, .even),
+  html body table.list tbody tr:is(.odd, .even):hover {
+    background-color: transparent;
+  }
+  table.list tr.context-menu-selection {
+    background-color: transparent !important;
+  }
+  table.list tr.issue > td.checkbox.hide-when-print + td.id {
+    position: relative;
+  }
+  table.list tr.issue > td.checkbox.hide-when-print + td.id::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color);
+  }
 }
