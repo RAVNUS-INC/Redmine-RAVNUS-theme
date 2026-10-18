@@ -14,10 +14,18 @@
     "url": "https://github.com/RAVNUS-INC/Redmine-RAVNUS-theme/issues"
   },
   "scripts": {
-    "build": "sass --no-source-map --no-charset --style=expanded --fatal-deprecation=import src/application.scss stylesheets/application.css",
-    "watch": "npm run build -- --watch"
+    "build": "node src/tools/build.mjs",
+    "watch": "node src/tools/build.mjs --watch",
+    "fonts": "node src/tools/pretendard-font-face.mjs",
+    "check": "npm run check:build && npm run check:fonts && npm run check:contrast",
+    "check:build": "npm run build && git diff --exit-code -- stylesheets/application.css && git ls-files --error-unmatch stylesheets/application.css",
+    "check:fonts": "node src/tools/check-fonts.mjs",
+    "check:contrast": "node src/tools/contrast-gate.mjs",
+    "probe": "node .docker/probe/probe.mjs"
   },
   "devDependencies": {
+    "axe-core": "4.13.0",
+    "playwright-core": "1.63.0",
     "sass": "1.105.0"
   }
 }

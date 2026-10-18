@@ -1,19 +1,30 @@
-// RAVNUS — Redmine theme entry point.
+// RAVNUS: Redmine theme entry point.
 // `npm run build` compiles this file to stylesheets/application.css.
 //
 // Compiled output order:
-//   1. Redmine core stylesheet (the plain CSS @import below)
-//   2. Design tokens (:root custom properties) — the user customization surface
-//   3. Theme layers that override the core (typography, then components)
+//   1. Redmine core stylesheet, then the user stub custom.css (the two plain
+//      CSS imports at the end of this file; Dart Sass hoists them to the top)
+//   2. Design tokens: knob guide, :where(:root) defaults, color-mix()
+//      fallback, core variable bridge, preset comments (_tokens.scss)
+//   3. Pretendard CDN @font-face rules (_pretendard.scss, generated)
+//   4. Typography (_typography.scss)
+// Write only // comments in this file: the token guide must be the first
+// comment after the imports.
 
 @use "tokens";
+@use "pretendard";
 @use "typography";
 
 // Load the Redmine core stylesheet before every theme rule.
-// - Keep the url() form: Redmine 6.0+ rewrites url() references in theme CSS
-//   at boot and serves this as /assets/application-<digest>.css.
-//   A plain string (@import "...") is not rewritten.
+// - Keep the url() form: Redmine rewrites url() references in theme CSS at
+//   boot and serves this as /assets/application-<digest>.css. A plain string
+//   (@import "...") is not rewritten.
 // - Sass allows no rule before @use, so this line comes after the @use rules.
 //   Dart Sass hoists plain CSS imports, so the compiled file still starts with
 //   it (`--no-charset` keeps an @charset line from being emitted above it).
 @import url(../../../stylesheets/application.css);
+
+// The user stub (stylesheets/custom.css, a tracked empty file) must be the
+// second rule. Its :root tokens then beat the :where(:root) defaults below,
+// and a child theme that imports this theme still comes after both.
+@import url(custom.css);

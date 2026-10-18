@@ -24,18 +24,22 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 
 - **SCSS는 작성용이다.** 컴포넌트별 partial로 나누고, 공통 스타일은 mixin으로 작성한다. 우선순위 위치 클래스(`priority-lowest` 등)와 태그 색 이름은 map + `@each`로 만든다. 설치마다 id가 다른 상태·트래커 색은 사용자 CSS(`custom.css`)의 행 매핑으로 제공한다.
 - **CSS 변수는 사용자 커스터마이즈용이다.** 색·폰트·라운드·간격 등 디자인 토큰은 SCSS 변수가 아니라 `--ravnus-*` CSS 변수로 출력한다. 기본 토큰은 명시도 0인 `:where(:root)`에 선언해, 사용자가 빌드 없이 `stylesheets/custom.css`나 자식 테마의 `:root { … }`로 덮어 브랜드를 바꿀 수 있어야 한다.
-- **Dart Sass + `@use`/`@forward` 모듈 문법만 쓴다.** Sass `@import`는 deprecated이므로 금지한다. 빌드 스크립트의 `--fatal-deprecation=import`가 이를 에러로 막는다.
+- **Dart Sass + `@use`/`@forward` 모듈 문법만 쓴다.** Sass `@import`는 deprecated이므로 금지한다. 빌드 스크립트(`src/tools/build.mjs`, `npm run build`)가 이 deprecation을 에러로 처리해 막는다(`fatalDeprecations: ["import"]`, CLI의 `--fatal-deprecation=import`).
 - **코어 import**는 `@import url(../../../stylesheets/application.css);`로 쓰고, 컴파일 결과 파일의 첫 줄이어야 한다.
   - 반드시 `url()` 형태로 쓴다. Redmine은 테마 CSS의 `url()`만 재작성하므로 `@import "..."` 문자열 형태는 동작하지 않는다.
   - Sass는 `@use` 앞에 어떤 규칙도 허용하지 않으므로, 엔트리(`src/application.scss`)에서는 `@use` 뒤에 쓴다. Dart Sass가 plain CSS import를 출력 맨 위로 끌어올린다.
-  - 출력에 비ASCII 문자가 있으면 Sass가 `@charset`을 첫 줄에 넣으므로 빌드는 `--no-charset`을 쓴다.
+  - 출력에 비ASCII 문자가 있으면 Sass가 `@charset`을 첫 줄에 넣으므로 빌드는 charset 출력을 끈다(`charset: false`, CLI의 `--no-charset`).
+  - 빌드는 Sass CLI가 아니라 `src/tools/build.mjs`(Sass JS API)로 한다. 컴파일에 성공했을 때만 `stylesheets/application.css`를 쓰고, 실패하면(예: 파생값 sRGB 검사) 파일을 그대로 두고 종료 코드 1을 낸다. Sass CLI는 실패하면 출력 파일을 오류 표시용 CSS로 바꾸고, `--no-error-css`를 주면 지운다. 출력은 같은 옵션의 CLI 출력과 바이트 단위로 같다.
+  - `custom.css` import(`@import url(custom.css);`)는 코어 import 바로 다음, 주석을 뺀 둘째 규칙이다. 엔트리에서 코어 import 뒤에 쓰면 Dart Sass가 두 import를 이 순서로 함께 끌어올린다.
+  - 엔트리에는 `//` 주석만 쓴다. 노브 안내 주석은 `_tokens.scss`에 두어 두 import 뒤에 출력되게 한다.
+- **`src/_pretendard.scss`는 생성 파일이다.** 직접 고치지 않는다. 생성 스크립트가 머리 주석에 규칙 본문의 SHA-256을 적으므로, 손으로 고치면 폰트 검사(`check:fonts`)가 실패한다. Pretendard 버전은 `src/tools/pretendard-font-face.mjs`의 버전 상수 `PRETENDARD_VERSION` 한 곳에만 둔다. 버전을 바꾸면 `npm run fonts`(네트워크 사용)로 다시 만들고 `npm run build` 결과와 함께 커밋한다. 폰트 검사는 기대 접두사와 규칙 수를 이 상수와 생성 파일에서 읽으므로 따로 고치지 않는다.
 - **컴파일된 `stylesheets/application.css`를 커밋한다.** Redmine(Propshaft)은 테마의 SCSS를 컴파일하지 않고 CSS를 그대로 서빙하므로, 사용자가 clone만 해서 `themes/`에 넣으면 바로 동작해야 한다. `src/`를 바꾸면 `npm run build` 결과를 같은 커밋에 포함한다.
-- CI(GitHub Actions)를 구성해 PR마다 빌드하고, 커밋된 CSS와 소스 빌드 결과가 다르면 실패시킨다. (아직 구성 전이다. `.github/workflows/`에 추가한다.)
+- CI(GitHub Actions, `.github/workflows/ci.yml`)는 PR마다와 `main` push마다 `npm ci` 뒤 `npm run check`를 돌린다. 빌드 비교(`check:build`: 커밋된 CSS와 소스 빌드 결과가 다르거나 CSS가 추적되지 않으면 실패), 폰트 검사(`check:fonts`, `DESIGN.md` §10.2 6), 명암 게이트(`check:contrast`, §6.6) 순서다. 기대값은 문서가 아니라 저장소(버전 상수, 생성 파일, `_tokens.scss`)에서 읽는다.
 
 ## 다크 모드
 
 - 구현하지 않는다. 확장 가능한 구조만 유지한다.
-- 모든 색은 CSS 변수 토큰으로만 쓴다. `_tokens.scss` 밖에서 hex 등 색 값을 하드코딩하지 않는다.
+- 모든 색은 CSS 변수 토큰으로만 쓴다. `_tokens.scss` 밖에서 hex 등 색 값을 하드코딩하지 않는다. 검사 스크립트(`src/tools/contrast-gate.mjs`)도 색 표를 따로 두지 않고 `_tokens.scss`의 값을 Sass로 읽는다.
 - 추후 다크 모드는 같은 토큰을 재정의하는 토큰 세트 하나를 추가하는 것으로 끝나야 한다.
 
 ## 차별점: 한글(CJK) 타이포그래피
@@ -51,7 +55,7 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
   - 흰 헤더는 코어의 "어두운 헤더 위 밝은 글자" 전제를 뒤집는다. 헤더 안의 링크·아이콘·검색·프로젝트 이동·모바일 헤더(나중에 로드되는 `responsive.css`)는 모두 header 토큰으로 명시적으로 다시 칠한다. 대상 셀렉터 목록은 `DESIGN.md` §8을 따른다.
 - **레이아웃**: 코어 배치(상단 메뉴, 헤더, 메인 메뉴, 사이드바, 본문)를 옮기지 않고 스타일만 바꾼다. v1에는 `javascripts/theme.js`를 두지 않는다.
 - **사이드바**: 기본은 오른쪽(코어와 같음)이다. `--ravnus-sidebar-at-start: 1`로 인라인 시작 쪽(LTR에서는 왼쪽)으로 바꾼다.
-- **폰트 제공**: Pretendard Variable 동적 서브셋을 jsDelivr CDN에서 버전을 고정해 불러온다. 폰트 파일은 저장소에 넣지 않는다. CDN 스타일시트를 `@import`하지 않는다(닿지 않으면 렌더링이 늦어질 수 있음). 생성 스크립트가 CDN woff2 주소를 가진 `@font-face`를 만들고 빌드가 테마 CSS에 컴파일한다. 폐쇄망이나 엄격한 CSP 환경은 `custom.css`나 자식 테마에서 직접 호스팅하거나 시스템 폰트만 쓴다. 이때 폰트 스택 네 개(`--ravnus-font-sans`·`-ja`·`-zh`·`-zh-tw`)를 모두 바꿔야 CDN 요청이 0이 된다.
+- **폰트 제공**: Pretendard Variable 동적 서브셋을 jsDelivr CDN에서 버전을 고정해 불러온다. 폰트 파일은 저장소에 넣지 않는다. CDN 스타일시트를 `@import`하지 않는다(닿지 않으면 렌더링이 늦어질 수 있음). 생성 스크립트(`src/tools/pretendard-font-face.mjs`, `npm run fonts`)가 CDN woff2 주소를 가진 `@font-face`를 `src/_pretendard.scss`에 만들고 빌드가 테마 CSS에 컴파일한다. 폐쇄망이나 엄격한 CSP 환경은 `custom.css`나 자식 테마에서 직접 호스팅하거나 시스템 폰트만 쓴다. 이때 폰트 스택 네 개(`--ravnus-font-sans`·`-ja`·`-zh`·`-zh-tw`)를 모두 바꿔야 CDN 요청이 0이 된다.
   - CDN에 닿지 못해도 첫 화면 표시는 늦어지지 않는다. 그러나 패킷을 버려 연결이 응답 없이 끊기는 네트워크에서는 폰트 요청이 페이지 `load`를 수 분(macOS 실측 225–300초, 다른 OS는 미검증) 붙잡고, 그동안 "저장하지 않은 변경" 경고가 등록되지 않아 편집 중 이동하면 입력이 경고 없이 사라질 수 있다(경고는 textarea의 `change`만 추적하므로, `load` 전에 입력하고 포커스를 옮긴 textarea는 `load` 뒤에도 경고 대상이 되지 않는다). 그런 환경에서는 자체 호스팅이나 시스템 폰트 블록이 필수다(Phase 0, `DESIGN.md` 부록).
 - **커스터마이즈**: 추적되는 빈 스텁 `stylesheets/custom.css`를 테마가 import하고, 사용자는 여기에 토큰을 적는다. 조직 단위 설정은 자식 테마로 관리하도록 문서화한다.
 
@@ -79,18 +83,29 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 
 ```
 .
-├── src/                          # SCSS 소스 (Redmine이 서빙하지 않음)
-│   ├── application.scss          # 엔트리: @use tokens → typography, 그다음 코어 import
-│   ├── _tokens.scss              # :where(:root) 디자인 토큰 (--ravnus-*), 다크 모드 확장 지점
-│   └── _typography.scss          # 폰트와 CJK 타이포그래피
-├── stylesheets/application.css   # 컴파일 결과 (커밋함)
-├── .docker/seed.rb               # 도커 테스트 환경 샘플 데이터
-├── docker-compose.yml            # Redmine 7 테스트 환경 (redmine:7.0.2)
-├── package.json                  # Sass 빌드 스크립트 (build / watch)
-├── DESIGN.md                     # 디자인 기획서 (결정 사항, 토큰·색·타이포 사양, 단계별 계획)
-├── LICENSE                       # MIT
-├── README.md                     # 영문
-└── README.ko.md                  # 한국어
+├── src/                              # SCSS 소스와 개발 도구 (Redmine이 서빙하지 않음)
+│   ├── application.scss              # 엔트리: @use tokens → pretendard → typography, 그다음 코어·custom.css import
+│   ├── _tokens.scss                  # 토큰 3계층(primitive map, :where(:root) --ravnus-*), color-mix 폴백, 프리셋 데이터, 다크 모드 확장 지점
+│   ├── _pretendard.scss              # 생성 파일: Pretendard CDN @font-face (npm run fonts, 직접 고치지 않음)
+│   ├── _typography.scss              # 폰트와 CJK 타이포그래피
+│   └── tools/                        # Node 스크립트 (CI·개발용)
+│       ├── build.mjs                 # 빌드 (npm run build / watch, 성공했을 때만 CSS를 씀)
+│       ├── pretendard-font-face.mjs  # _pretendard.scss 생성기, Pretendard 버전 상수
+│       ├── check-fonts.mjs           # 폰트 검사 (DESIGN.md §10.2 6)
+│       └── contrast-gate.mjs         # 명암 게이트 (DESIGN.md §6.6)
+├── stylesheets/
+│   ├── application.css               # 컴파일 결과 (커밋함)
+│   └── custom.css                    # 사용자 토큰용 빈 스텁 (추적함, 업스트림은 비워 둔다)
+├── .docker/
+│   ├── seed.rb                       # 도커 테스트 환경 샘플 데이터
+│   └── probe/probe.mjs               # 프로브 하네스 (playwright-core + 설치된 Chrome, axe-core)
+├── .github/workflows/ci.yml          # CI: npm ci → npm run check
+├── docker-compose.yml                # Redmine 7 테스트 환경 (redmine:7.0.2)
+├── package.json                      # 스크립트 (build / watch / fonts / check / probe)
+├── DESIGN.md                         # 디자인 기획서 (결정 사항, 토큰·색·타이포 사양, 단계별 계획)
+├── LICENSE                           # MIT
+├── README.md                         # 영문
+└── README.ko.md                      # 한국어
 ```
 
 문서는 루트에 둔다. Redmine은 루트 파일은 서빙하지 않지만 하위 디렉터리는 서빙하므로 `docs/` 같은 디렉터리를 만들지 않는다.
@@ -99,15 +114,21 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 
 - 컴포넌트: `src/components/_<name>.scss`를 만들고 `src/components/_index.scss`에서 모두 `@forward`한 뒤, 엔트리에서 `@use "components";`를 typography 다음에 추가한다.
 - 런타임 디렉터리(`favicon/`, `images/` 등): `docker-compose.yml`의 서비스 볼륨에도 마운트를 추가한다. 폰트는 CDN을 쓰므로 저장소에 넣지 않는다.
-- CI: `.github/workflows/`
 
 ## 개발 명령
 
 - 빌드: `npm install` 후 `npm run build` (1회) 또는 `npm run watch` (변경 감지)
+- 폰트 생성: `npm run fonts` (Pretendard 버전 상수를 바꿀 때만. jsDelivr에서 업스트림 CSS를 받아 검증하고 모든 폰트 URL의 200 `font/woff2`를 확인한 뒤 `src/_pretendard.scss`를 다시 쓴다)
+- 검사: `npm run check` (CI와 같다: `check:build` → `check:fonts` → `check:contrast`). 각각 따로 돌릴 수 있고, `node src/tools/contrast-gate.mjs --verbose`는 통과한 쌍도 보여 준다.
+  - `check:build`는 git 인덱스와 비교하므로 로컬에서는 `src/`와 컴파일 결과를 stage한 뒤 돌린다. `stylesheets/application.css`를 다시 쓰므로 다른 작업이 `src/`를 고치는 중인 작업 트리에서는 돌리지 않는다.
+- 프로브: `npm run probe -- [옵션] [페이지]` (`--help`, 사용법은 `.docker/probe/probe.mjs` 머리 주석). 설치된 Google Chrome을 쓰고 기본 대상은 http://127.0.0.1:3007이다.
+  - `--out`·`--screenshot`은 저장소 밖(`$TMPDIR` 등)에 쓴다.
+  - 로그인 화면은 `--autologin`(rails runner로 만든 autologin 토큰 쿠키, 끝나면 삭제)으로만 연다. 자동 검증에서 비밀번호와 로그인 폼은 쓰지 않는다.
 - 테스트 환경: `docker compose up -d` → Redmine 7은 http://localhost:3007
   - 첫 기동 때 한국어 기본 데이터와 샘플 프로젝트를 시드하고 RAVNUS 테마를 적용한다. 로그인은 Redmine 기본 관리자 계정(admin / admin)이며, 포트는 127.0.0.1에만 열린다.
   - CSS 반영: `npm run build` 후 `docker compose restart` (기동 시 에셋 재컴파일)
   - 초기화: `docker compose down -v` (다음 기동 때 다시 시드)
+  - 기본 환경과 섞이지 않는 1회 실행은 `REDMINE_PORT=<포트> docker compose -p <이름> up -d`로 띄우고 `docker compose -p <이름> down -v`로 지운다. 프로브에는 `--base-url`과 `--compose-project <이름>`을 준다.
 - 시드 데이터는 가상의 인물과 `example.com` 주소만 쓴다.
 
 ## 작업 규칙
@@ -121,4 +142,5 @@ Redmine 7.x용 오픈소스(MIT) 테마. "한중일(CJK) 사용자에게 가장 
 
 ## 진행 상태
 
-- Phase 0 검증은 2026-10-01에 끝났다(Redmine 7.0.2, 결과는 `DESIGN.md` 부록 "Phase 0 검증 결과"). 다음은 Phase 1(v0.1.0: 토큰 3계층, 타이포그래피, CDN `@font-face` 생성, `custom.css` 스텁, CI)이다.
+- Phase 0 검증은 2026-10-01에 끝났다(Redmine 7.0.2, 결과는 `DESIGN.md` 부록 "Phase 0 검증 결과").
+- Phase 1(v0.1.0)은 구현했다(2026-10-02): 토큰 3계층과 프리셋 데이터, CJK 타이포그래피, CDN `@font-face` 생성 스크립트와 생성 파일, `custom.css` 스텁, CI(빌드 비교·폰트 검사·명암 게이트), 프로브 하네스, README의 폰트·CDN 안내와 커스터마이즈 절. `DESIGN.md` §9 Phase 1 완료 기준은 2026-10-02에 검증했다(결과는 `DESIGN.md` 부록 "Phase 1 검증 결과"). 공통 기준의 axe-core 검사는 main에도 있는 코어 하드코딩 색 위반 때문에 통과하지 못했고(회귀 없음), 2026-10-18 소유자 결정으로 v0.1.0은 이 코어 위반을 받아들인다(`DESIGN.md` §9 Phase 1, 결정 기록 #8). 그다음은 Phase 2(v0.2.0, 크롬)다.
