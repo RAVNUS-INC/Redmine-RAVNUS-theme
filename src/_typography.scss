@@ -1,9 +1,508 @@
-// Typography layer: CJK-first text rendering.
+// Typography layer (DESIGN.md 7, decision 4.6: F1 + K2).
+//
+// - Typographic properties only: family, size, line height, weight, letter
+//   spacing, line breaking, spacing between scripts, numerals and link
+//   decoration. Colors, spacing and heights of components come with their
+//   own partials. Exceptions written in 7.2 and 7.9: wiki h6 color, the em
+//   tint and the pre surface.
+// - Values come from --ravnus-* tokens (src/_tokens.scss). Heading sizes the
+//   spec does not expose as knobs are written here in rem.
+// - Font stacks per UI language live in the tokens (--ravnus-font-ui); the
+//   core reads them through --fonts-main.
+// - Core stylesheets that load after the theme (responsive, dropdown,
+//   context_menu, jstoolbar, gantt, scm) win at equal specificity, so a rule
+//   that must beat one of them adds a selector step (DESIGN.md 8.3).
+// - The gantt subject column (.gantt_subjects) keeps the core size and line
+//   height: its rows are fixed at 20px (DESIGN.md 7.2).
 
-:root {
-  // Redmine 6.0+ core uses var(--fonts-main) for body text, headings and
-  // proportional wiki textareas, so remapping it changes their font. Form
-  // controls and jQuery UI widgets do not use it and need explicit rules
-  // (DESIGN.md §7.9). This stays on :root to beat the core :root declaration.
-  --fonts-main: var(--ravnus-font-sans);
+// Windows renders Yu Gothic Regular too thin, so the ja stack names this alias
+// for Yu Gothic Medium and Bold (DESIGN.md 7.1).
+@font-face {
+  font-family: "RAVNUS Yu Gothic";
+  src: local("Yu Gothic Medium"), local("YuGothic-Medium");
+  font-weight: 100 500;
+}
+
+@font-face {
+  font-family: "RAVNUS Yu Gothic";
+  src: local("Yu Gothic Bold"), local("YuGothic-Bold");
+  font-weight: 600 900;
+}
+
+// ---------------------------------------------------------------------------
+// Base text (7.2, 7.3, 7.6)
+// ---------------------------------------------------------------------------
+
+// The core sets no body line height. A unitless value on body reaches every
+// text container that does not set its own, so line boxes keep their height
+// when the web font swaps in or never arrives.
+body {
+  font-size: var(--ravnus-font-size-base);
+  line-height: var(--ravnus-line-height-ui);
+  font-feature-settings: var(--ravnus-font-feature-settings);
+  // keep-all breaks Korean between words; it is unset (normal) in ja and zh
+  // UIs. break-word is the safety net for long words and URLs.
+  word-break: var(--ravnus-word-break, normal);
+  overflow-wrap: break-word;
+}
+
+:root:lang(ja) body {
+  line-break: strict;
+}
+
+// Spacing between CJK and Latin text (7.7). Each selector has one :lang()
+// argument, which keeps the rules valid in every engine.
+:root:lang(ja),
+:root:lang(zh) {
+  text-autospace: normal;
+}
+
+:root:lang(ko) {
+  text-autospace: no-autospace;
+}
+
+pre,
+code,
+kbd,
+samp,
+textarea {
+  text-autospace: no-autospace;
+}
+
+// Text the core breaks with word-break: break-word overrides the inherited
+// value, so restate the token there (7.0.2 application.css 913, 974).
+div.issue div.subject div div,
+#issue_tree .issue > td.subject,
+#relations .issue > td.subject {
+  word-break: var(--ravnus-word-break, normal);
+  overflow-wrap: anywhere;
+}
+
+// Cells that hold long text: anywhere keeps an auto-layout table within its
+// container (keep-all alone widens it). Name columns (assigned_to, author,
+// last_updated_by, category, name) are left out on purpose: anywhere would
+// let the table squeeze them to one syllable, so they keep break-word.
+table.list td:is(.subject, .string, .text, .list, .relations, .parent) {
+  overflow-wrap: anywhere;
+}
+
+// A minimum width keeps subjects from breaking into syllables in queries with
+// many columns.
+table.list td.subject {
+  min-inline-size: var(--ravnus-subject-min-inline-size, 12em);
+}
+
+strong {
+  font-weight: 600;
+}
+
+// ---------------------------------------------------------------------------
+// Headings (7.2-7.5)
+// ---------------------------------------------------------------------------
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  line-height: var(--ravnus-line-height-heading);
+}
+
+// Type selectors like the core, so wiki and component headings keep their
+// own sizes.
+h2 {
+  font-size: 1.25rem;
+}
+
+h3 {
+  font-size: 1.0625rem;
+}
+
+h4 {
+  font-size: 0.9375rem;
+}
+
+div.issue div.subject h3 {
+  font-size: 1.375rem;
+  font-weight: 700;
+}
+
+// 20px and larger: slightly tighter tracking in ko and Latin UIs (the token
+// is 0 in ja and zh UIs).
+h2,
+#header h1,
+#content h1,
+div.wiki :is(h1, h2),
+div.issue div.subject h3 {
+  letter-spacing: var(--ravnus-letter-spacing-heading);
+}
+
+// 22px and larger. The header h1 keeps the core 1.15 for now: the chrome
+// height depends on it and the chrome styles set it together.
+#content h1,
+div.wiki h1,
+div.issue div.subject h3 {
+  line-height: var(--ravnus-line-height-heading-lg);
+}
+
+#content :is(h1, h2, h3, h4),
+div.issue div.subject h3 {
+  text-wrap: balance;
+}
+
+@supports (word-break: auto-phrase) {
+  :root:lang(ja) :is(#content h1, #content h2, #content h3, div.issue div.subject h3) {
+    word-break: auto-phrase;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Prose: wiki text and the wiki editor (7.2, 7.3, 7.4, 7.9)
+// ---------------------------------------------------------------------------
+
+// Every div.wiki (issue description, journal, wiki page, news) and the editor
+// share one size, so writing and reading look the same.
+div.wiki {
+  font-size: var(--ravnus-font-size-prose);
+}
+
+div.wiki :is(p, li) {
+  line-height: var(--ravnus-line-height-prose);
+  letter-spacing: var(--ravnus-letter-spacing-prose);
+}
+
+// Wiki tables and wiki text inside list tables go back to the UI and cell
+// line heights.
+div.wiki table :is(p, li) {
+  line-height: var(--ravnus-line-height-ui);
+}
+
+table.list div.wiki :is(p, li) {
+  line-height: var(--ravnus-line-height-cell);
+}
+
+div.wiki p {
+  text-wrap: pretty;
+}
+
+div.wiki h1 {
+  font-size: 1.5rem;
+}
+
+div.wiki h2 {
+  font-size: 1.3125rem;
+}
+
+div.wiki h3 {
+  font-size: 1.125rem;
+}
+
+div.wiki h4 {
+  font-size: 1rem;
+}
+
+div.wiki h5 {
+  font-size: 0.9375rem;
+}
+
+div.wiki h6 {
+  font-size: 0.875rem;
+  color: var(--ravnus-fg-muted);
+}
+
+div.wiki :is(h1, h2, h3, h4, h5, h6) {
+  margin-block: 1.6em 0.6em;
+}
+
+// No gap above a heading that opens the text. Redmine puts an empty
+// <a name> anchor before every rendered wiki heading.
+div.wiki > :is(h1, h2, h3, h4, h5, h6):first-child,
+div.wiki > a[name]:first-child + :is(h1, h2, h3, h4, h5, h6) {
+  margin-block-start: 0;
+}
+
+div.wiki strong {
+  font-weight: 700;
+}
+
+// Pretendard and most CJK fonts have no italics, so browsers slant the glyphs
+// synthetically. In ko, ja and zh UIs, emphasis is upright, semibold and
+// tinted instead (4.11).
+:root:lang(ko) div.wiki em,
+:root:lang(ja) div.wiki em,
+:root:lang(zh) div.wiki em {
+  font-style: normal;
+  font-weight: 600;
+  background-color: var(--ravnus-em-bg);
+}
+
+textarea.wiki-edit {
+  font-size: var(--ravnus-font-size-prose);
+  line-height: var(--ravnus-line-height-prose);
+  letter-spacing: var(--ravnus-letter-spacing-prose);
+  word-break: var(--ravnus-word-break, normal);
+}
+
+// ---------------------------------------------------------------------------
+// Code (7.2, 7.3, 7.9)
+// ---------------------------------------------------------------------------
+
+pre,
+code,
+kbd,
+samp,
+.sample-data td,
+body.textarea-monospace textarea.wiki-edit {
+  font-family: var(--ravnus-font-mono);
+}
+
+body.textarea-monospace textarea.wiki-edit {
+  line-height: var(--ravnus-line-height-mono);
+  letter-spacing: 0;
+}
+
+// About 13px in 15px prose; never below the 12px floor in 13px cells.
+pre,
+code,
+kbd,
+samp {
+  font-size: max(0.875em, var(--ravnus-font-size-min));
+}
+
+// Code inside pre keeps the pre size instead of shrinking again.
+:is(pre, code, kbd, samp) :is(code, kbd, samp) {
+  font-size: inherit;
+}
+
+pre {
+  line-height: var(--ravnus-line-height-mono);
+}
+
+div.wiki pre {
+  background-color: var(--ravnus-bg-inset);
+  border-radius: var(--ravnus-radius);
+}
+
+// The core paints the highlighted block itself; let the pre surface show.
+div.wiki pre .syntaxhl {
+  background: none;
+}
+
+// ---------------------------------------------------------------------------
+// Numerals (7.8): tabular figures where digits line up in columns. Running
+// text keeps proportional figures like the core.
+// ---------------------------------------------------------------------------
+
+td.id,
+td.created_on,
+td.updated_on,
+td.start_date,
+td.due_date,
+td.closed_on,
+td.estimated_hours,
+td.total_estimated_hours,
+td.estimated_remaining_hours,
+td.spent_hours,
+td.total_spent_hours,
+td.done_ratio,
+.pagination,
+div.issue .attributes .value,
+.journals h4.journal-header,
+.query-totals .value,
+tr.group span.totals .value {
+  font-variant-numeric: tabular-nums;
+}
+
+// ---------------------------------------------------------------------------
+// Links (7.9)
+// ---------------------------------------------------------------------------
+
+// Pretendard's default underline nearly touches Hangul final consonants. The
+// core sets the text-decoration shorthand, which resets the thickness, on
+// a:link and a:hover (0,1,1); a:any-link has the same specificity and comes
+// later.
+a:any-link {
+  text-underline-offset: 0.2em;
+  text-decoration-thickness: 1px;
+}
+
+// Links inside running text are underlined at rest too: the link color alone
+// differs too little from body text (WCAG 1.4.1). Links that stand alone
+// (cells, sidebar, menus, tabs, pagination, buttons) keep the hover-only
+// underline. Phases 5 and 6 confirm this list against the 7.0.2 markup.
+div.wiki a:not(.wiki-anchor, .icon, .icon-only, .copy-pre-content-link),
+:is(p, span).author a,
+.journals h4.journal-header .journal-info a,
+.journals .journal-details a:not(.icon, .icon-only),
+div#activity dd a,
+#search-results dd a {
+  text-decoration-line: underline;
+  text-decoration-color: var(--ravnus-link-decoration);
+
+  &:is(:hover, :active, :focus-visible) {
+    text-decoration-color: currentColor;
+  }
+
+  // Keep the core strike-through of closed issues next to the underline (the
+  // core shorthand there also resets the thickness).
+  &.issue.closed {
+    text-decoration-line: underline line-through;
+    text-decoration-thickness: 1px;
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Form controls (7.9)
+// ---------------------------------------------------------------------------
+
+// The core gives controls no font family, so they render in the browser
+// default (Arial 13.33px in 7.0.2).
+input,
+select,
+textarea,
+button {
+  font-family: inherit;
+  font-size: var(--ravnus-font-size-base);
+  line-height: var(--ravnus-line-height-tight);
+}
+
+// The core shrinks controls in .contextual to 0.9em (0,1,1; 7.0.2
+// application.css 834), which is 11.7px in the 13px .contextual. Same
+// specificity, later in the cascade.
+.contextual :is(input, select) {
+  font-size: var(--ravnus-font-size-base);
+}
+
+button,
+input:is([type="submit"], [type="button"], [type="reset"]) {
+  font-weight: 500;
+}
+
+// jQuery UI widgets (datepicker, autocomplete, dialog) set Arial; its
+// stylesheet loads before the theme, so equal specificity is enough.
+.ui-widget,
+.ui-widget :is(input, select, textarea, button) {
+  font-family: inherit;
+}
+
+// Below 900px, responsive.css sets body and control sizes after the theme at
+// equal specificity. The extra html element keeps the token, and stays below
+// the core `.flyout-menu input[type='text']` (0,2,1) that prevents iOS zoom.
+@media screen and (max-width: 899px) {
+  html body,
+  html body :is(input, select, textarea, button) {
+    font-size: var(--ravnus-font-size-base);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Component text sizes and weights (7.2, 7.3, 7.5). Only the typography:
+// colors, spacing and heights come with the component partials. The main
+// menu tab keeps the core 16px line height, which its 32px bar relies on.
+// ---------------------------------------------------------------------------
+
+#top-menu {
+  font-size: var(--ravnus-font-size-sm);
+  line-height: var(--ravnus-line-height-tight);
+}
+
+#header h1 {
+  font-weight: 700;
+}
+
+// UI text has no tracking (7.4); the core spaces the header breadcrumbs.
+#header h1 .breadcrumbs,
+p.breadcrumb {
+  font-size: var(--ravnus-font-size-sm);
+  letter-spacing: 0;
+}
+
+#main-menu li a {
+  font-size: var(--ravnus-font-size-base);
+  font-weight: 500;
+}
+
+#main-menu li a.selected,
+#main-menu li a.selected:hover,
+#content .tabs ul li a.selected,
+#sidebar a.selected {
+  font-weight: 600;
+}
+
+#content .tabs ul li a {
+  font-weight: 500;
+  line-height: var(--ravnus-line-height-tight);
+}
+
+#sidebar,
+.contextual,
+.journals .journal-details {
+  font-size: var(--ravnus-font-size-sm);
+}
+
+th,
+.tabular label,
+#login-form label,
+div.issue .attributes .attribute .label {
+  font-weight: 600;
+}
+
+table.list,
+.table-list {
+  font-size: var(--ravnus-font-size-cell);
+}
+
+table.list th,
+.table-list-header {
+  font-size: var(--ravnus-font-size-sm);
+  font-weight: 600;
+}
+
+table.list td {
+  line-height: var(--ravnus-line-height-cell);
+}
+
+table.list td.subject {
+  font-size: var(--ravnus-font-size-cell-subject);
+  font-weight: 500;
+}
+
+// Row states: weight is the cue besides color (6.5). Colors and glyphs come
+// with the issue list styles.
+table.list tr.issue.parent td.subject {
+  font-weight: 600;
+}
+
+table.list tr.issue.overdue td.due_date,
+div.issue.overdue .due-date .value {
+  font-weight: 600;
+}
+
+table.list tr.issue.behind-schedule:not(.overdue) td.due_date {
+  font-weight: 500;
+}
+
+.badge {
+  font-size: var(--ravnus-font-size-min);
+  line-height: var(--ravnus-line-height-tight);
+}
+
+// 12px floor for text the core sets smaller (7.2). max() only raises.
+table.list thead.related-issues th {
+  font-size: var(--ravnus-font-size-min);
+}
+
+div.issue span.private,
+div.journal span.private {
+  font-size: max(60%, var(--ravnus-font-size-min));
+}
+
+p.percent,
+p.progress-info {
+  font-size: max(86%, var(--ravnus-font-size-min));
+}
+
+#footer {
+  font-size: max(0.9em, var(--ravnus-font-size-min));
 }

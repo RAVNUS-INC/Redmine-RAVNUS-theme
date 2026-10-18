@@ -1,0 +1,38 @@
+# Build and checks for every pull request and every push to main.
+#
+# `npm run check` runs, in order:
+#   check:build     rebuild stylesheets/application.css and fail if it differs
+#                   from the committed file (commit `npm run build` output with src/)
+#   check:fonts     CDN @font-face count and URLs, import order, no external
+#                   @import, "Pretendard Variable" only in @font-face and the
+#                   four font stack tokens (src/tools/check-fonts.mjs)
+#   check:contrast  token pair contrast gate (src/tools/contrast-gate.mjs)
+#
+# No step needs network access beyond `npm ci`, and no secrets are used.
+# The browser probe (.docker/probe/) needs Docker and Chrome and runs locally only.
+
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Build and checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+          cache: npm
+      - run: npm ci
+      - run: npm run check

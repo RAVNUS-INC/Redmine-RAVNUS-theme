@@ -1,23 +1,942 @@
-// Design tokens.
+// Design tokens (DESIGN.md 5, 6, 7 and 8.5).
 //
-// - Every token is a CSS custom property on :where(:root) (zero specificity),
-//   so a later :root { --ravnus-*: ... } block overrides it without a Sass build.
-// - Until the update-safe override file (custom.css) ships, users edit the
-//   block below in the compiled stylesheets/application.css; those edits are
-//   overwritten by `git pull` and `npm run build` (see README).
-// - Theme rules read tokens through var(--ravnus-*). Never hard-code values
-//   such as hex colors outside this file.
-// - Dark mode is not implemented. It will be one more token set that
-//   overrides these same custom properties.
+// Three layers:
+//   1. Primitives: Sass maps of the decided palette values. Never emitted.
+//   2. Semantic and 3. component/domain tokens: --ravnus-* custom properties
+//      on :where(:root). Zero specificity lets a user :root block in
+//      stylesheets/custom.css or a child theme win without a build.
+// - Color literals live only in this file (CLAUDE.md). Theme rules read tokens
+//   through var(--ravnus-*).
+// - Derived colors are two-argument color-mix(in oklch, ...) at run time. The
+//   @supports fallback carries the same values as hex, computed here with
+//   color.mix($method: oklch). A derived default or preset value outside sRGB
+//   fails the build, so the fallback matches the run-time value up to channel
+//   rounding; a channel close to a .5 boundary gets a build warning.
+// - Presets are data ($presets). The emitted preset comments and the contrast
+//   gate (src/tools/contrast-gate.mjs, through the public functions below)
+//   both read it.
+// - Dark mode will be one more token set that overrides these properties.
+
+@use "sass:color";
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "sass:string";
+
+// ---------------------------------------------------------------------------
+// 1. Primitives
+// ---------------------------------------------------------------------------
+
+// Keys are 10 x (100 - OKLCH lightness %), rounded: 0 is white and 1000 is
+// black. The build checks every key against its color.
+$neutral: (
+  0: #FFFFFF,
+  16: #FAF9FC,
+  32: #F4F4F7,
+  43: #F0F0F6,
+  50: #EEEEF1,
+  74: #E6E6E9,
+  116: #D9D8DD,
+  300: #9F9DA3,
+  410: #7D7C85,
+  499: #64626A,
+  550: #55545D,
+  555: #53535B,
+  754: #202026,
+  1000: #000000,
+);
+$violet: (
+  46: #F0EDFF,
+  139: #D1CEE4,
+  161: #CAC5EA,
+  550: #5A3CA5,
+  640: #46009B, // RAVNUS brand violet
+  641: #3E3463,
+  700: #311E5F,
+);
+$blue: (
+  36: #E9F5FF,
+  45: #E4F2FF,
+  94: #D4E2EF,
+  201: #98C3E8,
+  503: #1864AB,
+  508: #0065A4,
+  511: #215DB3,
+  529: #2B5F8A,
+  530: #065DA0,
+);
+$green: (
+  35: #E6F9EE,
+  45: #E0F7E9,
+  200: #90CEAC,
+  415: #249163,
+  521: #176E4A,
+  531: #126B47,
+);
+$amber: (
+  31: #FFF4DB,
+  43: #FFEEDA,
+  180: #EABC6E,
+  203: #FEA800, // logo amber
+  379: #BD7221,
+  460: #B24B0A,
+  499: #964D09,
+  500: #8A560C,
+);
+$red: (
+  37: #FFEEEE,
+  47: #FFEAE8,
+  200: #F2A7A4,
+  501: #B32322,
+  520: #A5292B,
+);
+$_palette: (
+  neutral: $neutral,
+  violet: $violet,
+  blue: $blue,
+  green: $green,
+  amber: $amber,
+  red: $red,
+);
+
+@each $family, $steps in $_palette {
+  @each $key, $color in $steps {
+    $lightness: math.div(color.channel($color, "lightness", $space: oklch), 1%);
+    $expected: math.round((100 - $lightness) * 10);
+    @if $expected != $key {
+      @error "Primitive #{$family} #{$key} (#{$color}) should have key #{$expected}.";
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Token values
+// ---------------------------------------------------------------------------
+// A token value is one of:
+// - a color, number, length, keyword or font list, emitted as is;
+// - _ref(name): var() of another token;
+// - _mix(a, weight, b): color-mix(in oklch, a weight, b), where a and b are
+//   token names or the keyword transparent;
+// - _shadow(layers...): box-shadow layers colored by shadow-color;
+// - _literal(formula) (presets only): the formula's result as a literal. With
+//   no argument the formula is the token's default.
+
+@function _p($family, $key) {
+  $steps: map.get($_palette, $family);
+  @if not $steps or not map.has-key($steps, $key) {
+    @error "No primitive #{$family} #{$key}.";
+  }
+  @return map.get($steps, $key);
+}
+
+@function _ref($name) {
+  @return ("ravnus-ref": $name);
+}
+
+@function _mix($a, $weight, $b, $space: oklch) {
+  @return ("ravnus-mix": ($space, $a, $weight, $b));
+}
+
+@function _shadow($layers...) {
+  @return ("ravnus-shadow": $layers);
+}
+
+@function _literal($formula: null) {
+  @return ("ravnus-literal": $formula);
+}
+
+// "ref", "mix", "shadow", "literal" or null for a plain value.
+@function _kind($value) {
+  @if meta.type-of($value) == map {
+    @each $key in ("ravnus-ref", "ravnus-mix", "ravnus-shadow", "ravnus-literal") {
+      @if map.has-key($value, $key) {
+        @return string.slice($key, 8);
+      }
+    }
+  }
+  @return null;
+}
+
+// ---------------------------------------------------------------------------
+// 2-3. Semantic, component and domain tokens. Defaults are the Signature
+// chrome (DESIGN.md 4.1).
+// ---------------------------------------------------------------------------
+
+// Role colors (6.1): text, tint, border. The fill (solid) follows the text
+// color in the light set; a dark set splits them.
+$_roles: (
+  info: (_p(blue, 508), _p(blue, 36), _p(blue, 201)),
+  success: (_p(green, 521), _p(green, 35), _p(green, 200)),
+  warning: (_p(amber, 500), _p(amber, 31), _p(amber, 180)),
+  danger: (_p(red, 501), _p(red, 37), _p(red, 200)),
+);
+$_role-tokens: ();
+@each $role, $colors in $_roles {
+  $_role-tokens: map.merge($_role-tokens, (
+    "#{$role}-fg": list.nth($colors, 1),
+    "#{$role}-subtle": list.nth($colors, 2),
+    "#{$role}-border": list.nth($colors, 3),
+    "#{$role}-solid": _ref("#{$role}-fg"),
+  ));
+}
+$_role-tokens: map.set($_role-tokens, "on-solid", _p(neutral, 0));
+
+// Opt-in tag colors for tracker and status mappings (6.1): fixed names, so a
+// dark set remaps names instead of hex values.
+$_tags: (
+  red: (_p(red, 520), _p(red, 47)),
+  orange: (_p(amber, 499), _p(amber, 43)),
+  green: (_p(green, 531), _p(green, 45)),
+  blue: (_p(blue, 530), _p(blue, 45)),
+  violet: (_p(violet, 550), _p(violet, 46)),
+  gray: (_p(neutral, 550), _p(neutral, 50)),
+);
+$_domain-tokens: (
+  "priority-low-fg": _ref("fg-subtle"),
+  "priority-high3-fg": _ref("warning-fg"),
+  "priority-high2-fg": _p(amber, 460),
+  "priority-highest-fg": _ref("danger-fg"),
+  "status-open-color": _ref("info-fg"),
+  "status-progress-color": _ref("warning-fg"),
+  "status-done-color": _ref("success-fg"),
+  "status-closed-color": _ref("fg-subtle"),
+  "progress-closed": _p(green, 521),
+  "progress-done": _p(green, 415),
+  "progress-behind": _p(amber, 379),
+  "progress-track": _ref("border-muted"),
+);
+@each $name, $colors in $_tags {
+  $_domain-tokens: map.merge($_domain-tokens, (
+    "tag-#{$name}-fg": list.nth($colors, 1),
+    "tag-#{$name}-bg": list.nth($colors, 2),
+  ));
+}
+
+$_groups: (
+  "Internal mix anchors for lighter and darker derivations (not knobs)": (
+    "_mix-light": _p(neutral, 0),
+    "_mix-dark": _p(neutral, 1000),
+  ),
+  "Surfaces": (
+    "bg-canvas": _p(neutral, 0),
+    "bg-subtle": _p(neutral, 16),
+    "bg-inset": _p(neutral, 32),
+    "bg-hover": _p(neutral, 43),
+    "bg-raised": _ref("bg-canvas"),
+    "bg-overlay": _ref("bg-canvas"),
+    "bg-inverse": _ref("fg-default"),
+    "accent-subtle": _mix("accent", 6%, "bg-canvas"),
+    "accent-muted": _mix("accent", 12%, "bg-canvas"),
+    "nav-bg": _mix("accent", 4%, "bg-canvas"),
+    "nav-hover-bg": _mix("accent", 9%, "bg-canvas"),
+    "em-bg": _mix("accent", 10%, "bg-canvas"),
+  ),
+  "Text and icons": (
+    "fg-default": _p(neutral, 754),
+    "fg-muted": _p(neutral, 555),
+    "fg-subtle": _p(neutral, 499),
+    "fg-disabled": _p(neutral, 300),
+    "fg-icon": _p(neutral, 410),
+    "fg-inverse": _ref("bg-canvas"),
+    "link": _p(blue, 511),
+    "link-hover": _mix("link", 80%, "_mix-dark"),
+    "link-decoration": _mix("link", 75%, transparent),
+  ),
+  "Accent": (
+    "accent": _p(violet, 640),
+    "accent-hover": _mix("accent", 86%, "_mix-light"),
+    "accent-active": _mix("accent", 85%, "_mix-dark"),
+    "on-accent": _p(neutral, 0),
+    "focus-ring": _ref("accent"),
+  ),
+  "Borders": (
+    "border-muted": _p(neutral, 74),
+    "border-default": _p(neutral, 116),
+    "border-control": _p(neutral, 410),
+    "nav-border": _ref("border-default"),
+  ),
+  "Roles": $_role-tokens,
+  "Domain: priority, status, progress and tags": $_domain-tokens,
+  "Chrome": (
+    "topbar-bg": _ref("accent"),
+    "topbar-fg": _ref("on-accent"),
+    "topbar-fg-muted": _p(violet, 161),
+    "topbar-focus": _p(amber, 203),
+    "topbar-height": 2rem,
+    "header-bg": _ref("bg-canvas"),
+    "header-fg": _ref("fg-default"),
+    "header-fg-muted": _ref("fg-subtle"),
+    "header-icon": _ref("header-fg-muted"),
+    "header-focus": _ref("accent"),
+    "header-divider": _ref("border-default"),
+    "header-control-border": _ref("border-control"),
+  ),
+  "Typography": (
+    "font-sans": ("Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui,
+      "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Noto Sans CJK KR", "Segoe UI", Roboto,
+      "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif),
+    "font-sans-ja": (-apple-system, BlinkMacSystemFont, "Segoe UI", "Hiragino Sans",
+      "Hiragino Kaku Gothic ProN", "RAVNUS Yu Gothic", Meiryo, "Noto Sans JP", "Noto Sans CJK JP",
+      "Pretendard Variable", Pretendard, sans-serif),
+    "font-sans-zh": (-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB",
+      "Microsoft YaHei UI", "Microsoft YaHei", "Noto Sans CJK SC", "Source Han Sans SC",
+      "Pretendard Variable", Pretendard, sans-serif),
+    "font-sans-zh-tw": (-apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang TC",
+      "Microsoft JhengHei UI", "Microsoft JhengHei", "Noto Sans CJK TC", "Source Han Sans TC",
+      "Pretendard Variable", Pretendard, sans-serif),
+    "font-mono": (ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", D2Coding,
+      "Noto Sans Mono CJK KR", monospace),
+    "font-ui": _ref("font-sans"),
+    "font-feature-settings": normal,
+    "font-size-min": 0.75rem,
+    "font-size-sm": 0.8125rem,
+    "font-size-base": 0.875rem,
+    "font-size-prose": 0.9375rem,
+    "font-size-cell": 0.8125rem,
+    "font-size-cell-subject": 0.875rem,
+    "line-height-tight": 1.25,
+    "line-height-heading": 1.4,
+    "line-height-heading-lg": 1.35,
+    "line-height-ui": 1.5,
+    "line-height-cell": 1.45,
+    "line-height-prose": 1.7,
+    "line-height-mono": 1.55,
+    "letter-spacing-heading": -0.01em,
+    "letter-spacing-prose": 0,
+  ),
+  "Layout and dimensions": (
+    "space-025": 2px,
+    "space-050": 4px,
+    "space-075": 6px,
+    "space-100": 8px,
+    "space-150": 12px,
+    "space-200": 16px,
+    "space-250": 20px,
+    "space-300": 24px,
+    "space-400": 32px,
+    "radius-sm": 3px,
+    "radius": 6px,
+    "radius-lg": 8px,
+    "radius-full": 9999px,
+    "control-height": 2rem,
+    "control-height-sm": 1.75rem,
+    "nav-height": 2.25rem,
+    "sticky-header-block-size": 50px,
+    "sidebar-at-start": 0,
+    "row-pad-y": 0.375rem,
+    "row-stripe": _ref("bg-subtle"),
+    "list-link": _ref("link"),
+    "prose-max-inline-size": none,
+    "subject-min-inline-size": 12em,
+  ),
+  "Shadows (floating layers only)": (
+    "shadow-color": _ref("fg-default"),
+    "shadow-raised": _shadow((0 1px 2px, 6%), (0 1px 3px, 10%)),
+    "shadow-overlay": _shadow((0 8px 24px, 12%), (0 2px 6px, 8%)),
+  ),
+);
+
+// All default tokens in emission order.
+$tokens: ();
+@each $group, $set in $_groups {
+  @each $name, $value in $set {
+    @if map.has-key($tokens, $name) {
+      @error "Token #{$name} is defined twice.";
+    }
+    $tokens: map.set($tokens, $name, $value);
+  }
+}
+
+// UI-language overrides (7.1, 7.3, 7.4). :lang(zh) also matches zh-TW, so the
+// zh-TW block comes after zh. Each selector takes one :lang() argument: the
+// list form is invalid in Chrome and would drop the whole rule.
+$lang-tokens: (
+  "ja": (
+    "font-ui": _ref("font-sans-ja"),
+    "font-mono": (ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+      "Noto Sans Mono CJK JP", "MS Gothic", D2Coding, monospace),
+    "line-height-heading": 1.45,
+    "line-height-heading-lg": 1.45,
+    "line-height-prose": 1.75,
+    "letter-spacing-heading": 0,
+    "letter-spacing-prose": 0.02em,
+  ),
+  "zh": (
+    "font-ui": _ref("font-sans-zh"),
+    "font-mono": (ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+      "Noto Sans Mono CJK SC", D2Coding, monospace),
+    "line-height-heading": 1.45,
+    "line-height-heading-lg": 1.45,
+    "line-height-prose": 1.75,
+    "letter-spacing-heading": 0,
+  ),
+  "zh-TW": (
+    "font-ui": _ref("font-sans-zh-tw"),
+    "font-mono": (ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono",
+      "Noto Sans Mono CJK TC", D2Coding, monospace),
+  ),
+);
+@each $lang, $set in $lang-tokens {
+  @each $name in map.keys($set) {
+    @if not map.has-key($tokens, $name) {
+      @error "Language #{$lang} sets unknown token #{$name}.";
+    }
+  }
+}
+
+// keep-all for every UI language except ja and zh (decision 4.6 K2). Left
+// unset elsewhere, so readers use var(--ravnus-word-break, normal).
+$_word-break: keep-all;
+
+// ---------------------------------------------------------------------------
+// Presets (6.3)
+// ---------------------------------------------------------------------------
+// Dark-header chrome. topbar-bg is derived from header-bg; presets carry it
+// as a literal because a color-mix() in a user :root block has no fallback.
+$_ink: (
+  "header-bg": _p(violet, 700),
+  "header-fg": _p(neutral, 0),
+  "header-fg-muted": _p(violet, 139),
+  "header-divider": _p(violet, 641),
+  "header-focus": _p(neutral, 0),
+  "topbar-bg": _literal(_mix("header-bg", 72%, "_mix-dark")),
+  "topbar-fg": _p(neutral, 0),
+  "topbar-fg-muted": _p(violet, 139),
+  "topbar-focus": _p(neutral, 0),
+  "topbar-height": 1.75rem,
+);
+
+$presets: (
+  "ink": (
+    "title": "Ink (A)",
+    "about": "Ink violet header and top bar with light text, like the core header.",
+    "tokens": $_ink,
+  ),
+  "brand-forward": (
+    "title": "Brand-forward",
+    "about": "Ink with the brand violet as the header color.",
+    "tokens": map.merge($_ink, ("header-bg": _p(violet, 640))),
+  ),
+  "calm": (
+    "title": "Calm (C)",
+    "about": "Light top bar over the white header.",
+    "tokens": (
+      "topbar-bg": _ref("bg-subtle"),
+      "topbar-fg": _ref("fg-muted"),
+      "topbar-fg-muted": _ref("fg-subtle"),
+      "topbar-focus": _ref("accent"),
+      "topbar-height": 1.75rem,
+    ),
+  ),
+  "redmine-blue": (
+    "title": "Redmine Blue (D)",
+    "about": "Blue header and accent, no brand color.",
+    "tokens": map.merge($_ink, (
+      "header-bg": _p(blue, 529),
+      "header-fg-muted": _p(blue, 94),
+      "accent": _p(blue, 503),
+      "accent-hover": _literal(),
+      "accent-active": _literal(),
+      "accent-subtle": _literal(),
+      "accent-muted": _literal(),
+      "nav-bg": _literal(),
+      "nav-hover-bg": _literal(),
+      "em-bg": _literal(),
+    )),
+  ),
+  "left-sidebar": (
+    "title": "Left sidebar",
+    "about": "Sidebar at the inline start (left in LTR layouts).",
+    "tokens": ("sidebar-at-start": 1),
+  ),
+  "compact": (
+    "title": "Compact",
+    "about": "Denser issue list rows (about 27px).",
+    "tokens": (
+      "row-pad-y": 0.25rem,
+      "font-size-cell-subject": 0.8125rem,
+    ),
+  ),
+  "classic-stripes-off": (
+    "title": "Classic stripes off",
+    "about": "No row stripes in lists.",
+    "tokens": ("row-stripe": transparent),
+  ),
+);
+
+// ---------------------------------------------------------------------------
+// Public functions (also used by src/tools/contrast-gate.mjs)
+// ---------------------------------------------------------------------------
+
+// "default" followed by every preset name.
+@function scheme-names() {
+  @return list.join(("default",), map.keys($presets));
+}
+
+// Token map of a scheme: the defaults with the preset's values on top.
+@function scheme($name) {
+  @if $name == "default" {
+    @return $tokens;
+  }
+  @if not map.has-key($presets, $name) {
+    @error "Unknown preset #{$name}.";
+  }
+  $set: map.get($presets, $name, "tokens");
+  @each $key in map.keys($set) {
+    @if not map.has-key($tokens, $key) {
+      @error "Preset #{$name} sets unknown token #{$key}.";
+    }
+  }
+  @return map.merge($tokens, $set);
+}
+
+// Color of a token in a scheme map, with references and derivations
+// resolved, or null for a token that is not a color.
+@function resolve-color($scheme, $name) {
+  @if not map.has-key($scheme, $name) {
+    @error "Unknown token #{$name}.";
+  }
+  @return _resolve($scheme, map.get($scheme, $name), $name, 0);
+}
+
+// CSS text of a color: #RRGGBB, rgba() when translucent, or transparent.
+// Channels are clipped to sRGB, then rounded.
+@function css-color($color) {
+  $rgb: color.to-gamut(color.to-space($color, rgb), $method: clip);
+  $alpha: color.channel($rgb, "alpha");
+  @if $alpha == 0 {
+    @return string.unquote("transparent");
+  }
+  $r: math.round(color.channel($rgb, "red"));
+  $g: math.round(color.channel($rgb, "green"));
+  $b: math.round(color.channel($rgb, "blue"));
+  @if $alpha < 1 {
+    @return string.unquote("rgba(#{$r}, #{$g}, #{$b}, #{math.div(math.round($alpha * 1000), 1000)})");
+  }
+  @return string.unquote("#" + _hex2($r) + _hex2($g) + _hex2($b));
+}
+
+// ---------------------------------------------------------------------------
+// Internals
+// ---------------------------------------------------------------------------
+
+@function _hex2($n) {
+  $digits: "0123456789ABCDEF";
+  $high: math.floor(math.div($n, 16)) + 1;
+  $low: $n % 16 + 1;
+  @return string.slice($digits, $high, $high) + string.slice($digits, $low, $low);
+}
+
+@function _prop($name) {
+  @if string.slice($name, 1, 1) == "_" {
+    @return "--_ravnus-" + string.slice($name, 2);
+  }
+  @return "--ravnus-" + $name;
+}
+
+@function _resolve($scheme, $value, $name, $depth) {
+  @if $depth > 16 {
+    @error "Token reference loop at #{$name}.";
+  }
+  @if meta.type-of($value) == color {
+    @return $value;
+  }
+  $kind: _kind($value);
+  @if $kind == "ref" {
+    @return _resolve-name($scheme, map.get($value, "ravnus-ref"), $depth);
+  }
+  @if $kind == "mix" {
+    $mix: map.get($value, "ravnus-mix");
+    @return color.mix(
+      _resolve-arg($scheme, list.nth($mix, 2), $depth),
+      _resolve-arg($scheme, list.nth($mix, 4), $depth),
+      list.nth($mix, 3),
+      $method: list.nth($mix, 1)
+    );
+  }
+  @if $kind == "literal" {
+    @return _resolve($scheme, _literal-formula($value, $name), $name, $depth + 1);
+  }
+  @return null;
+}
+
+@function _resolve-name($scheme, $name, $depth) {
+  @if not map.has-key($scheme, $name) {
+    @error "Reference to unknown token #{$name}.";
+  }
+  @return _resolve($scheme, map.get($scheme, $name), $name, $depth + 1);
+}
+
+@function _resolve-arg($scheme, $arg, $depth) {
+  @if meta.type-of($arg) == color {
+    @return $arg;
+  }
+  $color: _resolve-name($scheme, $arg, $depth);
+  @if meta.type-of($color) != color {
+    @error "color-mix() input #{$arg} is not a color.";
+  }
+  @return $color;
+}
+
+@function _literal-formula($value, $name) {
+  $formula: map.get($value, "ravnus-literal");
+  @if $formula == null {
+    $formula: map.get($tokens, $name);
+  }
+  @return $formula;
+}
+
+@function _is-oklch-derived($value, $name) {
+  $kind: _kind($value);
+  @if $kind == "literal" {
+    @return _is-oklch-derived(_literal-formula($value, $name), $name);
+  }
+  @if $kind == "mix" {
+    @return list.nth(map.get($value, "ravnus-mix"), 1) == oklch;
+  }
+  @return false;
+}
+
+@function _css-arg($arg) {
+  @if meta.type-of($arg) == color {
+    @return css-color($arg);
+  }
+  @return "var(#{_prop($arg)})";
+}
+
+// CSS text of a default token value (run-time form).
+@function _css($value) {
+  @if meta.type-of($value) == color {
+    @return css-color($value);
+  }
+  $kind: _kind($value);
+  @if $kind == "ref" {
+    @return "var(#{_prop(map.get($value, "ravnus-ref"))})";
+  }
+  @if $kind == "mix" {
+    $mix: map.get($value, "ravnus-mix");
+    @return "color-mix(in #{list.nth($mix, 1)}, #{_css-arg(list.nth($mix, 2))} #{list.nth($mix, 3)}, #{_css-arg(list.nth($mix, 4))})";
+  }
+  @if $kind == "shadow" {
+    $layers: ();
+    @each $layer in map.get($value, "ravnus-shadow") {
+      $color: _css(_mix("shadow-color", list.nth($layer, 2), transparent, srgb));
+      $layers: list.append($layers, string.unquote("#{list.nth($layer, 1)} #{$color}"), $separator: comma);
+    }
+    @return $layers;
+  }
+  @if $kind == "literal" {
+    @error "Literal values belong to presets.";
+  }
+  @if meta.type-of($value) == list {
+    @return meta.inspect($value);
+  }
+  @return $value;
+}
+
+// CSS text of a default derived token for browsers without color-mix().
+@function _fallback($name, $value) {
+  $kind: _kind($value);
+  @if $kind == "mix" {
+    @return css-color(_resolve($tokens, $value, $name, 0));
+  }
+  $shadow-color: resolve-color($tokens, "shadow-color");
+  $layers: ();
+  @each $layer in map.get($value, "ravnus-shadow") {
+    $color: css-color(color.mix($shadow-color, transparent, list.nth($layer, 2), $method: srgb));
+    $layers: list.append($layers, string.unquote("#{list.nth($layer, 1)} #{$color}"), $separator: comma);
+  }
+  @return $layers;
+}
+
+// Knob line for the guide comment: default value, plus the resolved color
+// when the default is a reference. A trailing * marks a knob that no style in
+// this release reads yet.
+@function _knob($name, $reserved: false) {
+  @if not map.has-key($tokens, $name) {
+    @error "Unknown knob #{$name}.";
+  }
+  $value: map.get($tokens, $name);
+  $text: "#{_prop($name)}: #{_css($value)}";
+  @if _kind($value) == "ref" {
+    $color: resolve-color($tokens, $name);
+    @if $color {
+      $text: "#{$text} = #{css-color($color)}";
+    }
+  }
+  @if $reserved {
+    $text: "#{$text} *";
+  }
+  @return $text;
+}
+
+// Declaration $n of a preset block. Values derived by the theme are written
+// as literals computed for the preset.
+@function _preset-decl($preset, $n) {
+  $set: map.get($presets, $preset, "tokens");
+  $names: map.keys($set);
+  @if $n > list.length($names) {
+    @error "Preset #{$preset} has only #{list.length($names)} tokens.";
+  }
+  $name: list.nth($names, $n);
+  $value: map.get($set, $name);
+  @if _kind($value) == "literal" {
+    $value: resolve-color(scheme($preset), $name);
+  }
+  @return "#{_prop($name)}: #{_css($value)};";
+}
+
+// Guard at the end of a preset comment: the comment must list every token of
+// the preset, so data and comment cannot drift apart.
+@function _preset-end($preset, $count) {
+  $length: list.length(map.keys(map.get($presets, $preset, "tokens")));
+  @if $count != $length {
+    @error "The #{$preset} preset comment lists #{$count} of #{$length} tokens.";
+  }
+  @return "";
+}
+
+@function _preset-title($preset) {
+  @return map.get($presets, $preset, "title");
+}
+
+@function _preset-about($preset) {
+  @return map.get($presets, $preset, "about");
+}
+
+// Every derived default and preset value must be inside sRGB before any
+// clipping, so the hex fallback equals what browsers compute (DESIGN.md 5.4).
+//
+// The hex rounds each channel half up. Browsers compute color-mix() with
+// their own precision, so a channel within $_rounding-margin of a .5 boundary
+// can round the other way at run time: Chrome 154 paints the Redmine Blue
+// accent-muted (red 227.546, hex #E4ECF6) as #E3ECF6. Such values get a
+// warning, once each (a preset value equal to the default is skipped).
+$_rounding-margin: 0.05;
+
+@each $scheme-name in scheme-names() {
+  $scheme-map: scheme($scheme-name);
+  @each $name, $value in $scheme-map {
+    @if _is-oklch-derived($value, $name) {
+      $color: _resolve($scheme-map, $value, $name, 0);
+      @if not color.is-in-gamut($color, $space: rgb) {
+        @error "#{_prop($name)} in the #{$scheme-name} scheme is outside sRGB: #{meta.inspect(color.to-space($color, rgb))}. Change its inputs (DESIGN.md 5.4).";
+      }
+      $hex: css-color($color);
+      @if $scheme-name == "default" or $hex != css-color(resolve-color($tokens, $name)) {
+        @each $channel in ("red", "green", "blue") {
+          $v: color.channel($color, $channel, $space: rgb);
+          @if math.abs($v - math.floor($v) - 0.5) < $_rounding-margin {
+            @warn "#{_prop($name)} in the #{$scheme-name} scheme: #{$channel} #{math.div(math.round($v * 1000), 1000)} is within #{$_rounding-margin} of a rounding boundary, so browsers may compute a channel 1 away from #{$hex} (DESIGN.md 5.4).";
+          }
+        }
+      }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Output
+// ---------------------------------------------------------------------------
 
 /*
- * RAVNUS design tokens.
- * You can customize the theme by editing the values in this block, but the
- * edits are overwritten when the theme is updated. Keep a copy and see README.
- * Source: src/_tokens.scss
+ * RAVNUS design tokens
+ *
+ * Customize without a build: set --ravnus-* tokens in a :root { } block in
+ * stylesheets/custom.css (a tracked empty file) or in a child theme. Edits
+ * to this compiled file are lost on update. The defaults below sit on
+ * :where(:root), so any :root block wins. Write literal values there: a
+ * color-mix() in your block has no fallback for browsers without
+ * color-mix(). Derived tokens (hover, active, tints) follow the knobs.
+ * See the README for updating with local edits, child themes and fonts.
+ * This release ships the tokens and the typography; the styles that paint
+ * links, buttons, the chrome and lists with these colors come later. Knobs
+ * marked * are read only by styles that are not in this release yet.
+ *
+ * 1. Brand
+ *    #{_knob("accent")}
+ *    #{_knob("on-accent", $reserved: true)}
+ *    #{_knob("link")}
+ *    #{_knob("topbar-bg", $reserved: true)}
+ *    #{_knob("topbar-fg-muted", $reserved: true)}
+ *    #{_knob("topbar-focus", $reserved: true)}
+ *    #{_knob("topbar-height", $reserved: true)}
+ *    #{_knob("header-bg", $reserved: true)}
+ *    #{_knob("bg-canvas")}
+ *    #{_knob("radius")}
+ *    The top bar follows --ravnus-accent, but --ravnus-topbar-fg-muted and
+ *    --ravnus-topbar-focus are fixed for #{css-color(resolve-color($tokens, "accent"))}: change them with the accent.
+ * 2. Typography
+ *    --ravnus-font-sans, --ravnus-font-sans-ja, --ravnus-font-sans-zh and
+ *    --ravnus-font-sans-zh-tw: UI font stacks (ja, zh and zh-TW UIs put the
+ *    native CJK fonts first). They start with the CDN web font of the
+ *    @font-face rules below; to self-host it or to use system fonts only,
+ *    change all four.
+ *    --ravnus-font-mono: code font stack
+ *    #{_knob("font-feature-settings")}
+ *    --ravnus-word-break: #{$_word-break} (left unset in ja and zh UIs, so normal there)
+ * 3. Layout
+ *    #{_knob("sidebar-at-start", $reserved: true)} (1 = sidebar at the inline start)
+ *    #{_knob("row-pad-y", $reserved: true)}
+ *    #{_knob("font-size-cell")}
+ *    #{_knob("font-size-cell-subject")}
+ *    #{_knob("row-stripe", $reserved: true)}
+ *    #{_knob("list-link", $reserved: true)}
+ *    #{_knob("prose-max-inline-size", $reserved: true)}
+ *    #{_knob("subject-min-inline-size")}
+ * 4. Domain hooks *: map issue rows by status or tracker id, for example
+ *    tr.status-2 {
+ *      --ravnus-status-color: var(--ravnus-status-progress-color);
+ *      --ravnus-status-fill: 0.5; --ravnus-status-check: 0;
+ *    }
+ *    tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
+ * 5. Advanced: every other token in the blocks below (the semantic set that
+ *    a dark mode will override). Copyable presets follow the token blocks.
  */
 :where(:root) {
-  // Pretendard first, then the fallback stack recommended by Pretendard
-  // for a consistent look across platforms.
-  --ravnus-font-sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont, system-ui, Roboto, "Helvetica Neue", "Segoe UI", "Apple SD Gothic Neo", "Noto Sans KR", "Malgun Gothic", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
+  color-scheme: light;
+  @each $group, $set in $_groups {
+    /* #{$group} */
+    @each $name, $value in $set {
+      #{_prop($name)}: #{_css($value)};
+    }
+  }
 }
+
+@each $lang, $set in $lang-tokens {
+  :where(:root:lang(#{$lang})) {
+    @each $name, $value in $set {
+      #{_prop($name)}: #{_css($value)};
+    }
+  }
+}
+
+:where(:root:not(:lang(ja)):not(:lang(zh))) {
+  --ravnus-word-break: #{$_word-break};
+}
+
+// The core gives the sticky issue header anchors 114px of scroll margin below
+// 900px (responsive.css) instead of 50px (DESIGN.md 8.5).
+@media screen and (max-width: 899px) {
+  :where(:root) {
+    --ravnus-sticky-header-block-size: 114px;
+  }
+}
+
+/*
+ * Literal values of the derived tokens for browsers without color-mix().
+ * They follow the defaults only, not your knobs.
+ */
+@supports not (color: color-mix(in oklch, red, blue)) {
+  :where(:root) {
+    @each $name, $value in $tokens {
+      @if _kind($value) == "mix" or _kind($value) == "shadow" {
+        #{_prop($name)}: #{_fallback($name, $value)};
+      }
+    }
+  }
+}
+
+// Core semantic variables (DESIGN.md 8.4 item 5): plain :root beats the core
+// :root declarations, and the values only point at tokens, so user knobs flow
+// through. The chrome background variables are remapped together with the
+// chrome styles, not here (DESIGN.md 4.5).
+:root {
+  --fonts-main: var(--ravnus-font-ui);
+  --color-current-marker: var(--ravnus-accent);
+}
+
+/*
+ * Presets (DESIGN.md 6.3). Copy a :root block into stylesheets/custom.css or
+ * a child theme. Colors the theme derives are written as literals computed at
+ * build time with the formulas of the :where(:root) block above; the top bar
+ * of the dark-header presets is color-mix(in oklch, header-bg 72%, black).
+ * Recompute a literal when you change the color it comes from, and do not
+ * paste color-mix() itself.
+ * The chrome presets (Ink, Brand-forward, Calm, Redmine Blue) need the chrome
+ * styles, and Left sidebar, Compact and Classic stripes off need the sidebar
+ * and issue list styles. None of these ship in this release yet.
+ */
+/*
+ * Preset: #{_preset-title("ink")}. #{_preset-about("ink")}
+ * :root {
+ *   #{_preset-decl("ink", 1)}
+ *   #{_preset-decl("ink", 2)}
+ *   #{_preset-decl("ink", 3)}
+ *   #{_preset-decl("ink", 4)}
+ *   #{_preset-decl("ink", 5)}
+ *   #{_preset-decl("ink", 6)}
+ *   #{_preset-decl("ink", 7)}
+ *   #{_preset-decl("ink", 8)}
+ *   #{_preset-decl("ink", 9)}
+ *   #{_preset-decl("ink", 10)}
+ * }#{_preset-end("ink", 10)}
+ */
+/*
+ * Preset: #{_preset-title("brand-forward")}. #{_preset-about("brand-forward")}
+ * :root {
+ *   #{_preset-decl("brand-forward", 1)}
+ *   #{_preset-decl("brand-forward", 2)}
+ *   #{_preset-decl("brand-forward", 3)}
+ *   #{_preset-decl("brand-forward", 4)}
+ *   #{_preset-decl("brand-forward", 5)}
+ *   #{_preset-decl("brand-forward", 6)}
+ *   #{_preset-decl("brand-forward", 7)}
+ *   #{_preset-decl("brand-forward", 8)}
+ *   #{_preset-decl("brand-forward", 9)}
+ *   #{_preset-decl("brand-forward", 10)}
+ * }#{_preset-end("brand-forward", 10)}
+ */
+/*
+ * Preset: #{_preset-title("calm")}. #{_preset-about("calm")}
+ * :root {
+ *   #{_preset-decl("calm", 1)}
+ *   #{_preset-decl("calm", 2)}
+ *   #{_preset-decl("calm", 3)}
+ *   #{_preset-decl("calm", 4)}
+ *   #{_preset-decl("calm", 5)}
+ * }#{_preset-end("calm", 5)}
+ */
+/*
+ * Preset: #{_preset-title("redmine-blue")}. #{_preset-about("redmine-blue")}
+ * :root {
+ *   #{_preset-decl("redmine-blue", 1)}
+ *   #{_preset-decl("redmine-blue", 2)}
+ *   #{_preset-decl("redmine-blue", 3)}
+ *   #{_preset-decl("redmine-blue", 4)}
+ *   #{_preset-decl("redmine-blue", 5)}
+ *   #{_preset-decl("redmine-blue", 6)}
+ *   #{_preset-decl("redmine-blue", 7)}
+ *   #{_preset-decl("redmine-blue", 8)}
+ *   #{_preset-decl("redmine-blue", 9)}
+ *   #{_preset-decl("redmine-blue", 10)}
+ *   #{_preset-decl("redmine-blue", 11)}
+ *   #{_preset-decl("redmine-blue", 12)}
+ *   #{_preset-decl("redmine-blue", 13)}
+ *   #{_preset-decl("redmine-blue", 14)}
+ *   #{_preset-decl("redmine-blue", 15)}
+ *   #{_preset-decl("redmine-blue", 16)}
+ *   #{_preset-decl("redmine-blue", 17)}
+ *   #{_preset-decl("redmine-blue", 18)}
+ * }#{_preset-end("redmine-blue", 18)}
+ */
+/*
+ * Preset: #{_preset-title("left-sidebar")}. #{_preset-about("left-sidebar")}
+ * :root {
+ *   #{_preset-decl("left-sidebar", 1)}
+ * }#{_preset-end("left-sidebar", 1)}
+ */
+/*
+ * Preset: #{_preset-title("compact")}. #{_preset-about("compact")}
+ * :root {
+ *   #{_preset-decl("compact", 1)}
+ *   #{_preset-decl("compact", 2)}
+ * }#{_preset-end("compact", 2)}
+ */
+/*
+ * Preset: #{_preset-title("classic-stripes-off")}. #{_preset-about("classic-stripes-off")}
+ * :root {
+ *   #{_preset-decl("classic-stripes-off", 1)}
+ * }#{_preset-end("classic-stripes-off", 1)}
+ */
