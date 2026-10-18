@@ -296,7 +296,7 @@ table.list tr.issue.overdue td.due_date {
 }
 
 table.list tr.issue.overdue td.due_date::before,
-table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
   content: "";
   display: inline-block;
   inline-size: 10px;
@@ -319,12 +319,14 @@ table.list tr.issue.overdue td.due_date::before {
 }
 
 // Behind schedule: warning text and a triangle (warning alone is 2.64:1
-// against body text, so the shape is the non-color cue).
-table.list tr.issue.behind-schedule:not(.overdue) td.due_date {
+// against body text, so the shape is the non-color cue). Redmine also marks
+// closed issues that were closed before reaching their done ratio; a
+// finished issue is not late, so closed rows get none of it.
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date {
   color: var(--ravnus-warning-fg);
 }
 
-table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
   background-color: var(--ravnus-warning-solid);
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
@@ -363,7 +365,7 @@ table.progress td.closed + td.done {
 
 // The issue page bar only: subtask and related issue rows inside div.issue
 // carry their own row classes.
-:is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
+:is(table.list tr.issue.behind-schedule:not(.closed), div.issue.behind-schedule:not(.closed) .attributes) table.progress td.closed {
   background: repeating-linear-gradient(
     45deg,
     var(--ravnus-progress-behind) 0 3px,
@@ -509,7 +511,7 @@ tr.group .expander svg.icon-svg {
     background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
   }
 
-  table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+  table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
     background-color: CanvasText;
   }
 
@@ -529,7 +531,7 @@ tr.group .expander svg.icon-svg {
     border-inline-start-color: Canvas;
   }
 
-  :is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
+  :is(table.list tr.issue.behind-schedule:not(.closed), div.issue.behind-schedule:not(.closed) .attributes) table.progress td.closed {
     background: repeating-linear-gradient(45deg, CanvasText 0 3px, Canvas 3px 6px);
   }
 }

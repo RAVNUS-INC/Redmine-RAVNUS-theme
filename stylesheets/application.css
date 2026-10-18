@@ -1562,7 +1562,7 @@ div.issue.overdue .due-date .value {
   font-weight: 600;
 }
 
-table.list tr.issue.behind-schedule:not(.overdue) td.due_date {
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date {
   font-weight: 500;
 }
 
@@ -1671,6 +1671,10 @@ p.progress-info {
 
 body.has-main-menu #header {
   padding-block-end: var(--ravnus-nav-height);
+}
+
+body:not(.has-main-menu) #header {
+  border-block-end: 1px solid var(--ravnus-header-divider);
 }
 
 #header a:not(#main-menu a, #project-jump .drdn-content a, .mobile-toggle-button) {
@@ -2195,7 +2199,7 @@ table.list tr.issue.overdue td.due_date {
 }
 
 table.list tr.issue.overdue td.due_date::before,
-table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
   content: "";
   display: inline-block;
   inline-size: 10px;
@@ -2215,11 +2219,11 @@ table.list tr.issue.overdue td.due_date::before {
   background-position: 4.25px 2px, 4.25px 7px;
 }
 
-table.list tr.issue.behind-schedule:not(.overdue) td.due_date {
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date {
   color: var(--ravnus-warning-fg);
 }
 
-table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
   background-color: var(--ravnus-warning-solid);
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
@@ -2249,7 +2253,7 @@ table.progress td.closed + td.done {
   border-inline-start: 1px solid var(--ravnus-bg-canvas);
 }
 
-:is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
+:is(table.list tr.issue.behind-schedule:not(.closed), div.issue.behind-schedule:not(.closed) .attributes) table.progress td.closed {
   background: repeating-linear-gradient(45deg, var(--ravnus-progress-behind) 0 3px, color-mix(in srgb, var(--ravnus-progress-behind) 55%, var(--ravnus-bg-canvas)) 3px 6px);
 }
 
@@ -2363,7 +2367,7 @@ tr.group .expander svg.icon-svg {
     background-color: CanvasText;
     background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
   }
-  table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+  table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
     background-color: CanvasText;
   }
   table.progress {
@@ -2378,7 +2382,7 @@ tr.group .expander svg.icon-svg {
   table.progress td.closed + td.done {
     border-inline-start-color: Canvas;
   }
-  :is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
+  :is(table.list tr.issue.behind-schedule:not(.closed), div.issue.behind-schedule:not(.closed) .attributes) table.progress td.closed {
     background: repeating-linear-gradient(45deg, CanvasText 0 3px, Canvas 3px 6px);
   }
 }
