@@ -4,7 +4,7 @@
 
 RAVNUS is a free, open-source theme for Redmine 7.x. Its goal is to be the most readable Redmine theme for Korean, Japanese and Chinese (CJK) users.
 
-> **Status: v0.2.0 in progress.** v0.1.0 (released 2026-10-18) added the design tokens and the CJK typography on top of the default Redmine look: font stacks per UI language, line breaking, line heights, text sizes, fonts in form controls and underlines for links in running text. The main branch also styles the chrome (top bar, header, menu bar, mobile header and flyout menu) and the sidebar; the issue list follows before v0.2.0 is released. Colors for links, buttons and lists come in later releases. Some gray text, the footer and avatar initials keep Redmine's own colors, which fall below WCAG AA contrast; they are recolored in later releases.
+> **Status: v0.2.0 in progress.** v0.1.0 (released 2026-10-18) added the design tokens and the CJK typography on top of the default Redmine look: font stacks per UI language, line breaking, line heights, text sizes, fonts in form controls and underlines for links in running text. The main branch also styles the chrome (top bar, header, menu bar, mobile header and flyout menu), the sidebar and the issue list (density, priority and status glyphs, row states, group rows, the selected row, print and forced colors). Colors for links, buttons, forms and the issue page come in later releases. Some gray text, the footer and avatar initials keep Redmine's own colors, which fall below WCAG AA contrast; they are recolored in later releases.
 
 ## Goals
 
@@ -287,8 +287,44 @@ Copy a block into `custom.css` or a child theme and restart Redmine. The default
 }
 ```
 
+**Compact**: denser issue list rows (about 27px instead of 32px).
+
+```css
+/* RAVNUS preset: compact */
+:root {
+  --ravnus-row-pad-y: 0.25rem;
+  --ravnus-font-size-cell-subject: 0.8125rem;
+}
+```
+
+**Classic stripes off**: no striped rows in lists.
+
+```css
+/* RAVNUS preset: classic-stripes-off */
+:root {
+  --ravnus-row-stripe: transparent;
+}
+```
+
 - Colors the theme derives are written as literals. The dark top bars are the header color mixed with 28% black in OKLCH; if you change `--ravnus-header-bg` in a block, compute the new top bar color and write it as a literal too, not as `color-mix()`.
 - Below 900px, the mobile header takes the header colors and the flyout menu takes the top bar colors.
+
+### Issue list status and tracker colors
+
+By default the status column shows two shapes that mean the same in every installation: a ring for open issues and a disc for closed ones. Status and tracker ids differ between installations, so map your own in `custom.css` or a child theme. Set all three status variables, so the closed default (a disc) does not remain:
+
+```css
+tr.status-1 { --ravnus-status-color: var(--ravnus-status-open-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 0; }
+tr.status-2,
+tr.status-4 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; --ravnus-status-check: 0; }
+tr.status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 1; }
+tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
+```
+
+- Shapes: `--ravnus-status-fill` `0` is a ring, `0.5` a half disc, `1` a disc; `--ravnus-status-check: 1` adds a dot in the ring (done).
+- Colors: `--ravnus-status-open-color`, `--ravnus-status-progress-color`, `--ravnus-status-done-color`, `--ravnus-status-closed-color`, and for trackers the tag colors `--ravnus-tag-{red,orange,green,blue,violet,gray}-fg`.
+- A typical mapping for the default Korean statuses: new as open, in progress and feedback as progress, resolved as done, closed and rejected as closed. Look up the ids in *Administration → Issue statuses*.
+- Priorities need no mapping: the theme reads the position classes Redmine gives every installation (lowest, default, high…, highest).
 
 ### Tokens
 
@@ -314,9 +350,12 @@ These knobs take effect in this release:
 | `--ravnus-font-size-cell` | `0.8125rem` | Text in list tables |
 | `--ravnus-font-size-cell-subject` | `0.875rem` | Subject column of the issue list |
 | `--ravnus-subject-min-inline-size` | `12em` | Minimum width of the subject column |
+| `--ravnus-row-pad-y` | `0.375rem` | Vertical padding of list rows (Compact: `0.25rem`) |
+| `--ravnus-row-stripe` | `var(--ravnus-bg-subtle)` | Background of every other list row (`transparent` turns stripes off) |
+| `--ravnus-list-link` | `var(--ravnus-link)` | Links in selected list rows |
 | `--ravnus-sidebar-at-start` | `0` | `1` moves the sidebar to the inline start (see [Presets](#presets)) |
 
-- The comment at the top of `stylesheets/application.css` lists every knob. Knobs marked `*` there (row padding and stripes, the list link color and the prose width) are read only by styles that come in later releases. The other chrome tokens (`--ravnus-topbar-fg`, `--ravnus-header-fg`, `--ravnus-header-divider` and the rest) are in the same file; the presets above show them.
+- The comment at the top of `stylesheets/application.css` lists every knob. The knob marked `*` there (the prose width) is read only by styles that come in a later release. The other chrome tokens (`--ravnus-topbar-fg`, `--ravnus-header-fg`, `--ravnus-header-divider` and the rest) are in the same file; the presets above show them.
 - Every other token, for example `--ravnus-font-size-base` (`0.875rem`, body and form controls) or `--ravnus-line-height-prose` (`1.7`, wiki text), is in the `:where(:root)` blocks of the same file and can be overridden the same way.
 
 ## Development
@@ -372,7 +411,8 @@ npm run probe -- --autologin --viewports 1440,800 --eval-file .docker/probe/chro
 - Pretendard comes from the CDN, so measurements that depend on it need internet access.
 - `.docker/probe/chrome-check.js` checks the chrome: each color in the top bar, header, menu bar, account dropdown, mobile header and flyout menu against the token it comes from, with its contrast, plus focus rings, chrome heights and long project names. It opens the account dropdown (logged in, 900px and wider) or the flyout menu (below 900px) and leaves it open for `--screenshot`. Failed checks are listed in `.eval.failed` and fail the run (exit status 1), as does a missing chrome element.
 - To check a preset, write the presets as files with `node src/tools/check-presets.mjs --write "$TMPDIR/ravnus-presets"` and pass one with `--inject-css`.
-- `--forced-colors` emulates forced colors (Windows high contrast).
+- `.docker/probe/list-check.js` checks an issue list: row heights (32 or 27px), priority, status, overdue and progress glyph colors, row markers, name and subject line breaking, horizontal overflow, group rows and totals, and the selected row (it marks rows as selected). Run it on a query with the columns you want to check, for example `'/projects/website-renewal/issues?set_filter=1&status_id=*&c[]=tracker&c[]=status&c[]=priority&c[]=subject&c[]=assigned_to&c[]=due_date&c[]=done_ratio'`.
+- `--forced-colors` emulates forced colors (Windows high contrast). `--pdf <dir>` prints each page to PDF with background graphics off, like a print preview.
 - Write `--out` and `--screenshot` outside the repository.
 
 ### Test environment
