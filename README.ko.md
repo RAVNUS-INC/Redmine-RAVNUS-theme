@@ -355,13 +355,13 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 
 ![일감 목록](.github/screenshots/issue-list.png)
 
-상태와 트래커 id는 설치마다 다르므로 기본으로는 열린 상태 모두 파란 고리, 닫힌 상태 모두 초록 원입니다. `custom.css`나 자식 테마에서 매핑합니다. `:is(tr, div)`로 쓰면 일감 상세의 상태 배지에도 같은 표시가 들어갑니다. 아이콘은 기본이 고리이고, `fill`(0~1)은 안을 채우고, `check`는 가운데 점을, `slash`는 사선을 더합니다. 그래서 상태는 색뿐 아니라 모양으로도 구별됩니다.
+상태와 트래커 id는 설치마다 다르므로 기본으로는 열린 상태 모두 파란 고리, 닫힌 상태 모두 초록 원입니다. `custom.css`나 자식 테마에서 매핑합니다. `:is(tr, div)`로 쓰면 일감 상세의 상태 배지에도 같은 표시가 들어갑니다. 아이콘은 기본이 고리이고, `fill`(0~1)은 안을 채우고, `check`는 가운데 점을, `slash`는 사선을 더합니다. 그래서 상태는 색뿐 아니라 모양으로도 구별됩니다. 닫힌 상태는 처음부터 채워져 있으므로(`fill: 1`), 점이나 사선을 보이려는 닫힌 상태에는 `--ravnus-status-fill: 0`을 함께 적습니다.
 
 ```css
 :is(tr, div).status-2 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; }
-:is(tr, div).status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-check: 1; }
+:is(tr, div).status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 1; }
 :is(tr, div).status-4 { --ravnus-status-color: var(--ravnus-status-feedback-color); --ravnus-status-check: 1; }
-:is(tr, div).status-6 { --ravnus-status-color: var(--ravnus-status-rejected-color); --ravnus-status-slash: 1; }
+:is(tr, div).status-6 { --ravnus-status-color: var(--ravnus-status-rejected-color); --ravnus-status-fill: 0; --ravnus-status-slash: 1; }
 tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
 tr.tracker-2 { --ravnus-tracker-color: var(--ravnus-tag-blue-fg); }
 ```

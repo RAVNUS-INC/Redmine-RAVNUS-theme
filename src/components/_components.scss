@@ -120,7 +120,7 @@ legend {
 // delete confirmation pages also name their button commit (users, projects,
 // wikis, my account and the bulk deletes, 4.10), so their actions are left
 // out and keep the outline button.
-body:not(.action-destroy, .action-bulk_destroy) input[type="submit"][name="commit"],
+body:not(.action-destroy, .action-bulk_destroy) input[type="submit"][name="commit"]:not(.btn-alert),
 #login-form #login-submit {
   border-color: var(--ravnus-accent);
   background-color: var(--ravnus-accent);
@@ -134,7 +134,8 @@ body:not(.action-destroy, .action-bulk_destroy) input[type="submit"][name="commi
 
 // Destructive buttons (shadcn Button variant="destructive"); the core has no
 // style for .btn-alert (4.10).
-.btn-alert:is(input, button, a) {
+// Same specificity as the outline button rule above (0,2,1), later.
+:is(input, button, a).btn-alert:not(.icon-only) {
   border-color: var(--ravnus-danger-solid);
   background-color: var(--ravnus-danger-solid);
   color: var(--ravnus-on-solid);
@@ -248,6 +249,14 @@ div.flash,
   color: var(--ravnus-fg-default);
   font-size: var(--ravnus-font-size-base);
   box-shadow: $_shadow-xs;
+}
+
+// The core notice (0,2,1) keeps its green box over div.flash; the notice is
+// a plain card with a green icon.
+div.flash.notice {
+  border-color: var(--ravnus-border-default);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
 }
 
 div.flash.notice svg.icon-svg {

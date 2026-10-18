@@ -30,8 +30,14 @@
 // shadcn Sidebar: a hairline at the content side, menu items as rounded
 // rows; the selected item is the muted surface with medium text, and a 2px
 // start marker keeps it visible in forced colors (8.8), where backgrounds go.
+// The core #main is row-reverse, so the content is at the sidebar's inline
+// start by default and at its inline end with --ravnus-sidebar-at-start: 1.
 #sidebar {
-  border-inline-end: 1px solid var(--ravnus-border-default);
+  border-color: var(--ravnus-border-default);
+  border-style: solid;
+  border-block-width: 0;
+  border-inline-start-width: calc(1px * (1 - var(--ravnus-sidebar-at-start, 0)));
+  border-inline-end-width: calc(1px * var(--ravnus-sidebar-at-start, 0));
 }
 
 #sidebar a.selected {

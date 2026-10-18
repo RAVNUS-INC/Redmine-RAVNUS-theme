@@ -134,7 +134,9 @@ async () => {
     expectValue(`priority ${label}: icon shape`, cs.clipPath.slice(0, 24), cs.clipPath !== "none", "polygon or path");
     shapes.add(cs.clipPath);
   }
-  expectValue("priority icons differ per level", shapes.size, shapes.size === [lowest, normal, high3, high2, highest].filter(Boolean).length, "one shape per level");
+  const levels = [lowest, normal, high3, high2, highest].filter(Boolean).length;
+  if (levels) expectValue("priority icons differ per level", shapes.size, shapes.size === levels, "one shape per level");
+  else push({ label: "priority icons differ per level", skipped: "no rows" });
   if (highest) check("priority highest: cell text", glyph(highest), "color", "priority-highest-fg", "bg-canvas", 4.5);
 
   // Status (6.5): an outline badge on canvas, the label in fg-muted, and a

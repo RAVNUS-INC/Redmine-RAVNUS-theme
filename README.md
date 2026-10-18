@@ -355,13 +355,13 @@ The issue list reads like a data table: no cell lines, a hover tint, and the col
 
 ![Issue list](.github/screenshots/issue-list.png)
 
-Out of the box every open status is a blue ring and every closed status a green disc, because status and tracker ids differ between installations. Map your own in `custom.css` or a child theme. `:is(tr, div)` also sets the status badge on the issue page. The icon is a ring by default; `fill` (0 to 1) fills it, `check` adds a center dot and `slash` crosses it, so statuses differ by shape as well as color:
+Out of the box every open status is a blue ring and every closed status a green disc, because status and tracker ids differ between installations. Map your own in `custom.css` or a child theme. `:is(tr, div)` also sets the status badge on the issue page. The icon is a ring by default; `fill` (0 to 1) fills it, `check` adds a center dot and `slash` crosses it, so statuses differ by shape as well as color. Closed statuses start filled (`fill: 1`), so set `--ravnus-status-fill: 0` on a closed status that should show a dot or a slash:
 
 ```css
 :is(tr, div).status-2 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; }
-:is(tr, div).status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-check: 1; }
+:is(tr, div).status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 1; }
 :is(tr, div).status-4 { --ravnus-status-color: var(--ravnus-status-feedback-color); --ravnus-status-check: 1; }
-:is(tr, div).status-6 { --ravnus-status-color: var(--ravnus-status-rejected-color); --ravnus-status-slash: 1; }
+:is(tr, div).status-6 { --ravnus-status-color: var(--ravnus-status-rejected-color); --ravnus-status-fill: 0; --ravnus-status-slash: 1; }
 tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
 tr.tracker-2 { --ravnus-tracker-color: var(--ravnus-tag-blue-fg); }
 ```

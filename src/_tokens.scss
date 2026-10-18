@@ -280,7 +280,7 @@ $_groups: (
   "Domain: priority, status, progress and tags": $_domain-tokens,
   "Chrome": (
     "topbar-bg": _p(neutral, 855),
-    "topbar-fg": _ref("on-accent"),
+    "topbar-fg": _p(neutral, 15),
     "topbar-fg-muted": _p(neutral, 285),
     "topbar-focus": _p(neutral, 15),
     "topbar-height": 2rem,

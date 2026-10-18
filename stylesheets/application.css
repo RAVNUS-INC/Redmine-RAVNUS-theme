@@ -147,7 +147,7 @@
   --ravnus-tag-gray-bg: #F5F5F5;
   /* Chrome */
   --ravnus-topbar-bg: #0A0A0A;
-  --ravnus-topbar-fg: var(--ravnus-on-accent);
+  --ravnus-topbar-fg: #FAFAFA;
   --ravnus-topbar-fg-muted: #A3A3A3;
   --ravnus-topbar-focus: #FAFAFA;
   --ravnus-topbar-height: 2rem;
@@ -2008,7 +2008,11 @@ body:not(.has-main-menu) #header {
 }
 
 #sidebar {
-  border-inline-end: 1px solid var(--ravnus-border-default);
+  border-color: var(--ravnus-border-default);
+  border-style: solid;
+  border-block-width: 0;
+  border-inline-start-width: calc(1px * (1 - var(--ravnus-sidebar-at-start, 0)));
+  border-inline-end-width: calc(1px * var(--ravnus-sidebar-at-start, 0));
 }
 
 #sidebar a.selected {
@@ -2127,24 +2131,24 @@ legend {
   outline-offset: 2px;
 }
 
-body:not(.action-destroy, .action-bulk_destroy) input[type=submit][name=commit],
+body:not(.action-destroy, .action-bulk_destroy) input[type=submit][name=commit]:not(.btn-alert),
 #login-form #login-submit {
   border-color: var(--ravnus-accent);
   background-color: var(--ravnus-accent);
   color: var(--ravnus-on-accent);
 }
-body:not(.action-destroy, .action-bulk_destroy) input[type=submit][name=commit]:hover,
+body:not(.action-destroy, .action-bulk_destroy) input[type=submit][name=commit]:not(.btn-alert):hover,
 #login-form #login-submit:hover {
   border-color: var(--ravnus-accent-hover);
   background-color: var(--ravnus-accent-hover);
 }
 
-.btn-alert:is(input, button, a) {
+:is(input, button, a).btn-alert:not(.icon-only) {
   border-color: var(--ravnus-danger-solid);
   background-color: var(--ravnus-danger-solid);
   color: var(--ravnus-on-solid);
 }
-.btn-alert:is(input, button, a):hover {
+:is(input, button, a).btn-alert:not(.icon-only):hover {
   border-color: color-mix(in srgb, var(--ravnus-danger-solid) 85%, black);
   background-color: color-mix(in srgb, var(--ravnus-danger-solid) 85%, black);
 }
@@ -2233,6 +2237,12 @@ div.flash,
   color: var(--ravnus-fg-default);
   font-size: var(--ravnus-font-size-base);
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+}
+
+div.flash.notice {
+  border-color: var(--ravnus-border-default);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
 }
 
 div.flash.notice svg.icon-svg {
