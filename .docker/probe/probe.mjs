@@ -155,6 +155,7 @@ const OPTIONS = {
   "--screenshot": { arg: "dir", help: "save a PNG per run in this directory" },
   "--full-page": { flag: true, help: "full-page screenshots" },
   "--forced-colors": { flag: true, help: "emulate forced colors (Windows high contrast)" },
+  "--pdf": { arg: "dir", help: "print each page to PDF without background graphics (print preview)" },
   "--eval": { arg: "js", help: "expression or function evaluated in the page; result in .eval" },
   "--eval-file": { arg: "file", help: "same as --eval, from a file" },
   "--autologin": { flag: true, help: "log in as admin with an autologin token made by rails runner" },
@@ -277,6 +278,7 @@ async function buildConfig(argv) {
     screenshotDir: v["--screenshot"] ? resolve(v["--screenshot"]) : null,
     fullPage: !!v["--full-page"],
     forcedColors: !!v["--forced-colors"],
+    pdfDir: v["--pdf"] ? resolve(v["--pdf"]) : null,
     evalCode,
     autologin: v["--autologin"] ? { token: autologinToken, login, cookieName: v["--cookie-name"] ?? null } : null,
     project,
@@ -699,6 +701,19 @@ async function probeOne(browser, config, shared, job) {
         result.screenshot = { error: String(error).split("\n")[0] };
       } finally {
         delete process.env.PW_TEST_SCREENSHOT_NO_FONTS_READY;
+      }
+    }
+
+    // Print preview with "background graphics" off: print media rules apply,
+    // and only colors with print-color-adjust: exact keep their backgrounds.
+    if (config.pdfDir) {
+      const path = join(config.pdfDir, `${slugOf(job, data.loggedIn)}.pdf`);
+      await mkdir(config.pdfDir, { recursive: true });
+      try {
+        await page.pdf({ path, printBackground: false, landscape: true, format: "A4" });
+        result.pdf = path;
+      } catch (error) {
+        result.pdf = { error: String(error).split("\n")[0] };
       }
     }
 

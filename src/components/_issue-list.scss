@@ -1,0 +1,561 @@
+// Issue list: density, priority, status and tracker glyphs, row states, group
+// rows and totals, the selected row, query filter controls, forced colors and
+// print (DESIGN.md 4.8, 4.9, 5.6, 6.1 progress bars, 6.4, 6.5, 8.8, 8.9).
+//
+// - Row variables (--ravnus-status-*, --ravnus-tracker-color,
+//   --ravnus-priority-color, --ravnus-row-marker-*) have zero-specificity
+//   defaults, so mappings such as `tr.status-2 { ... }` in custom.css win
+//   (5.6). Rules that read them use normal specificity.
+// - Glyphs are drawn with borders, gradients and clip-path: no url() and no
+//   font glyphs. Shapes, not only colors, tell the levels apart.
+// - context_menu.css loads after the theme and uses !important for the
+//   selected row, so the selection rules do too (8.3).
+@use "sass:list";
+@use "sass:map";
+
+// ---------------------------------------------------------------------------
+// Table, header cells, rows
+// ---------------------------------------------------------------------------
+
+table.list,
+.table-list {
+  border-block-color: var(--ravnus-border-default);
+}
+
+// Same padding as the body rows, so the header row has their height.
+table.list th,
+.table-list-header {
+  padding-block: var(--ravnus-row-pad-y);
+  background-color: var(--ravnus-bg-subtle);
+  color: var(--ravnus-fg-muted);
+  border-block-end: 1px solid var(--ravnus-border-default);
+  line-height: var(--ravnus-line-height-cell);
+}
+
+table.list th a {
+  color: inherit;
+}
+
+// The 18px sort icon link would sit on the x-height middle, which moves with
+// the font, so the header row changed by 1px when the CDN font was blocked.
+// Top alignment keeps the line box at the strut height.
+table.list th a.icon {
+  vertical-align: top;
+}
+
+// Rows are about 32px: 14px subject x 1.45 plus 2 x 6px padding (4.8). The
+// 1px row line is part of the row, so it comes off the top padding (Compact:
+// 13px x 1.45 plus 2 x 4px, about 27px). The cell line height is the tallest
+// box except for the 18px buttons icon.
+table.list td {
+  padding-block: calc(var(--ravnus-row-pad-y) - 1px) var(--ravnus-row-pad-y);
+  border-block-start-color: var(--ravnus-border-muted);
+}
+
+// Stripes and hover. Same selectors as the core, which the theme follows.
+table.list:not(.odd-even) tbody tr:nth-child(odd),
+.odd {
+  background-color: var(--ravnus-bg-canvas);
+}
+
+table.list:not(.odd-even) tbody tr:nth-child(even),
+.even {
+  background-color: var(--ravnus-row-stripe);
+}
+
+.box table.list:not(.odd-even) tbody tr:nth-child(even),
+.box .even {
+  background-color: var(--ravnus-bg-canvas);
+}
+
+table.list:not(.odd-even) tbody tr:nth-child(odd):hover,
+.odd:hover,
+table.list:not(.odd-even) tbody tr:nth-child(even):hover,
+.even:hover {
+  background-color: var(--ravnus-bg-hover);
+}
+
+// Subjects avoid a last line of one syllable (Phase 1 regression, 7.6).
+table.list td.subject {
+  text-wrap: pretty;
+}
+
+// Name columns break between words only, never between syllables: in a
+// table squeezed by many columns they stay on one line, and the table
+// scrolls inside #content instead (Phase 1 regression, 7.6).
+table.list td:is(.assigned_to, .author, .last_updated_by, .category) {
+  white-space: nowrap;
+}
+
+// ---------------------------------------------------------------------------
+// Row variables: zero-specificity defaults (5.6). Later rules win at equal
+// specificity, so closed rows and priority positions come after the default.
+// ---------------------------------------------------------------------------
+
+:where(table.list tr.issue) {
+  --ravnus-status-color: var(--ravnus-status-open-color);
+  --ravnus-status-fill: 0;
+  --ravnus-status-check: 0;
+  --ravnus-tracker-color: var(--ravnus-fg-muted);
+  --ravnus-priority-color: transparent;
+  --ravnus-row-marker-width: 0;
+  --ravnus-row-marker-color: transparent;
+}
+
+:where(table.list tr.issue.closed) {
+  --ravnus-status-color: var(--ravnus-status-closed-color);
+  --ravnus-status-fill: 1;
+}
+
+// Position classes only, never priority-N ids (6.4). The attribute selectors
+// catch extra low and high positions of installations with more priorities.
+:where(table.list tr.issue:is(.priority-lowest, [class*=" priority-low"])) {
+  --ravnus-priority-color: var(--ravnus-priority-low-fg);
+}
+
+:where(table.list tr.issue:is(.priority-high3, [class*=" priority-high"])) {
+  --ravnus-priority-color: var(--ravnus-priority-high3-fg);
+}
+
+:where(table.list tr.issue.priority-high2) {
+  --ravnus-priority-color: var(--ravnus-priority-high2-fg);
+  --ravnus-row-marker-width: 3px;
+  --ravnus-row-marker-color: var(--ravnus-priority-high2-fg);
+}
+
+:where(table.list tr.issue.priority-highest) {
+  --ravnus-priority-color: var(--ravnus-priority-highest-fg);
+  --ravnus-row-marker-width: 6px;
+  --ravnus-row-marker-color: var(--ravnus-priority-highest-fg);
+}
+
+// ---------------------------------------------------------------------------
+// Row marker: a border on a pseudo-element of the first cell, so it keeps the
+// column widths of the collapsed table, follows the writing direction and
+// stays in forced colors (6.4).
+// ---------------------------------------------------------------------------
+
+table.list tr.issue > td:first-child {
+  position: relative;
+}
+
+table.list tr.issue > td:first-child::before {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color);
+  pointer-events: none;
+}
+
+// ---------------------------------------------------------------------------
+// Priority glyph (6.4): 12 x 10px signal bars, one per level, or a 14px
+// square with "!" for the highest level. Default priority has none.
+// ---------------------------------------------------------------------------
+
+$_bar: linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color));
+$_bars: (
+  1: ($_bar, 3px 4px, 0 100%),
+  2: ($_bar, 3px 7px, 4.5px 100%),
+  3: ($_bar, 3px 10px, 9px 100%),
+);
+
+@function _bar-layers($count, $part) {
+  $layers: ();
+  @for $i from 1 through $count {
+    $layers: list.append($layers, list.nth(map.get($_bars, $i), $part), $separator: comma);
+  }
+  @return $layers;
+}
+
+table.list tr.issue td.priority::before {
+  content: "";
+  display: inline-block;
+  inline-size: 12px;
+  block-size: 10px;
+  margin-inline-end: var(--ravnus-space-075);
+  vertical-align: -1px;
+  background-repeat: no-repeat;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.list tr.issue.priority-default td.priority::before {
+  display: none;
+}
+
+@each $selector, $count in (".priority-lowest, [class*=' priority-low']": 1, ".priority-high3, [class*=' priority-high']": 2, ".priority-high2": 3) {
+  table.list tr.issue:is(#{$selector}) td.priority::before {
+    background-image: _bar-layers($count, 1);
+    background-size: _bar-layers($count, 2);
+    background-position: _bar-layers($count, 3);
+  }
+}
+
+// "!" in on-solid on a danger square: a bar and a dot drawn as gradients.
+table.list tr.issue.priority-highest td.priority::before {
+  inline-size: 14px;
+  block-size: 14px;
+  vertical-align: -2px;
+  border-radius: var(--ravnus-radius-sm);
+  background-color: var(--ravnus-danger-solid);
+  background-image:
+    linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid)),
+    linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid));
+  background-size: 2px 6px, 2px 2px;
+  background-position: 6px 3px, 6px 10px;
+}
+
+table.list tr.issue.priority-highest td.priority {
+  color: var(--ravnus-priority-highest-fg);
+  font-weight: 600;
+}
+
+// ---------------------------------------------------------------------------
+// Status glyph (6.5): a 10px circle. fill 0 is a ring, 0.5 a half disc, 1 a
+// disc (the 5px border fills it); check adds a dot in the ring.
+// ---------------------------------------------------------------------------
+
+// The circle and the tick are both placed from the cell center, so they line
+// up whatever the font; the start padding keeps room for them. The cell
+// aligns to the start instead of the core center.
+table.list tr.issue td.status {
+  position: relative;
+  text-align: start;
+  padding-inline-start: calc(var(--ravnus-space-100) + 10px + var(--ravnus-space-075));
+}
+
+table.list tr.issue td.status::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: var(--ravnus-space-100);
+  inset-block-start: calc(50% - 5px);
+  box-sizing: border-box;
+  inline-size: 10px;
+  block-size: 10px;
+  border: max(1.5px, (var(--ravnus-status-fill) - 0.5) * 10px) solid var(--ravnus-status-color);
+  border-radius: 50%;
+  background: linear-gradient(to top, var(--ravnus-status-color) calc(var(--ravnus-status-fill) * 100%), transparent 0);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+// Done: a 4px dot in the ring (a tick does not read at 10px on 1x screens).
+// --ravnus-status-check keeps its name for mappings.
+table.list tr.issue td.status::after {
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(var(--ravnus-space-100) + 3px);
+  inset-block-start: calc(50% - 2px);
+  inline-size: 4px;
+  block-size: 4px;
+  border: 2px solid var(--ravnus-status-color);
+  border-radius: 50%;
+  box-sizing: border-box;
+  opacity: var(--ravnus-status-check);
+  pointer-events: none;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+// ---------------------------------------------------------------------------
+// Tracker (6.5): neutral text and an 8px square dot by default; a mapping
+// such as `tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }`
+// colors both.
+// ---------------------------------------------------------------------------
+
+table.list tr.issue td.tracker {
+  color: var(--ravnus-tracker-color);
+}
+
+table.list tr.issue td.tracker::before {
+  content: "";
+  display: inline-block;
+  inline-size: 8px;
+  block-size: 8px;
+  margin-inline-end: var(--ravnus-space-075);
+  border: 4px solid var(--ravnus-tracker-color);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+// ---------------------------------------------------------------------------
+// Other row states (6.5)
+// ---------------------------------------------------------------------------
+
+// Closed rows: subtle text (6.01), no strike-through on the subject.
+table.list tr.issue.closed td {
+  color: var(--ravnus-fg-subtle);
+}
+
+// Overdue: danger text, 600 (typography) and a 10px "!" disc.
+table.list tr.issue.overdue td.due_date {
+  color: var(--ravnus-danger-fg);
+}
+
+table.list tr.issue.overdue td.due_date::before,
+table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+  content: "";
+  display: inline-block;
+  inline-size: 10px;
+  block-size: 10px;
+  margin-inline-end: var(--ravnus-space-050);
+  vertical-align: -1px;
+  background-repeat: no-repeat;
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.list tr.issue.overdue td.due_date::before {
+  border-radius: 50%;
+  background-color: var(--ravnus-danger-solid);
+  background-image:
+    linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid)),
+    linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid));
+  background-size: 1.5px 4px, 1.5px 1.5px;
+  background-position: 4.25px 2px, 4.25px 7px;
+}
+
+// Behind schedule: warning text and a triangle (warning alone is 2.64:1
+// against body text, so the shape is the non-color cue).
+table.list tr.issue.behind-schedule:not(.overdue) td.due_date {
+  color: var(--ravnus-warning-fg);
+}
+
+table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+  background-color: var(--ravnus-warning-solid);
+  clip-path: polygon(50% 0, 100% 100%, 0 100%);
+}
+
+// The core overdue color would beat the theme on unselected rows.
+table.list tr.overdue:not(.context-menu-selection) td.due_date {
+  color: var(--ravnus-danger-fg);
+}
+
+// ---------------------------------------------------------------------------
+// Progress bars (6.1): green, the behind-schedule share hatched.
+// ---------------------------------------------------------------------------
+
+// Cells of the progress bar table nested in a list cell keep no padding (the
+// list cell padding above would otherwise thicken the bar).
+table.list table.progress td {
+  padding-block: 0;
+}
+
+table.progress td {
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.progress td.closed {
+  background: var(--ravnus-progress-closed);
+}
+
+table.progress td.done {
+  background: var(--ravnus-progress-done);
+}
+
+table.progress td.todo {
+  background: var(--ravnus-progress-track);
+}
+
+// A canvas line between the closed and done shares of roadmap bars (1.58:1).
+table.progress td.closed + td.done {
+  border-inline-start: 1px solid var(--ravnus-bg-canvas);
+}
+
+:is(table.list tr.issue, div.issue).behind-schedule table.progress td.closed {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--ravnus-progress-behind) 0 3px,
+    color-mix(in srgb, var(--ravnus-progress-behind) 55%, var(--ravnus-bg-canvas)) 3px 6px
+  );
+}
+
+p.percent,
+p.progress-info {
+  color: var(--ravnus-fg-muted);
+}
+
+// ---------------------------------------------------------------------------
+// Selected rows (context menu, 6.5): accent-muted background, default text,
+// the list link color and icons in currentColor. The checked checkbox is the
+// cue besides color, so no marker.
+// ---------------------------------------------------------------------------
+
+table.list tr.context-menu-selection,
+table.list tr.context-menu-selection:hover {
+  background-color: var(--ravnus-accent-muted) !important;
+  color: var(--ravnus-fg-default) !important;
+}
+
+table.list tr.context-menu-selection a,
+table.list tr.context-menu-selection a:hover {
+  color: var(--ravnus-list-link) !important;
+}
+
+table.list tr.context-menu-selection svg.icon-svg {
+  stroke: currentColor !important;
+}
+
+// ---------------------------------------------------------------------------
+// Group rows and totals (6.5): the core grays are 2.07 and 3.32:1.
+// ---------------------------------------------------------------------------
+
+tr.group td {
+  background-color: var(--ravnus-bg-subtle);
+  border-block-end: 1px solid var(--ravnus-border-default);
+  color: var(--ravnus-fg-default);
+}
+
+table.list tbody tr.group:hover {
+  background-color: var(--ravnus-bg-subtle);
+}
+
+tr.group span.name {
+  font-weight: 600;
+}
+
+tr.group span.count {
+  inset-block-end: 0;
+  padding-inline: var(--ravnus-space-075);
+  border-radius: var(--ravnus-radius-full);
+  background: var(--ravnus-bg-inset);
+  color: var(--ravnus-fg-muted);
+}
+
+tr.group span.totals,
+.query-totals {
+  color: var(--ravnus-fg-muted);
+}
+
+tr.group span.totals .value,
+.query-totals .value {
+  color: var(--ravnus-fg-default);
+  font-weight: 600;
+}
+
+tr.group a.toggle-all {
+  color: var(--ravnus-link);
+
+  &:hover {
+    color: var(--ravnus-link-hover);
+    text-decoration-line: underline;
+  }
+}
+
+tr.group .expander svg.icon-svg {
+  stroke: var(--ravnus-fg-icon);
+}
+
+// ---------------------------------------------------------------------------
+// Query filter controls: compact fields with the control border, radius and
+// a focus ring (the core text input focus rule removes the outline).
+// ---------------------------------------------------------------------------
+
+#query_form_content :is(input[type="text"], input[type="date"], input[type="number"], select) {
+  min-block-size: var(--ravnus-control-height-sm);
+  border: 1px solid var(--ravnus-border-control);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+}
+
+#query_form_content :is(input[type="text"], input[type="date"], input[type="number"], select):focus-visible {
+  outline: 2px solid var(--ravnus-focus-ring);
+  outline-offset: 1px;
+}
+
+#query_form_content input[type="checkbox"] {
+  accent-color: var(--ravnus-accent);
+}
+
+#query_form_content legend {
+  color: var(--ravnus-fg-default);
+}
+
+// ---------------------------------------------------------------------------
+// Forced colors (8.8): backgrounds and gradients drop in this mode, so the
+// glyphs opt out and redraw in system colors. Borders (status ring, row
+// marker) stay on their own.
+// ---------------------------------------------------------------------------
+
+@media (forced-colors: active) {
+  table.list tr.issue td.priority::before,
+  table.list tr.issue td.status::before,
+  table.list tr.issue td.status::after,
+  table.list tr.issue td.due_date::before,
+  table.progress td {
+    forced-color-adjust: none;
+  }
+
+  table.list tr.issue td.priority::before {
+    --ravnus-priority-color: CanvasText;
+  }
+
+  table.list tr.issue.priority-highest td.priority::before {
+    background-color: CanvasText;
+    background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
+  }
+
+  table.list tr.issue td.status::before,
+  table.list tr.issue td.status::after {
+    --ravnus-status-color: CanvasText;
+  }
+
+  table.list tr.issue.overdue td.due_date::before {
+    background-color: CanvasText;
+    background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
+  }
+
+  table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
+    background-color: CanvasText;
+  }
+
+  table.progress {
+    border: 1px solid CanvasText;
+  }
+
+  table.progress td.todo {
+    background: Canvas;
+  }
+
+  table.progress td:is(.closed, .done) {
+    background: CanvasText;
+  }
+
+  :is(table.list tr.issue, div.issue).behind-schedule table.progress td.closed {
+    background: repeating-linear-gradient(45deg, CanvasText 0 3px, Canvas 3px 6px);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Print (8.9): glyphs and bars print with their colors (above); stripes,
+// hover and selection tints do not.
+// ---------------------------------------------------------------------------
+
+// html body lifts the rules above the stripe and hover rules (0,3,3), (0,4,3).
+@media print {
+  html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)),
+  html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)):hover {
+    background-color: transparent;
+  }
+
+  table.list tr.context-menu-selection {
+    background-color: transparent !important;
+  }
+
+  // The checkbox column is hidden in print (hide-when-print), so the row
+  // marker moves to the next cell.
+  table.list tr.issue > td.checkbox.hide-when-print + td {
+    position: relative;
+  }
+
+  table.list tr.issue > td.checkbox.hide-when-print + td::before {
+    content: "";
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: 0;
+    border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color);
+  }
+}
