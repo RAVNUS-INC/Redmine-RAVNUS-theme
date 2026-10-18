@@ -172,7 +172,13 @@ async () => {
     check("overdue date", $("td.due_date", overdue), "color", "danger-fg", "bg-canvas", 4.5);
     check("overdue glyph", $("td.due_date", overdue), "backgroundColor", "danger-solid", null, null, "::before");
   } else push({ label: "overdue", skipped: "no row or column" });
-  const behind = rows.find((r) => r.matches(".behind-schedule:not(.overdue)") && $("td.due_date", r)?.textContent.trim());
+  // Closed issues can carry behind-schedule too; the theme shows it on open rows only.
+  const behind = rows.find((r) => r.matches(".behind-schedule:not(.overdue, .closed)") && $("td.due_date", r)?.textContent.trim());
+  const closedBehind = row(".closed.behind-schedule");
+  if (closedBehind && $("td.due_date", closedBehind)) {
+    const g = getComputedStyle($("td.due_date", closedBehind), "::before");
+    expectValue("closed late row: no behind-schedule glyph", g.content, g.content === "none" || g.content === "normal", "none");
+  }
   if (behind) {
     check("behind schedule date", $("td.due_date", behind), "color", "warning-fg", "bg-canvas", 4.5);
     const clip = getComputedStyle($("td.due_date", behind), "::before").clipPath;
@@ -182,7 +188,7 @@ async () => {
   // Progress bars (6.1).
   const bar = $("tr.issue:not(.behind-schedule) table.progress td.closed", table);
   if (bar) check("progress closed", bar, "backgroundColor", "progress-closed", "progress-track", 3);
-  const behindBar = $("tr.issue.behind-schedule table.progress td.closed", table);
+  const behindBar = $("tr.issue.behind-schedule:not(.closed) table.progress td.closed", table);
   if (behindBar) {
     const image = getComputedStyle(behindBar).backgroundImage;
     expectValue("progress behind: hatched", image.slice(0, 40), image.startsWith("repeating-linear-gradient"), "repeating-linear-gradient");

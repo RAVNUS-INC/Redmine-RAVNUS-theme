@@ -132,6 +132,12 @@ body.has-main-menu #header {
   padding-block-end: var(--ravnus-nav-height);
 }
 
+// Without a main menu (my page, account pages, admin), nothing separates the
+// white header from the white content: draw the line the menu bar draws.
+body:not(.has-main-menu) #header {
+  border-block-end: 1px solid var(--ravnus-header-divider);
+}
+
 // Links in the header, but not in the main menu bar (nav tokens), the project
 // jump overlay (overlay tokens) or the mobile menu toggle (8.6).
 #header a:not(#main-menu a, #project-jump .drdn-content a, .mobile-toggle-button) {

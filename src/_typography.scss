@@ -479,7 +479,7 @@ div.issue.overdue .due-date .value {
   font-weight: 600;
 }
 
-table.list tr.issue.behind-schedule:not(.overdue) td.due_date {
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date {
   font-weight: 500;
 }
 
