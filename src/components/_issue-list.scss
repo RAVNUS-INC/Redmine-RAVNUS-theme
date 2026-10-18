@@ -288,7 +288,9 @@ table.list tr.issue.closed td {
   color: var(--ravnus-fg-subtle);
 }
 
-// Overdue: danger text, 600 (typography) and a 10px "!" disc.
+// Overdue: danger text, 600 (typography) and a 10px "!" disc. Same
+// specificity as the core rule (0,4,3), later, and on selected rows too
+// (danger 5.23:1 on accent-muted).
 table.list tr.issue.overdue td.due_date {
   color: var(--ravnus-danger-fg);
 }
@@ -327,11 +329,6 @@ table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
-// The core overdue color would beat the theme on unselected rows.
-table.list tr.overdue:not(.context-menu-selection) td.due_date {
-  color: var(--ravnus-danger-fg);
-}
-
 // ---------------------------------------------------------------------------
 // Progress bars (6.1): green, the behind-schedule share hatched.
 // ---------------------------------------------------------------------------
@@ -364,7 +361,9 @@ table.progress td.closed + td.done {
   border-inline-start: 1px solid var(--ravnus-bg-canvas);
 }
 
-:is(table.list tr.issue, div.issue).behind-schedule table.progress td.closed {
+// The issue page bar only: subtask and related issue rows inside div.issue
+// carry their own row classes.
+:is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
   background: repeating-linear-gradient(
     45deg,
     var(--ravnus-progress-behind) 0 3px,
@@ -402,7 +401,9 @@ table.list tr.context-menu-selection svg.icon-svg {
 // Group rows and totals (6.5): the core grays are 2.07 and 3.32:1.
 // ---------------------------------------------------------------------------
 
+// The list cell padding above would replace the core group spacing.
 tr.group td {
+  padding-block: 0.8em 0.5em;
   background-color: var(--ravnus-bg-subtle);
   border-block-end: 1px solid var(--ravnus-border-default);
   color: var(--ravnus-fg-default);
@@ -524,7 +525,11 @@ tr.group .expander svg.icon-svg {
     background: CanvasText;
   }
 
-  :is(table.list tr.issue, div.issue).behind-schedule table.progress td.closed {
+  table.progress td.closed + td.done {
+    border-inline-start-color: Canvas;
+  }
+
+  :is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
     background: repeating-linear-gradient(45deg, CanvasText 0 3px, Canvas 3px 6px);
   }
 }
@@ -537,7 +542,9 @@ tr.group .expander svg.icon-svg {
 // html body lifts the rules above the stripe and hover rules (0,3,3), (0,4,3).
 @media print {
   html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)),
-  html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)):hover {
+  html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)):hover,
+  html body table.list tbody tr:is(.odd, .even),
+  html body table.list tbody tr:is(.odd, .even):hover {
     background-color: transparent;
   }
 
@@ -546,12 +553,13 @@ tr.group .expander svg.icon-svg {
   }
 
   // The checkbox column is hidden in print (hide-when-print), so the row
-  // marker moves to the next cell.
-  table.list tr.issue > td.checkbox.hide-when-print + td {
+  // marker moves to the id cell, which every issue query has (its other
+  // neighbors draw glyphs on ::before).
+  table.list tr.issue > td.checkbox.hide-when-print + td.id {
     position: relative;
   }
 
-  table.list tr.issue > td.checkbox.hide-when-print + td::before {
+  table.list tr.issue > td.checkbox.hide-when-print + td.id::before {
     content: "";
     position: absolute;
     inset-block: 0;

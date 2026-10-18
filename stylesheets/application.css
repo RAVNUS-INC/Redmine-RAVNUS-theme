@@ -2224,10 +2224,6 @@ table.list tr.issue.behind-schedule:not(.overdue) td.due_date::before {
   clip-path: polygon(50% 0, 100% 100%, 0 100%);
 }
 
-table.list tr.overdue:not(.context-menu-selection) td.due_date {
-  color: var(--ravnus-danger-fg);
-}
-
 table.list table.progress td {
   padding-block: 0;
 }
@@ -2253,7 +2249,7 @@ table.progress td.closed + td.done {
   border-inline-start: 1px solid var(--ravnus-bg-canvas);
 }
 
-:is(table.list tr.issue, div.issue).behind-schedule table.progress td.closed {
+:is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
   background: repeating-linear-gradient(45deg, var(--ravnus-progress-behind) 0 3px, color-mix(in srgb, var(--ravnus-progress-behind) 55%, var(--ravnus-bg-canvas)) 3px 6px);
 }
 
@@ -2278,6 +2274,7 @@ table.list tr.context-menu-selection svg.icon-svg {
 }
 
 tr.group td {
+  padding-block: 0.8em 0.5em;
   background-color: var(--ravnus-bg-subtle);
   border-block-end: 1px solid var(--ravnus-border-default);
   color: var(--ravnus-fg-default);
@@ -2378,22 +2375,27 @@ tr.group .expander svg.icon-svg {
   table.progress td:is(.closed, .done) {
     background: CanvasText;
   }
-  :is(table.list tr.issue, div.issue).behind-schedule table.progress td.closed {
+  table.progress td.closed + td.done {
+    border-inline-start-color: Canvas;
+  }
+  :is(table.list tr.issue.behind-schedule, div.issue.behind-schedule .attributes) table.progress td.closed {
     background: repeating-linear-gradient(45deg, CanvasText 0 3px, Canvas 3px 6px);
   }
 }
 @media print {
   html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)),
-  html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)):hover {
+  html body table.list:not(.odd-even) tbody tr:is(:nth-child(odd), :nth-child(even)):hover,
+  html body table.list tbody tr:is(.odd, .even),
+  html body table.list tbody tr:is(.odd, .even):hover {
     background-color: transparent;
   }
   table.list tr.context-menu-selection {
     background-color: transparent !important;
   }
-  table.list tr.issue > td.checkbox.hide-when-print + td {
+  table.list tr.issue > td.checkbox.hide-when-print + td.id {
     position: relative;
   }
-  table.list tr.issue > td.checkbox.hide-when-print + td::before {
+  table.list tr.issue > td.checkbox.hide-when-print + td.id::before {
     content: "";
     position: absolute;
     inset-block: 0;

@@ -92,7 +92,10 @@ async () => {
   const heights = singleLine.slice(1).map((r) => round(r.getBoundingClientRect().height));
   const th = $("thead th", table);
   metrics.rows = { count: rows.length, singleLine: singleLine.length, min: Math.min(...heights), max: Math.max(...heights), header: th && round(th.getBoundingClientRect().height) };
-  const target = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--ravnus-row-pad-y")) < 0.3 ? 27 : 32;
+  // The bottom cell padding is --ravnus-row-pad-y in px (4px Compact, 6px default).
+  const padCell = rows.length ? $("td.id", rows[0]) ?? $("td.subject", rows[0]) : null;
+  const padY = padCell ? parseFloat(getComputedStyle(padCell).paddingBottom) : 6;
+  const target = padY < 5 ? 27 : 32;
   metrics.rows.target = target;
   if (heights.length) {
     expectValue(`row height ${target}±1px`, `${metrics.rows.min}-${metrics.rows.max}`, metrics.rows.min >= target - 1 && metrics.rows.max <= target + 1, `${target - 1}-${target + 1}`);
@@ -132,7 +135,15 @@ async () => {
   } else push({ label: "priority highest", skipped: "no row" });
 
   // Status glyphs (6.5): ring on open rows, disc on closed rows.
-  const open = rows.find((r) => !r.classList.contains("closed"));
+  // An open row that still has the default status shape (a mapping in
+  // custom.css may give other open rows other shapes and colors).
+  const rowVar = (r, name) => getComputedStyle(r).getPropertyValue(name).trim();
+  const resolved = (value) => {
+    probe.style.color = "";
+    probe.style.color = value;
+    return getComputedStyle(probe).color;
+  };
+  const open = rows.find((r) => !r.classList.contains("closed") && rowVar(r, "--ravnus-status-fill") === "0" && rowVar(r, "--ravnus-status-check") === "0" && same(resolved(rowVar(r, "--ravnus-status-color")), token("status-open-color")));
   const closed = row(".closed");
   if (open) {
     const cs = getComputedStyle($("td.status", open), "::before");
@@ -146,7 +157,14 @@ async () => {
     check("closed status: color", $("td.status", closed), "borderTopColor", "status-closed-color", "bg-canvas", 3, "::before");
     check("closed row text", $("td.status", closed), "color", "fg-subtle", "bg-canvas", 4.5);
   }
-  if (open) check("tracker text", $("td.tracker", open), "color", "fg-muted", "bg-canvas", 4.5);
+  // Tracker text follows the row variable (fg-muted unless mapped); closed
+  // rows use the closed text color instead.
+  const trackerRow = rows.find((r) => !r.classList.contains("closed") && $("td.tracker", r));
+  if (trackerRow) {
+    const want = resolved(rowVar(trackerRow, "--ravnus-tracker-color"));
+    const value = getComputedStyle($("td.tracker", trackerRow)).color;
+    push({ label: "tracker text", value, expected: want, contrast: contrast(value, token("bg-canvas")), ok: same(value, want) && contrast(value, token("bg-canvas")) >= 4.5 });
+  }
 
   // Overdue and behind schedule (6.5).
   const overdue = row(".overdue");

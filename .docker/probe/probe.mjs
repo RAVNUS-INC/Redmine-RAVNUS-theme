@@ -714,6 +714,7 @@ async function probeOne(browser, config, shared, job) {
         result.pdf = path;
       } catch (error) {
         result.pdf = { error: String(error).split("\n")[0] };
+        result.problems.push(`pdf: ${result.pdf.error}`);
       }
     }
 
