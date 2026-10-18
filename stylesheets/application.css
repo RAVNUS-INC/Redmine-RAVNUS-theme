@@ -1731,8 +1731,6 @@ body.has-main-menu #header {
 
 @media screen and (min-width: 900px) {
   #project-jump .drdn-trigger {
-    display: inline-flex;
-    align-items: center;
     block-size: var(--ravnus-control-height);
     padding-block: 0;
     padding-inline: var(--ravnus-space-100) var(--ravnus-space-250);
@@ -1740,7 +1738,7 @@ body.has-main-menu #header {
     border-radius: var(--ravnus-radius);
     background-color: var(--ravnus-bg-canvas);
     color: var(--ravnus-fg-default);
-    line-height: var(--ravnus-line-height-tight);
+    line-height: calc(var(--ravnus-control-height) - 2px);
   }
   #project-jump .drdn-content {
     inset-block-start: calc(100% + var(--ravnus-space-050));
@@ -1792,7 +1790,7 @@ body.has-main-menu #header {
   border-block-end: 1px solid var(--ravnus-nav-border);
 }
 
-#main-menu ul {
+#main-menu > ul {
   block-size: 100%;
   min-block-size: 0;
   align-items: stretch;
@@ -1848,6 +1846,8 @@ body.has-main-menu #header {
 }
 
 #main-menu .menu-children {
+  block-size: auto;
+  min-block-size: 0;
   padding-block: var(--ravnus-space-050);
   background-color: var(--ravnus-bg-overlay);
   border: 1px solid var(--ravnus-border-default);

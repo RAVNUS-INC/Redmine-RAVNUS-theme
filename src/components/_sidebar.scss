@@ -3,8 +3,9 @@
 // - A bg-subtle tint without the core border; the core width steps, the
 //   collapse toggle, its localStorage state and the collapsed padding stay.
 // - --ravnus-sidebar-at-start: 1 moves the sidebar to the inline start. The
-//   core #main is row-reverse, so order 1 puts it first in reading order
-//   (right in RTL, where the core already puts it on the left).
+//   core #main is row-reverse, so order 1 places it visually at the start
+//   (left in LTR, right in RTL). Only the visual position changes; the DOM,
+//   reading and tab order stay as in the core.
 // - Below 900px responsive.js moves the sidebar into the flyout, which the
 //   chrome partial paints.
 

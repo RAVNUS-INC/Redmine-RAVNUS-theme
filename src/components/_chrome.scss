@@ -205,9 +205,9 @@ body.has-main-menu #header {
 // turns it into a transparent title; a field surface declared there would put
 // the white title of a dark-header preset on canvas (8.4 item 12, 8.6).
 @media screen and (min-width: 900px) {
+  // inline-block, not flex: the core ellipsis for long project names only
+  // works on a block container. The line box fills the field instead.
   #project-jump .drdn-trigger {
-    display: inline-flex;
-    align-items: center;
     block-size: var(--ravnus-control-height);
     padding-block: 0;
     padding-inline: var(--ravnus-space-100) var(--ravnus-space-250);
@@ -215,7 +215,7 @@ body.has-main-menu #header {
     border-radius: var(--ravnus-radius);
     background-color: var(--ravnus-bg-canvas);
     color: var(--ravnus-fg-default);
-    line-height: var(--ravnus-line-height-tight);
+    line-height: calc(var(--ravnus-control-height) - 2px);
   }
 
   // The core opens the list 25px below the top, for its 24px trigger.
@@ -289,8 +289,9 @@ body.has-main-menu #header {
 }
 
 // Tabs fill the bar whatever their font: the height comes from the bar, not
-// from the line height and padding (7.0.1 and 7.0.2 differ there, 8.4).
-#main-menu ul {
+// from the line height and padding (7.0.1 and 7.0.2 differ there, 8.4). Only
+// the tab list: the submenu (ul.menu-children) sizes to its items.
+#main-menu > ul {
   block-size: 100%;
   min-block-size: 0;
   align-items: stretch;
@@ -352,6 +353,8 @@ body.has-main-menu #header {
 }
 
 #main-menu .menu-children {
+  block-size: auto;
+  min-block-size: 0;
   padding-block: var(--ravnus-space-050);
   background-color: var(--ravnus-bg-overlay);
   border: 1px solid var(--ravnus-border-default);

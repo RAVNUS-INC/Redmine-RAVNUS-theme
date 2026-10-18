@@ -679,6 +679,11 @@ async function probeOne(browser, config, shared, job) {
     if (config.evalCode) {
       const expression = `(async () => { const v = (${config.evalCode}\n); return typeof v === "function" ? await v() : await v; })()`;
       result.eval = await page.evaluate(expression).catch((error) => ({ evalError: String(error).split("\n")[0] }));
+      if (result.eval?.evalError) result.problems.push(`eval threw: ${result.eval.evalError}`);
+      // An eval file may report failed checks as { failed: [...] } (chrome-check.js).
+      if (Array.isArray(result.eval?.failed) && result.eval.failed.length) {
+        result.problems.push(`eval: ${result.eval.failed.length} failed check(s): ${result.eval.failed.slice(0, 5).join("; ")}`);
+      }
     }
 
     if (config.screenshotDir) {

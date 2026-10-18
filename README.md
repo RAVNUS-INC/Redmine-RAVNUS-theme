@@ -287,7 +287,7 @@ Copy a block into `custom.css` or a child theme and restart Redmine. The default
 }
 ```
 
-- The colors are literals. The dark top bars are the header color mixed with 28% black in OKLCH; if you change `--ravnus-header-bg` in a block, compute the new top bar color and write it as a literal too, not as `color-mix()`.
+- Colors the theme derives are written as literals. The dark top bars are the header color mixed with 28% black in OKLCH; if you change `--ravnus-header-bg` in a block, compute the new top bar color and write it as a literal too, not as `color-mix()`.
 - Below 900px, the mobile header takes the header colors and the flyout menu takes the top bar colors.
 
 ### Tokens
@@ -370,7 +370,7 @@ npm run probe -- --autologin --viewports 1440,800 --eval-file .docker/probe/chro
 - `--block abort` makes requests to jsDelivr fail at once, and `--block hang` leaves them unanswered, like a network that drops packets.
 - `--autologin` logs in as admin without a password. It creates an autologin token with `bin/rails runner` in the container and deletes it when the probe ends.
 - Pretendard comes from the CDN, so measurements that depend on it need internet access.
-- `.docker/probe/chrome-check.js` checks the chrome: each color in the top bar, header, menu bar, account dropdown, mobile header and flyout menu against the token it comes from, with its contrast, plus focus rings, chrome heights and long project names. It opens the account dropdown (logged in, 900px and wider) or the flyout menu (below 900px) and leaves it open for `--screenshot`. Failed checks are listed in `.eval.failed`.
+- `.docker/probe/chrome-check.js` checks the chrome: each color in the top bar, header, menu bar, account dropdown, mobile header and flyout menu against the token it comes from, with its contrast, plus focus rings, chrome heights and long project names. It opens the account dropdown (logged in, 900px and wider) or the flyout menu (below 900px) and leaves it open for `--screenshot`. Failed checks are listed in `.eval.failed` and fail the run (exit status 1), as does a missing chrome element.
 - To check a preset, write the presets as files with `node src/tools/check-presets.mjs --write "$TMPDIR/ravnus-presets"` and pass one with `--inject-css`.
 - `--forced-colors` emulates forced colors (Windows high contrast).
 - Write `--out` and `--screenshot` outside the repository.

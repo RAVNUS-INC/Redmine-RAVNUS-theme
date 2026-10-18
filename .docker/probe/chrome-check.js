@@ -66,9 +66,21 @@ async () => {
   const failed = [];
   // prop: computed property; want: token name; on: surface token for the
   // contrast; min: minimum contrast (omit for decorative lines).
+  // Elements a page may lack (no parent project, no selected tab, no project
+  // page). Any other missing element fails: a renamed core selector must not
+  // pass unnoticed.
+  const optional = /^(breadcrumbs|breadcrumb link|current project|h1 text|selected tab|menu tab|menu bar|project jump item|search label link)/;
+  const missing = (label) => {
+    const entry = { label, skipped: "no element" };
+    if (!optional.test(label)) {
+      entry.ok = false;
+      failed.push(label);
+    }
+    checks.push(entry);
+  };
   const check = (label, el, prop, want, on, min, pseudo) => {
     if (!el) {
-      checks.push({ label, skipped: "no element" });
+      missing(label);
       return;
     }
     const cs = getComputedStyle(el, pseudo);
@@ -188,7 +200,7 @@ async () => {
     // stays on the bar), header links in header-focus, tabs in focus-ring.
     const ring = async (label, el, want, on, offset) => {
       if (!el) {
-        checks.push({ label, skipped: "no element" });
+        missing(label);
         return;
       }
       el.focus();
@@ -218,6 +230,30 @@ async () => {
       await ring("project jump search focus ring", $("#projects-quick-search"), "focus-ring", "bg-overlay", "1px");
       jumpTrigger.click();
       await wait(100);
+    }
+
+    // New item submenu ("+", logged in): an overlay as tall as its items.
+    const children = $("#main-menu .menu-children");
+    if (children) {
+      children.classList.add("visible");
+      await wait(50);
+      const items = [...children.querySelectorAll("li")];
+      const itemsHeight = items.reduce((sum, li) => sum + li.getBoundingClientRect().height, 0);
+      const boxHeight = children.getBoundingClientRect().height;
+      metrics.submenu = { items: items.length, itemsHeight: Math.round(itemsHeight), boxHeight: Math.round(boxHeight) };
+      expectValue("new item submenu holds its items", boxHeight + 0.5 >= itemsHeight && items.length > 0, true);
+      check("new item submenu surface", children, "backgroundColor", "bg-overlay");
+      items.slice(0, 3).forEach((li, i) => check(`new item submenu item ${i}`, li.querySelector("a"), "color", "fg-default", "bg-overlay", 4.5));
+      children.classList.remove("visible");
+    }
+
+    // The project jump trigger keeps the core ellipsis for long names.
+    if (jumpTrigger) {
+      const saved = jumpTrigger.textContent;
+      jumpTrigger.textContent = "띄어쓰기없이아주길게이어지는프로젝트이름과とても長い日本語のプロジェクト名";
+      const cs = getComputedStyle(jumpTrigger);
+      expectValue("project jump trigger ellipsis", `${cs.display} ${cs.textOverflow} ${jumpTrigger.scrollWidth > jumpTrigger.clientWidth}`, "inline-block ellipsis true");
+      jumpTrigger.textContent = saved;
     }
 
     // Long Korean and Japanese project names must not run under the quick
@@ -261,7 +297,7 @@ async () => {
     expectValue("mobile header top line width", header && getComputedStyle(header).borderTopWidth, "0px");
     const toggle = $("#header a.mobile-toggle-button");
     check("menu toggle", toggle, "color", "header-fg", "header-bg", 4.5);
-    check("menu toggle divider", toggle, "borderLeftColor", "header-divider");
+    check("menu toggle divider", toggle, "borderInlineStartColor", "header-divider");
     expectValue(
       "menu toggle outside the header link rule (no hover underline)",
       !!toggle && toggle.matches("#header a:not(#main-menu a, #project-jump .drdn-content a, .mobile-toggle-button)"),

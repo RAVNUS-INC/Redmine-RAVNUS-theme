@@ -287,7 +287,7 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 }
 ```
 
-- 색은 리터럴 값입니다. 어두운 상단 바는 헤더 색에 검정 28%를 OKLCH로 섞은 색입니다. 블록에서 `--ravnus-header-bg`를 바꾸면 새 상단 바 색을 계산해 역시 리터럴로 적습니다. `color-mix()`를 그대로 쓰지 않습니다.
+- 테마가 계산하는 색은 리터럴 값으로 적었습니다. 어두운 상단 바는 헤더 색에 검정 28%를 OKLCH로 섞은 색입니다. 블록에서 `--ravnus-header-bg`를 바꾸면 새 상단 바 색을 계산해 역시 리터럴로 적습니다. `color-mix()`를 그대로 쓰지 않습니다.
 - 900px 미만에서는 모바일 헤더가 헤더 색을, flyout 메뉴가 상단 바 색을 따릅니다.
 
 ### 토큰
@@ -370,7 +370,7 @@ npm run probe -- --autologin --viewports 1440,800 --eval-file .docker/probe/chro
 - `--block abort`는 jsDelivr 요청을 바로 실패시키고, `--block hang`은 패킷을 버리는 망처럼 응답하지 않습니다.
 - `--autologin`은 비밀번호 없이 admin으로 로그인합니다. 컨테이너에서 `bin/rails runner`로 autologin 토큰을 만들고, 프로브가 끝나면 지웁니다.
 - Pretendard는 CDN에서 오므로, 이 글꼴에 기대는 측정에는 인터넷 연결이 필요합니다.
-- `.docker/probe/chrome-check.js`는 크롬을 검사합니다. 상단 바, 헤더, 메뉴 바, 계정 드롭다운, 모바일 헤더, flyout 메뉴의 색을 각각 가져와야 할 토큰과 비교하고 명암비를 재며, 포커스 링, 크롬 높이, 긴 프로젝트 이름도 봅니다. 계정 드롭다운(로그인, 900px 이상)이나 flyout 메뉴(900px 미만)를 열고, `--screenshot`을 위해 열어 둡니다. 실패한 항목은 `.eval.failed`에 나옵니다.
+- `.docker/probe/chrome-check.js`는 크롬을 검사합니다. 상단 바, 헤더, 메뉴 바, 계정 드롭다운, 모바일 헤더, flyout 메뉴의 색을 각각 가져와야 할 토큰과 비교하고 명암비를 재며, 포커스 링, 크롬 높이, 긴 프로젝트 이름도 봅니다. 계정 드롭다운(로그인, 900px 이상)이나 flyout 메뉴(900px 미만)를 열고, `--screenshot`을 위해 열어 둡니다. 실패한 항목은 `.eval.failed`에 나오고, 크롬 요소가 없을 때와 마찬가지로 실행을 실패(종료 코드 1)시킵니다.
 - 프리셋을 검사하려면 `node src/tools/check-presets.mjs --write "$TMPDIR/ravnus-presets"`로 프리셋 파일을 만들고 하나를 `--inject-css`로 넘깁니다.
 - `--forced-colors`는 강제 색 모드(Windows 고대비)를 흉내 냅니다.
 - `--out`과 `--screenshot`은 저장소 밖에 씁니다.
