@@ -18,7 +18,7 @@
   h3 {
     color: var(--ravnus-fg-muted);
     font-size: var(--ravnus-font-size-sm);
-    font-weight: 600;
+    font-weight: 500;
     line-height: var(--ravnus-line-height-heading);
   }
 
@@ -27,25 +27,37 @@
   }
 }
 
-// Selected item: tint, accent text (10.81:1) and a 3px marker at the inline
-// start. The marker is a border, not the core inset shadow, so it stays in
-// forced colors (8.8). The 3px border replaces 3px of the core start padding.
+// shadcn Sidebar: a hairline at the content side, menu items as rounded
+// rows; the selected item is the muted surface with medium text, and a 2px
+// start marker keeps it visible in forced colors (8.8), where backgrounds go.
+// The core #main is row-reverse, so the content is at the sidebar's inline
+// start by default and at its inline end with --ravnus-sidebar-at-start: 1.
+#sidebar {
+  border-color: var(--ravnus-border-default);
+  border-style: solid;
+  border-block-width: 0;
+  border-inline-start-width: calc(1px * (1 - var(--ravnus-sidebar-at-start, 0)));
+  border-inline-end-width: calc(1px * var(--ravnus-sidebar-at-start, 0));
+}
+
 #sidebar a.selected {
   line-height: var(--ravnus-line-height-ui);
-  padding-inline-start: 3px;
-  background-color: var(--ravnus-accent-subtle);
-  color: var(--ravnus-accent);
+  padding-inline-start: 4px;
+  border-radius: var(--ravnus-radius-sm);
+  background-color: var(--ravnus-bg-inset);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
   box-shadow: none;
-  border-inline-start: 3px solid var(--ravnus-accent);
+  border-inline-start: 2px solid var(--ravnus-accent);
 }
 
 #sidebar a.selected:hover {
-  color: var(--ravnus-accent);
+  color: var(--ravnus-fg-default);
 }
 
 // The core forces the selected icon color with !important (8.3).
 #sidebar a.selected svg.icon-svg {
-  stroke: var(--ravnus-accent) !important;
+  stroke: var(--ravnus-fg-default) !important;
 }
 
 // scale, not transform: the core flips icon-rtl chevrons with transform in

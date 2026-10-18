@@ -100,103 +100,113 @@ async () => {
   if (heights.length) {
     expectValue(`row height ${target}±1px`, `${metrics.rows.min}-${metrics.rows.max}`, metrics.rows.min >= target - 1 && metrics.rows.max <= target + 1, `${target - 1}-${target + 1}`);
   }
-  check("header text", th, "color", "fg-muted", "bg-subtle", 4.5);
-  check("header surface", th, "backgroundColor", "bg-subtle");
+  check("header text", th, "color", "fg-muted", "bg-canvas", 4.5);
+  check("header surface", th, "backgroundColor", "bg-canvas");
 
-  // Priority glyphs (6.4).
-  const glyph = (r) => r && $("td.priority", r);
-  const bars = (r) => (r ? getComputedStyle($("td.priority", r), "::before").backgroundImage.split("linear-gradient").length - 1 : null);
-  const lowest = row(".priority-lowest");
-  const high3 = row(".priority-high3");
-  const high2 = row(".priority-high2");
-  const highest = row(".priority-highest");
-  const normal = row(".priority-default");
-  if (normal) expectValue("default priority: no glyph", getComputedStyle(glyph(normal), "::before").display, getComputedStyle(glyph(normal), "::before").display === "none", "none");
-  for (const [label, r, count, color, marker] of [
-    ["lowest", lowest, 1, "priority-low-fg", "0px"],
-    ["high3", high3, 2, "priority-high3-fg", "0px"],
-    ["high2", high2, 3, "priority-high2-fg", "3px"],
-  ]) {
-    if (!r) {
-      push({ label: `priority ${label}`, skipped: "no row" });
-      continue;
-    }
-    expectValue(`priority ${label}: ${count} bar(s)`, bars(r), bars(r) === count, count);
-    probe.style.color = getComputedStyle(r).getPropertyValue("--ravnus-priority-color");
-    expectValue(`priority ${label}: bar color`, getComputedStyle(probe).color, same(getComputedStyle(probe).color, token(color)), token(color));
-    const markerWidth = getComputedStyle($("td", r), "::before").borderInlineStartWidth;
-    expectValue(`priority ${label}: row marker`, markerWidth, markerWidth === marker, marker);
-  }
-  if (highest) {
-    check("priority highest: square", glyph(highest), "backgroundColor", "danger-solid", null, null, "::before");
-    check("priority highest: cell text", glyph(highest), "color", "danger-fg", "bg-canvas", 4.5);
-    const markerWidth = getComputedStyle($("td", highest), "::before").borderInlineStartWidth;
-    expectValue("priority highest: row marker", markerWidth, markerWidth === "6px", "6px");
-  } else push({ label: "priority highest", skipped: "no row" });
-
-  // Status glyphs (6.5): ring on open rows, disc on closed rows.
-  // An open row that still has the default status shape (a mapping in
-  // custom.css may give other open rows other shapes and colors).
   const rowVar = (r, name) => getComputedStyle(r).getPropertyValue(name).trim();
   const resolved = (value) => {
     probe.style.color = "";
     probe.style.color = value;
     return getComputedStyle(probe).color;
   };
-  const open = rows.find((r) => !r.classList.contains("closed") && rowVar(r, "--ravnus-status-fill") === "0" && rowVar(r, "--ravnus-status-check") === "0" && same(resolved(rowVar(r, "--ravnus-status-color")), token("status-open-color")));
+
+  // Priority icons (6.4): a shape (clip-path) and a color per position class.
+  const glyph = (r) => r && $("td.priority", r);
+  const lowest = row(".priority-lowest");
+  const normal = row(".priority-default");
+  const high3 = row(".priority-high3");
+  const high2 = row(".priority-high2");
+  const highest = row(".priority-highest");
+  const shapes = new Set();
+  for (const [label, r, color] of [
+    ["lowest", lowest, "priority-low-fg"],
+    ["default", normal, "priority-default-fg"],
+    ["high3", high3, "priority-high3-fg"],
+    ["high2", high2, "priority-high2-fg"],
+    ["highest", highest, "priority-highest-fg"],
+  ]) {
+    if (!r) {
+      push({ label: `priority ${label}`, skipped: "no row" });
+      continue;
+    }
+    const cs = getComputedStyle(glyph(r), "::before");
+    check(`priority ${label}: icon color`, glyph(r), "backgroundColor", color, "bg-canvas", 3, "::before");
+    expectValue(`priority ${label}: icon shape`, cs.clipPath.slice(0, 24), cs.clipPath !== "none", "polygon or path");
+    shapes.add(cs.clipPath);
+  }
+  const levels = [lowest, normal, high3, high2, highest].filter(Boolean).length;
+  if (levels) expectValue("priority icons differ per level", shapes.size, shapes.size === levels, "one shape per level");
+  else push({ label: "priority icons differ per level", skipped: "no rows" });
+  if (highest) check("priority highest: cell text", glyph(highest), "color", "priority-highest-fg", "bg-canvas", 4.5);
+
+  // Status (6.5): an outline badge on canvas, the label in fg-muted, and a
+  // 12px icon whose ring is the row's status color at 3:1 or more.
+  const open = rows.find((r) => !r.classList.contains("closed") && same(resolved(rowVar(r, "--ravnus-status-color")), token("status-open-color")));
   const closed = row(".closed");
+  for (const r of rows.filter((r) => $("td.status", r))) {
+    const td = $("td.status", r);
+    const badge = getComputedStyle(td, "::before");
+    const icon = getComputedStyle(td, "::after");
+    const want = resolved(rowVar(r, "--ravnus-status-color"));
+    const ok =
+      same(badge.backgroundColor, token("bg-canvas")) &&
+      same(badge.borderTopColor, token("border-default")) &&
+      same(icon.borderTopColor, want) &&
+      contrast(icon.borderTopColor, token("bg-canvas")) >= 3 &&
+      same(getComputedStyle(td).color, token("fg-muted"));
+    if (!ok) push({ label: `status badge ${r.id}`, value: `icon ${icon.borderTopColor}, text ${getComputedStyle(td).color}, badge ${badge.backgroundColor}/${badge.borderTopColor}`, expected: want, ok: false });
+  }
   if (open) {
-    const cs = getComputedStyle($("td.status", open), "::before");
-    // 1.5px computes to 1px on a 1x screen (border widths snap to device pixels).
-    expectValue("open status: ring", `${cs.borderTopWidth} ${cs.borderRadius}`, parseFloat(cs.borderTopWidth) >= 1 && parseFloat(cs.borderTopWidth) <= 1.5 && cs.borderRadius === "50%", "1-1.5px 50%");
-    check("open status: color", $("td.status", open), "borderTopColor", "status-open-color", "bg-canvas", 3, "::before");
+    check("open status: icon", $("td.status", open), "borderTopColor", "status-open-color", "bg-canvas", 3, "::after");
+    check("status label", $("td.status", open), "color", "fg-muted", "bg-canvas", 4.5);
   }
   if (closed) {
-    const cs = getComputedStyle($("td.status", closed), "::before");
-    expectValue("closed status: disc", cs.borderTopWidth, parseFloat(cs.borderTopWidth) === 5, "5px");
-    check("closed status: color", $("td.status", closed), "borderTopColor", "status-closed-color", "bg-canvas", 3, "::before");
-    check("closed row text", $("td.status", closed), "color", "fg-subtle", "bg-canvas", 4.5);
+    check("closed status: icon", $("td.status", closed), "borderTopColor", "status-closed-color", "bg-canvas", 3, "::after");
+    const subject = $("td.subject", closed);
+    if (subject) check("closed row text", subject, "color", "fg-subtle", "bg-canvas", 4.5);
   }
-  // Tracker text follows the row variable (fg-muted unless mapped); closed
-  // rows use the closed text color instead.
-  const trackerRow = rows.find((r) => !r.classList.contains("closed") && $("td.tracker", r));
+  metrics.statusCells = rows.filter((r) => $("td.status", r)).length;
+
+  // Tracker: an outline badge with a dot in the row's tracker color.
+  const trackerRow = rows.find((r) => $("td.tracker", r)?.textContent.trim());
   if (trackerRow) {
+    const td = $("td.tracker", trackerRow);
+    const dot = getComputedStyle(td, "::before");
     const want = resolved(rowVar(trackerRow, "--ravnus-tracker-color"));
-    const value = getComputedStyle($("td.tracker", trackerRow)).color;
-    push({ label: "tracker text", value, expected: want, contrast: contrast(value, token("bg-canvas")), ok: same(value, want) && contrast(value, token("bg-canvas")) >= 4.5 });
+    expectValue("tracker dot", `${dot.width} ${dot.backgroundColor}`, dot.width === "7px" && same(dot.backgroundColor, want), `7px ${want}`);
+    check("tracker badge border", td, "borderTopColor", "border-default", null, null, "::after");
+    check("tracker label", td, "color", "fg-muted", "bg-canvas", 4.5);
   }
 
-  // Overdue and behind schedule (6.5).
+  // Due dates: plain text; overdue is the one filled red badge; behind
+  // schedule (open rows only) is amber text.
   const overdue = row(".overdue");
-  if (overdue && $("td.due_date", overdue)) {
-    check("overdue date", $("td.due_date", overdue), "color", "danger-fg", "bg-canvas", 4.5);
-    check("overdue glyph", $("td.due_date", overdue), "backgroundColor", "danger-solid", null, null, "::before");
-  } else push({ label: "overdue", skipped: "no row or column" });
-  // Closed issues can carry behind-schedule too; the theme shows it on open rows only.
   const behind = rows.find((r) => r.matches(".behind-schedule:not(.overdue, .closed)") && $("td.due_date", r)?.textContent.trim());
-  const closedBehind = row(".closed.behind-schedule");
-  if (closedBehind && $("td.due_date", closedBehind)) {
-    const g = getComputedStyle($("td.due_date", closedBehind), "::before");
-    expectValue("closed late row: no behind-schedule glyph", g.content, g.content === "none" || g.content === "normal", "none");
-  }
-  if (behind) {
-    check("behind schedule date", $("td.due_date", behind), "color", "warning-fg", "bg-canvas", 4.5);
-    const clip = getComputedStyle($("td.due_date", behind), "::before").clipPath;
-    expectValue("behind schedule glyph: triangle", clip, clip.startsWith("polygon"), "polygon(...)");
-  } else push({ label: "behind schedule", skipped: "no row or column" });
+  const onTime = rows.find((r) => !r.matches(".overdue, .behind-schedule, .closed") && $("td.due_date", r)?.textContent.trim());
+  if (onTime) {
+    const td = $("td.due_date", onTime);
+    expectValue("due date: no badge", getComputedStyle(td, "::before").content, getComputedStyle(td, "::before").content === "none", "none");
+    check("due date text", td, "color", "fg-default", "bg-canvas", 4.5);
+  } else push({ label: "due date", skipped: "no row" });
+  if (overdue && $("td.due_date", overdue)?.textContent.trim()) {
+    const td = $("td.due_date", overdue);
+    check("overdue badge surface", td, "backgroundColor", "overdue-bg", null, null, "::before");
+    check("overdue badge border", td, "borderTopColor", "overdue-border", null, null, "::before");
+    check("overdue text", td, "color", "overdue-fg", "overdue-bg", 4.5);
+  } else push({ label: "overdue badge", skipped: "no row or date" });
+  if (behind) check("behind schedule text", $("td.due_date", behind), "color", "behind-fg", "bg-canvas", 4.5);
+  else push({ label: "behind schedule text", skipped: "no row" });
 
-  // Progress bars (6.1).
-  const bar = $("tr.issue:not(.behind-schedule) table.progress td.closed", table);
-  if (bar) check("progress closed", bar, "backgroundColor", "progress-closed", "progress-track", 3);
-  const behindBar = $("tr.issue.behind-schedule:not(.closed) table.progress td.closed", table);
-  if (behindBar) {
-    const image = getComputedStyle(behindBar).backgroundImage;
-    expectValue("progress behind: hatched", image.slice(0, 40), image.startsWith("repeating-linear-gradient"), "repeating-linear-gradient");
-  }
+  // Progress bars (shadcn Progress): 8px, rounded, the fill on a track.
+  const bar = $("table.progress td.closed", table);
+  if (bar) check("progress fill", bar, "backgroundColor", "progress-closed", "bg-canvas", 3);
   const todo = $("table.progress td.todo", table);
   if (todo) check("progress track", todo, "backgroundColor", "progress-track");
   const progressCell = $("td.done_ratio", table);
-  if (progressCell) metrics.progressBar = round($("table.progress", progressCell)?.getBoundingClientRect().height ?? 0);
+  if (progressCell) {
+    metrics.progressBar = round($("table.progress", progressCell)?.getBoundingClientRect().height ?? 0);
+    expectValue("progress bar height", metrics.progressBar, Math.abs(metrics.progressBar - 8) <= 0.5, 8);
+  }
 
   // Name columns: "Admin Redmine" and other names on one line (7.6).
   const names = $$("td:is(.assigned_to, .author, .last_updated_by, .category)", table).filter((td) => td.textContent.trim());
@@ -241,12 +251,13 @@ async () => {
   // Group rows and totals (6.5).
   const group = $("tr.group", table);
   if (group) {
-    check("group row surface", $("td", group), "backgroundColor", "bg-subtle");
-    check("group name", $("span.name", group), "color", "fg-default", "bg-subtle", 4.5);
-    check("group count", $("span.count", group), "color", "fg-muted", "bg-inset", 4.5);
-    check("group totals", $("span.totals", group), "color", "fg-muted", "bg-subtle", 4.5);
-    check("group totals value", $("span.totals .value", group), "color", "fg-default", "bg-subtle", 4.5);
-    check("group toggle-all", $("a.toggle-all", group), "color", "link", "bg-subtle", 4.5);
+    check("group row surface", $("td", group), "backgroundColor", "bg-canvas");
+    check("group name", $("span.name", group), "color", "fg-default", "bg-canvas", 4.5);
+    check("group count", $("span.count", group), "color", "fg-default", "bg-inset", 4.5);
+    check("group count surface", $("span.count", group), "backgroundColor", "bg-inset");
+    check("group totals", $("span.totals", group), "color", "fg-muted", "bg-canvas", 4.5);
+    check("group totals value", $("span.totals .value", group), "color", "fg-default", "bg-canvas", 4.5);
+    check("group toggle-all", $("a.toggle-all", group), "color", "link", "bg-canvas", 4.5);
   }
   const totals = $(".query-totals");
   if (totals && totals.textContent.trim()) {
@@ -263,8 +274,11 @@ async () => {
     check(`selected ${name}: surface`, r, "backgroundColor", "accent-muted");
     const link = $("td.subject a", r);
     if (link) check(`selected ${name}: link`, link, "color", "list-link", "accent-muted", 4.5);
+    // Status and tracker badges and the overdue badge keep their own
+    // surfaces; the other cells sit on the selection tint.
     for (const td of $$("td:not(.checkbox):not(.buttons):not(.subject):not(.done_ratio)", r).filter((td) => td.textContent.trim())) {
-      const c = contrast(getComputedStyle(td).color, token("accent-muted"));
+      const surface = td.matches(".status") ? getComputedStyle(td, "::before").backgroundColor : td.matches(".tracker") ? getComputedStyle(td, "::after").backgroundColor : td.matches(".due_date") && r.matches(".overdue") ? getComputedStyle(td, "::before").backgroundColor : token("accent-muted");
+      const c = contrast(getComputedStyle(td).color, surface);
       if (c === null || c < 4.5) push({ label: `selected ${name}: ${td.className} text`, value: getComputedStyle(td).color, contrast: c, min: 4.5, ok: false });
     }
   }
@@ -279,7 +293,8 @@ async () => {
   const status2 = row(".status-2");
   if (status2) {
     const cs = getComputedStyle(status2);
-    metrics.status2 = { color: cs.getPropertyValue("--ravnus-status-color").trim(), fill: cs.getPropertyValue("--ravnus-status-fill").trim(), check: cs.getPropertyValue("--ravnus-status-check").trim(), glyphBorder: getComputedStyle($("td.status", status2), "::before").borderTopWidth };
+    metrics.status2 = Object.fromEntries(["color", "fill", "check", "slash"].map((k) => [k, cs.getPropertyValue(`--ravnus-status-${k}`).trim()]));
+    metrics.status2.icon = getComputedStyle($("td.status", status2), "::after").borderTopColor;
   }
 
   probe.remove();

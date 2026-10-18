@@ -4,7 +4,7 @@
 
 RAVNUS는 Redmine 7.x용 무료 오픈소스 테마입니다. 한국어·일본어·중국어(CJK) 사용자에게 가장 읽기 좋은 Redmine 테마를 목표로 합니다.
 
-> **현재 상태: v0.2.1 (2026-10-18 릴리스).** v0.1.0은 기본 Redmine 화면 위에 디자인 토큰과 CJK 타이포그래피를 더했습니다. UI 언어별 글꼴 스택, 줄바꿈, 행간, 글자 크기, 폼 컨트롤 글꼴, 문장 속 링크 밑줄이 여기에 해당합니다. v0.2.0은 여기에 크롬(상단 바, 헤더, 메뉴 바, 모바일 헤더와 flyout 메뉴), 사이드바, 일감 목록(밀도, 우선순위·상태 글리프, 행 상태, 그룹 행, 선택 행, 인쇄와 강제 색 모드)도 칠합니다. 링크·버튼·폼·일감 상세 화면의 색은 그 뒤 릴리스에서 바뀝니다. 일부 회색 글자, 바닥글, 아바타 이니셜은 Redmine 기본 색을 그대로 써서 WCAG AA 명암 기준에 못 미치며, 뒤 릴리스에서 다시 칠합니다.
+> **현재 상태: v0.3.0 (2026-10-19).** v0.1.0은 기본 Redmine 화면 위에 디자인 토큰과 CJK 타이포그래피를 더했습니다. UI 언어별 글꼴 스택, 줄바꿈, 행간, 글자 크기, 폼 컨트롤 글꼴, 문장 속 링크 밑줄이 여기에 해당합니다. v0.2.0은 크롬(상단 바, 헤더, 메뉴 바, 모바일 헤더와 flyout 메뉴), 사이드바, 일감 목록을 칠했습니다. v0.3.0은 화면 전체를 shadcn/ui를 본뜬 무채색 체계로 옮깁니다. 회색 테두리와 바탕, 검정에 가까운 강조색, 테두리 버튼과 입력 칸, 밑줄 탭, 카드, 알림, 배지, 드롭다운 메뉴, 페이지 이동을 바꾸고, 일감 목록은 데이터 표처럼 읽힙니다(색 아이콘이 든 테두리 배지, 단계마다 다른 우선순위 아이콘, 기한 초과만 빨간 배지, 얇은 진척도 막대). 링크 글자색과 다크 모드는 뒤 릴리스에서 바뀝니다. 아바타 이니셜은 Redmine 기본 색을 그대로 써서 WCAG AA 명암 기준에 못 미치며, 뒤 릴리스에서 다시 칠합니다.
 
 ## 목표
 
@@ -191,11 +191,33 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 
 ### 프리셋
 
-블록 하나를 `custom.css`나 자식 테마에 복사하고 Redmine을 재시작합니다. 기본 크롬은 **Signature**입니다. 흰 헤더 위에 보라 상단 바가 있고, 메뉴 바는 연한 색입니다.
+블록 하나를 `custom.css`나 자식 테마에 복사하고 Redmine을 재시작합니다. 기본 크롬은 무채색입니다. 흰 헤더 위에 검정에 가까운 상단 바가 있고, 메뉴 바는 흰색에 선택 탭만 밑줄로 표시하며, 선택과 주요 버튼에는 검정에 가까운 강조색을 씁니다.
 
-![기본 크롬 Signature](.github/screenshots/chrome-signature.png)
+![기본 크롬](.github/screenshots/chrome-default.png)
 
-**Ink**: 코어 헤더처럼 어두운 잉크 바이올렛 헤더와 상단 바에 밝은 글자를 씁니다. 플러그인이 헤더에 밝은 글자나 아이콘을 넣는다면 이 프리셋을 고르세요. 흰 기본 헤더에서는 그런 요소가 보이지 않습니다.
+**Signature**: 흰 헤더 위에서 상단 바와 강조색을 RAVNUS 보라로 바꿉니다.
+
+![Signature 프리셋](.github/screenshots/chrome-signature.png)
+
+```css
+/* RAVNUS preset: signature */
+:root {
+  --ravnus-topbar-bg: #46009B;
+  --ravnus-topbar-fg-muted: #CAC5EA;
+  --ravnus-topbar-focus: #FEA800;
+  --ravnus-accent: #46009B;
+  --ravnus-accent-hover: #5A38AB;
+  --ravnus-accent-active: #37007C;
+  --ravnus-accent-subtle: #F6F6FC;
+  --ravnus-accent-muted: #F6F6FC;
+  --ravnus-nav-bg: #FFFFFF;
+  --ravnus-nav-hover-bg: #F5F5F5;
+  --ravnus-em-bg: #F6F6FC;
+  --ravnus-link: #215DB3;
+}
+```
+
+**Ink**: 코어 헤더처럼 어두운 잉크 바이올렛 헤더와 상단 바에 밝은 글자를 쓰고, 강조색은 보라입니다. 플러그인이 헤더에 밝은 글자나 아이콘을 넣는다면 이 프리셋을 고르세요. 흰 기본 헤더에서는 그런 요소가 보이지 않습니다.
 
 ![Ink 프리셋](.github/screenshots/chrome-ink.png)
 
@@ -212,6 +234,15 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
   --ravnus-topbar-fg-muted: #D1CEE4;
   --ravnus-topbar-focus: #FFFFFF;
   --ravnus-topbar-height: 1.75rem;
+  --ravnus-accent: #46009B;
+  --ravnus-accent-hover: #5A38AB;
+  --ravnus-accent-active: #37007C;
+  --ravnus-accent-subtle: #F6F6FC;
+  --ravnus-accent-muted: #F6F6FC;
+  --ravnus-nav-bg: #FFFFFF;
+  --ravnus-nav-hover-bg: #F5F5F5;
+  --ravnus-em-bg: #F6F6FC;
+  --ravnus-link: #215DB3;
 }
 ```
 
@@ -232,6 +263,15 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
   --ravnus-topbar-fg-muted: #D1CEE4;
   --ravnus-topbar-focus: #FFFFFF;
   --ravnus-topbar-height: 1.75rem;
+  --ravnus-accent: #46009B;
+  --ravnus-accent-hover: #5A38AB;
+  --ravnus-accent-active: #37007C;
+  --ravnus-accent-subtle: #F6F6FC;
+  --ravnus-accent-muted: #F6F6FC;
+  --ravnus-nav-bg: #FFFFFF;
+  --ravnus-nav-hover-bg: #F5F5F5;
+  --ravnus-em-bg: #F6F6FC;
+  --ravnus-link: #215DB3;
 }
 ```
 
@@ -270,11 +310,11 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
   --ravnus-accent: #1864AB;
   --ravnus-accent-hover: #3F7AB8;
   --ravnus-accent-active: #114F89;
-  --ravnus-accent-subtle: #F1F6FA;
-  --ravnus-accent-muted: #E4ECF6;
-  --ravnus-nav-bg: #F6F9FC;
-  --ravnus-nav-hover-bg: #EAF1F8;
-  --ravnus-em-bg: #E8EFF7;
+  --ravnus-accent-subtle: #F6F9FC;
+  --ravnus-accent-muted: #F6F9FC;
+  --ravnus-nav-bg: #FFFFFF;
+  --ravnus-nav-hover-bg: #F5F5F5;
+  --ravnus-em-bg: #F6F9FC;
 }
 ```
 
@@ -297,12 +337,12 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 }
 ```
 
-**Classic stripes off**: 목록의 줄무늬를 없앱니다.
+**Striped rows**: 목록을 한 줄 걸러 칠합니다(기본은 줄무늬 없음).
 
 ```css
-/* RAVNUS preset: classic-stripes-off */
+/* RAVNUS preset: striped-rows */
 :root {
-  --ravnus-row-stripe: transparent;
+  --ravnus-row-stripe: var(--ravnus-bg-subtle);
 }
 ```
 
@@ -311,19 +351,24 @@ UI 글꼴 스택 토큰은 네 개입니다: `--ravnus-font-sans`(한국어·영
 
 ### 일감 목록의 상태·트래커 색
 
-기본으로 상태 열은 모든 설치에서 뜻이 같은 두 모양만 씁니다. 열린 일감은 빈 원, 닫힌 일감은 채운 원입니다. 상태와 트래커 id는 설치마다 다르므로 `custom.css`나 자식 테마에서 직접 매핑합니다. 닫힌 상태의 기본값(채운 원)이 남지 않도록 상태 변수 세 개를 모두 적습니다.
+일감 목록은 데이터 표처럼 읽힙니다. 칸 사이 선이 없고, 마우스를 올리면 행이 옅게 칠해지며, 색은 작은 표시에만 씁니다. 상태와 트래커는 회색 테두리 배지입니다. 상태 배지에는 상태 색의 12px 아이콘이, 트래커 배지에는 트래커 색 점이 들어갑니다. 우선순위는 단계마다 다른 아이콘(아래 화살표, 같음, 겹 꺾쇠, 위 화살표, 번개)과 회색 글자로 보이고, 가장 높은 단계만 빨강입니다. 완료일은 보통 글자이고 일정이 늦으면 호박색, 기한을 넘기면 하나뿐인 빨간 배지가 됩니다. 진척도는 얇고 둥근 막대입니다.
+
+![일감 목록](.github/screenshots/issue-list.png)
+
+상태와 트래커 id는 설치마다 다르므로 기본으로는 열린 상태 모두 파란 고리, 닫힌 상태 모두 초록 원입니다. `custom.css`나 자식 테마에서 매핑합니다. `:is(tr, div)`로 쓰면 일감 상세의 상태 배지에도 같은 표시가 들어갑니다. 아이콘은 기본이 고리이고, `fill`(0~1)은 안을 채우고, `check`는 가운데 점을, `slash`는 사선을 더합니다. 그래서 상태는 색뿐 아니라 모양으로도 구별됩니다. 닫힌 상태는 처음부터 채워져 있으므로(`fill: 1`), 점이나 사선을 보이려는 닫힌 상태에는 `--ravnus-status-fill: 0`을 함께 적습니다.
 
 ```css
-tr.status-1 { --ravnus-status-color: var(--ravnus-status-open-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 0; }
-tr.status-2,
-tr.status-4 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; --ravnus-status-check: 0; }
-tr.status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 1; }
+:is(tr, div).status-2 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; }
+:is(tr, div).status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 1; }
+:is(tr, div).status-4 { --ravnus-status-color: var(--ravnus-status-feedback-color); --ravnus-status-check: 1; }
+:is(tr, div).status-6 { --ravnus-status-color: var(--ravnus-status-rejected-color); --ravnus-status-fill: 0; --ravnus-status-slash: 1; }
 tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
+tr.tracker-2 { --ravnus-tracker-color: var(--ravnus-tag-blue-fg); }
 ```
 
-- 모양: `--ravnus-status-fill`이 `0`이면 빈 원, `0.5`면 반원, `1`이면 채운 원입니다. `--ravnus-status-check: 1`은 원 안에 점을 넣습니다(완료).
-- 색: `--ravnus-status-open-color`, `--ravnus-status-progress-color`, `--ravnus-status-done-color`, `--ravnus-status-closed-color`. 트래커는 태그 색 `--ravnus-tag-{red,orange,green,blue,violet,gray}-fg`를 씁니다.
-- 한국어 기본 상태라면 보통 신규는 open, 진행·의견은 progress, 해결은 done, 완료·거절은 closed로 매핑합니다. id는 *관리 → 일감 상태*에서 확인합니다.
+- 상태 색: `open`(파랑), `progress`(호박색), `feedback`(보라), `done`(초록), `closed`(초록), `rejected`(회색). 각각 `--ravnus-status-<이름>-color`이고, 행·마우스 올림·선택 바탕 위에서 모두 3:1 이상입니다. 배지 글자는 회색 그대로입니다.
+- 트래커 색: 태그 색 `--ravnus-tag-{red,orange,green,blue,violet,gray}-fg`. 매핑하지 않은 트래커는 회색 점입니다.
+- 위 id는 한국어 기본 데이터 기준입니다(2 진행, 3 해결, 4 의견, 6 거절). *관리 → 일감 상태*, *관리 → 유형*에서 확인합니다.
 - 우선순위는 매핑할 필요가 없습니다. 테마는 Redmine이 모든 설치에 주는 위치 클래스(lowest, default, high…, highest)를 읽습니다.
 
 ### 토큰
@@ -332,14 +377,14 @@ tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
 
 | 토큰 | 기본값 | 바뀌는 곳 |
 |------|--------|-----------|
-| `--ravnus-accent` | `#46009B` | 상단 바, 메인 메뉴 선택 탭 표시, 사이드바 선택 항목, 헤더 안 포커스 링. 메뉴 바 틴트와 `em` 틴트의 바탕색 |
-| `--ravnus-on-accent` | `#FFFFFF` | 상단 바의 글자와 아이콘 |
-| `--ravnus-link` | `#215DB3` | 문장 속 링크의 밑줄 색 (링크 글자색은 이후 릴리스) |
+| `--ravnus-accent` | `#171717` | 메인 메뉴 선택 탭과 사이드바 선택 항목, 주요 버튼(만들기·저장·로그인), 체크박스. 선택 틴트와 `em` 틴트의 바탕색 |
+| `--ravnus-on-accent` | `#FAFAFA` | 주요 버튼의 글자 |
+| `--ravnus-link` | `#2563EB` | 문장 속 링크의 밑줄 색 (링크 글자색은 이후 릴리스) |
 | `--ravnus-bg-canvas` | `#FFFFFF` | `em` 틴트 등 틴트 색을 섞는 바탕 |
-| `--ravnus-radius` | `6px` | 헤더 검색 칸, 드롭다운, 위키 본문 코드 블록의 모서리 |
-| `--ravnus-topbar-bg` | `var(--ravnus-accent)` | 상단 바와 모바일 flyout 메뉴 |
-| `--ravnus-topbar-fg-muted` | `#CAC5EA` | 상단 바에서 링크가 아닌 글자 |
-| `--ravnus-topbar-focus` | `#FEA800` | 상단 바와 flyout 메뉴의 포커스 링 |
+| `--ravnus-radius` | `8px` | 버튼, 입력 칸, 드롭다운, 코드 블록의 모서리(카드와 일감 목록 틀은 `--ravnus-radius-lg`, `10px`) |
+| `--ravnus-topbar-bg` | `#0A0A0A` | 상단 바와 모바일 flyout 메뉴 |
+| `--ravnus-topbar-fg-muted` | `#A3A3A3` | 상단 바에서 링크가 아닌 글자 |
+| `--ravnus-topbar-focus` | `#FAFAFA` | 상단 바와 flyout 메뉴의 포커스 링 |
 | `--ravnus-topbar-height` | `2rem` | 상단 바의 최소 높이 |
 | `--ravnus-header-bg` | `var(--ravnus-bg-canvas)` | 헤더, 모바일 헤더, flyout 메뉴의 절 제목 |
 | `--ravnus-font-sans` | Pretendard 우선 | 한국어·영어 등의 UI 글꼴 스택 |
@@ -351,7 +396,7 @@ tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
 | `--ravnus-font-size-cell-subject` | `0.875rem` | 일감 목록의 제목 열 |
 | `--ravnus-subject-min-inline-size` | `12em` | 제목 열의 최소 폭 |
 | `--ravnus-row-pad-y` | `0.375rem` | 목록 행의 세로 패딩(Compact는 `0.25rem`) |
-| `--ravnus-row-stripe` | `var(--ravnus-bg-subtle)` | 목록의 한 줄 걸러 칠하는 배경(`transparent`면 줄무늬 없음) |
+| `--ravnus-row-stripe` | `transparent` | 목록의 한 줄 걸러 칠하는 배경(Striped rows 프리셋 참고) |
 | `--ravnus-list-link` | `var(--ravnus-link)` | 선택한 목록 행의 링크 |
 | `--ravnus-sidebar-at-start` | `0` | `1`이면 사이드바를 인라인 시작 쪽으로 옮깁니다([프리셋](#프리셋) 참고) |
 

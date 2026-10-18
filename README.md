@@ -4,7 +4,7 @@
 
 RAVNUS is a free, open-source theme for Redmine 7.x. Its goal is to be the most readable Redmine theme for Korean, Japanese and Chinese (CJK) users.
 
-> **Status: v0.2.1 (released 2026-10-18).** v0.1.0 added the design tokens and the CJK typography on top of the default Redmine look: font stacks per UI language, line breaking, line heights, text sizes, fonts in form controls and underlines for links in running text. v0.2.0 also styles the chrome (top bar, header, menu bar, mobile header and flyout menu), the sidebar and the issue list (density, priority and status glyphs, row states, group rows, the selected row, print and forced colors). Colors for links, buttons, forms and the issue page come in later releases. Some gray text, the footer and avatar initials keep Redmine's own colors, which fall below WCAG AA contrast; they are recolored in later releases.
+> **Status: v0.3.0 (2026-10-19).** v0.1.0 added the design tokens and the CJK typography on top of the default Redmine look: font stacks per UI language, line breaking, line heights, text sizes, fonts in form controls and underlines for links in running text. v0.2.0 styled the chrome (top bar, header, menu bar, mobile header and flyout menu), the sidebar and the issue list. v0.3.0 moves the whole look to a neutral system modeled on shadcn/ui: gray borders and surfaces, a near-black accent, outline buttons and fields, line tabs, cards, alerts, badges, dropdown menus and pagination, and an issue list that reads like a data table (outline badges with a colored status icon, a priority icon per level, one red badge for overdue dates, a thin progress bar). Link text colors and the dark mode come in later releases. Avatar initials keep Redmine's own colors, which fall below WCAG AA contrast; they are recolored in a later release.
 
 ## Goals
 
@@ -191,11 +191,33 @@ Put this block in `custom.css` or a child theme. With it, no font is requested f
 
 ### Presets
 
-Copy a block into `custom.css` or a child theme and restart Redmine. The default chrome is **Signature**: a violet top bar over a white header, with a light menu bar.
+Copy a block into `custom.css` or a child theme and restart Redmine. The default chrome is neutral: a near-black top bar over a white header, a white menu bar with an underlined selected tab, and a near-black accent for selections and main buttons.
 
-![Signature, the default chrome](.github/screenshots/chrome-signature.png)
+![The default chrome](.github/screenshots/chrome-default.png)
 
-**Ink**: an ink violet header and top bar with light text, like the core header. Choose it when a plugin puts light text or icons into the header, which the white default header would hide.
+**Signature**: the RAVNUS violet as the top bar and accent, over the white header.
+
+![Signature preset](.github/screenshots/chrome-signature.png)
+
+```css
+/* RAVNUS preset: signature */
+:root {
+  --ravnus-topbar-bg: #46009B;
+  --ravnus-topbar-fg-muted: #CAC5EA;
+  --ravnus-topbar-focus: #FEA800;
+  --ravnus-accent: #46009B;
+  --ravnus-accent-hover: #5A38AB;
+  --ravnus-accent-active: #37007C;
+  --ravnus-accent-subtle: #F6F6FC;
+  --ravnus-accent-muted: #F6F6FC;
+  --ravnus-nav-bg: #FFFFFF;
+  --ravnus-nav-hover-bg: #F5F5F5;
+  --ravnus-em-bg: #F6F6FC;
+  --ravnus-link: #215DB3;
+}
+```
+
+**Ink**: an ink violet header and top bar with light text, like the core header, with the violet accent. Choose it when a plugin puts light text or icons into the header, which the white default header would hide.
 
 ![Ink preset](.github/screenshots/chrome-ink.png)
 
@@ -212,6 +234,15 @@ Copy a block into `custom.css` or a child theme and restart Redmine. The default
   --ravnus-topbar-fg-muted: #D1CEE4;
   --ravnus-topbar-focus: #FFFFFF;
   --ravnus-topbar-height: 1.75rem;
+  --ravnus-accent: #46009B;
+  --ravnus-accent-hover: #5A38AB;
+  --ravnus-accent-active: #37007C;
+  --ravnus-accent-subtle: #F6F6FC;
+  --ravnus-accent-muted: #F6F6FC;
+  --ravnus-nav-bg: #FFFFFF;
+  --ravnus-nav-hover-bg: #F5F5F5;
+  --ravnus-em-bg: #F6F6FC;
+  --ravnus-link: #215DB3;
 }
 ```
 
@@ -232,6 +263,15 @@ Copy a block into `custom.css` or a child theme and restart Redmine. The default
   --ravnus-topbar-fg-muted: #D1CEE4;
   --ravnus-topbar-focus: #FFFFFF;
   --ravnus-topbar-height: 1.75rem;
+  --ravnus-accent: #46009B;
+  --ravnus-accent-hover: #5A38AB;
+  --ravnus-accent-active: #37007C;
+  --ravnus-accent-subtle: #F6F6FC;
+  --ravnus-accent-muted: #F6F6FC;
+  --ravnus-nav-bg: #FFFFFF;
+  --ravnus-nav-hover-bg: #F5F5F5;
+  --ravnus-em-bg: #F6F6FC;
+  --ravnus-link: #215DB3;
 }
 ```
 
@@ -270,11 +310,11 @@ Copy a block into `custom.css` or a child theme and restart Redmine. The default
   --ravnus-accent: #1864AB;
   --ravnus-accent-hover: #3F7AB8;
   --ravnus-accent-active: #114F89;
-  --ravnus-accent-subtle: #F1F6FA;
-  --ravnus-accent-muted: #E4ECF6;
-  --ravnus-nav-bg: #F6F9FC;
-  --ravnus-nav-hover-bg: #EAF1F8;
-  --ravnus-em-bg: #E8EFF7;
+  --ravnus-accent-subtle: #F6F9FC;
+  --ravnus-accent-muted: #F6F9FC;
+  --ravnus-nav-bg: #FFFFFF;
+  --ravnus-nav-hover-bg: #F5F5F5;
+  --ravnus-em-bg: #F6F9FC;
 }
 ```
 
@@ -297,12 +337,12 @@ Copy a block into `custom.css` or a child theme and restart Redmine. The default
 }
 ```
 
-**Classic stripes off**: no striped rows in lists.
+**Striped rows**: tint every other row in lists (no stripes by default).
 
 ```css
-/* RAVNUS preset: classic-stripes-off */
+/* RAVNUS preset: striped-rows */
 :root {
-  --ravnus-row-stripe: transparent;
+  --ravnus-row-stripe: var(--ravnus-bg-subtle);
 }
 ```
 
@@ -311,19 +351,24 @@ Copy a block into `custom.css` or a child theme and restart Redmine. The default
 
 ### Issue list status and tracker colors
 
-By default the status column shows two shapes that mean the same in every installation: a ring for open issues and a disc for closed ones. Status and tracker ids differ between installations, so map your own in `custom.css` or a child theme. Set all three status variables, so the closed default (a disc) does not remain:
+The issue list reads like a data table: no cell lines, a hover tint, and the color kept in small marks. Status and tracker are outline badges with a gray border: the status badge carries a 12px icon in the status color, the tracker badge a dot in the tracker color. The priority shows an icon per level (down arrow, equals, double chevron, up arrow, bolt) next to a muted label, and the highest one is red. Due dates are plain text, amber when behind schedule; an overdue date is the one red badge. The progress bar is a thin rounded bar.
+
+![Issue list](.github/screenshots/issue-list.png)
+
+Out of the box every open status is a blue ring and every closed status a green disc, because status and tracker ids differ between installations. Map your own in `custom.css` or a child theme. `:is(tr, div)` also sets the status badge on the issue page. The icon is a ring by default; `fill` (0 to 1) fills it, `check` adds a center dot and `slash` crosses it, so statuses differ by shape as well as color. Closed statuses start filled (`fill: 1`), so set `--ravnus-status-fill: 0` on a closed status that should show a dot or a slash:
 
 ```css
-tr.status-1 { --ravnus-status-color: var(--ravnus-status-open-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 0; }
-tr.status-2,
-tr.status-4 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; --ravnus-status-check: 0; }
-tr.status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 0;   --ravnus-status-check: 1; }
+:is(tr, div).status-2 { --ravnus-status-color: var(--ravnus-status-progress-color); --ravnus-status-fill: 0.5; }
+:is(tr, div).status-3 { --ravnus-status-color: var(--ravnus-status-done-color);     --ravnus-status-fill: 1; }
+:is(tr, div).status-4 { --ravnus-status-color: var(--ravnus-status-feedback-color); --ravnus-status-check: 1; }
+:is(tr, div).status-6 { --ravnus-status-color: var(--ravnus-status-rejected-color); --ravnus-status-fill: 0; --ravnus-status-slash: 1; }
 tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
+tr.tracker-2 { --ravnus-tracker-color: var(--ravnus-tag-blue-fg); }
 ```
 
-- Shapes: `--ravnus-status-fill` `0` is a ring, `0.5` a half disc, `1` a disc; `--ravnus-status-check: 1` adds a dot in the ring (done).
-- Colors: `--ravnus-status-open-color`, `--ravnus-status-progress-color`, `--ravnus-status-done-color`, `--ravnus-status-closed-color`, and for trackers the tag colors `--ravnus-tag-{red,orange,green,blue,violet,gray}-fg`.
-- A typical mapping for the default Korean statuses: new as open, in progress and feedback as progress, resolved as done, closed and rejected as closed. Look up the ids in *Administration → Issue statuses*.
+- Status colors: `open` (blue), `progress` (amber), `feedback` (violet), `done` (green), `closed` (green), `rejected` (gray), as `--ravnus-status-<name>-color`. Each reaches 3:1 on the row, hover and selection surfaces; the badge text stays gray.
+- Tracker colors: the tag colors `--ravnus-tag-{red,orange,green,blue,violet,gray}-fg`. Unmapped trackers get a gray dot.
+- The ids above are those of the default Korean data (2 in progress, 3 resolved, 4 feedback, 6 rejected). Look up yours in *Administration → Issue statuses* and *Administration → Trackers*.
 - Priorities need no mapping: the theme reads the position classes Redmine gives every installation (lowest, default, high…, highest).
 
 ### Tokens
@@ -332,14 +377,14 @@ These knobs take effect in this release:
 
 | Token | Default | What it changes |
 |-------|---------|-----------------|
-| `--ravnus-accent` | `#46009B` | Top bar, marker of the selected main menu tab, selected sidebar item, focus rings in the header; base of the menu bar tint and the `em` tint |
-| `--ravnus-on-accent` | `#FFFFFF` | Text and icons on the top bar |
-| `--ravnus-link` | `#215DB3` | Underline color of links in running text (the link text color comes in a later release) |
+| `--ravnus-accent` | `#171717` | Selected main menu tab and sidebar item, main buttons (create, save, sign in), checkboxes; base of the selection tint and the `em` tint |
+| `--ravnus-on-accent` | `#FAFAFA` | Text on main buttons |
+| `--ravnus-link` | `#2563EB` | Underline color of links in running text (the link text color comes in a later release) |
 | `--ravnus-bg-canvas` | `#FFFFFF` | Base of the tinted colors, such as the `em` tint |
-| `--ravnus-radius` | `6px` | Corners of the header search fields, dropdowns and code blocks in wiki text |
-| `--ravnus-topbar-bg` | `var(--ravnus-accent)` | Top bar and the mobile flyout menu |
-| `--ravnus-topbar-fg-muted` | `#CAC5EA` | Text on the top bar that is not a link |
-| `--ravnus-topbar-focus` | `#FEA800` | Focus ring on the top bar and in the flyout menu |
+| `--ravnus-radius` | `8px` | Corners of buttons, fields, dropdowns and code blocks (`--ravnus-radius-lg`, `10px`, for cards and the issue list frame) |
+| `--ravnus-topbar-bg` | `#0A0A0A` | Top bar and the mobile flyout menu |
+| `--ravnus-topbar-fg-muted` | `#A3A3A3` | Text on the top bar that is not a link |
+| `--ravnus-topbar-focus` | `#FAFAFA` | Focus ring on the top bar and in the flyout menu |
 | `--ravnus-topbar-height` | `2rem` | Minimum height of the top bar |
 | `--ravnus-header-bg` | `var(--ravnus-bg-canvas)` | Header, mobile header and the section titles of the flyout menu |
 | `--ravnus-font-sans` | Pretendard first | UI font stack in Korean, English and other UIs |
@@ -351,7 +396,7 @@ These knobs take effect in this release:
 | `--ravnus-font-size-cell-subject` | `0.875rem` | Subject column of the issue list |
 | `--ravnus-subject-min-inline-size` | `12em` | Minimum width of the subject column |
 | `--ravnus-row-pad-y` | `0.375rem` | Vertical padding of list rows (Compact: `0.25rem`) |
-| `--ravnus-row-stripe` | `var(--ravnus-bg-subtle)` | Background of every other list row (`transparent` turns stripes off) |
+| `--ravnus-row-stripe` | `transparent` | Background of every other list row (see the Striped rows preset) |
 | `--ravnus-list-link` | `var(--ravnus-link)` | Links in selected list rows |
 | `--ravnus-sidebar-at-start` | `0` | `1` moves the sidebar to the inline start (see [Presets](#presets)) |
 

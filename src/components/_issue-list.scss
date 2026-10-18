@@ -1,21 +1,33 @@
-// Issue list: density, priority, status and tracker glyphs, row states, group
-// rows and totals, the selected row, query filter controls, forced colors and
-// print (DESIGN.md 4.8, 4.9, 5.6, 6.1 progress bars, 6.4, 6.5, 8.8, 8.9).
+// Issue list as a shadcn/ui data table (decision 9 of 2026-10-18, DESIGN.md
+// 4.9, 6.4, 6.5): quiet rows without cell lines or stripes, outline badges
+// whose color sits in a small icon only (status), priority icons with a muted
+// label, plain due dates with one filled badge for overdue, a thin rounded
+// progress bar. Also density, group rows and totals, the selected row, query
+// filter controls, forced colors and print (4.8, 5.6, 8.8, 8.9).
 //
-// - Row variables (--ravnus-status-*, --ravnus-tracker-color,
-//   --ravnus-priority-color, --ravnus-row-marker-*) have zero-specificity
-//   defaults, so mappings such as `tr.status-2 { ... }` in custom.css win
-//   (5.6). Rules that read them use normal specificity.
-// - Glyphs are drawn with borders, gradients and clip-path: no url() and no
-//   font glyphs. Shapes, not only colors, tell the levels apart.
+// - Row variables (--ravnus-status-color, -fill, -check, -slash and
+//   --ravnus-tracker-color) have zero-specificity defaults, so mappings such
+//   as `tr.status-2 { ... }` in custom.css win (5.6).
+// - Badges are pseudo-elements behind the cell text (Redmine cells are plain
+//   text); icons are CSS shapes, no url() and no font glyphs.
 // - context_menu.css loads after the theme and uses !important for the
 //   selected row, so the selection rules do too (8.3).
-@use "sass:list";
-@use "sass:map";
 
 // ---------------------------------------------------------------------------
-// Table, header cells, rows
+// Table frame, header, rows (shadcn Table)
 // ---------------------------------------------------------------------------
+
+// The list sits in a rounded bordered frame (the core wraps it in
+// div.autoscroll), so the table itself has no outer lines.
+div.autoscroll:has(> table.list) {
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+}
+
+div.autoscroll > table.list {
+  margin-block-end: 0;
+  border-block: 0;
+}
 
 table.list,
 .table-list {
@@ -26,8 +38,9 @@ table.list,
 table.list th,
 .table-list-header {
   padding-block: var(--ravnus-row-pad-y);
-  background-color: var(--ravnus-bg-subtle);
+  background-color: var(--ravnus-bg-canvas);
   color: var(--ravnus-fg-muted);
+  font-weight: 500;
   border-block-end: 1px solid var(--ravnus-border-default);
   line-height: var(--ravnus-line-height-cell);
 }
@@ -45,14 +58,14 @@ table.list th a.icon {
 
 // Rows are about 32px: 14px subject x 1.45 plus 2 x 6px padding (4.8). The
 // 1px row line is part of the row, so it comes off the top padding (Compact:
-// 13px x 1.45 plus 2 x 4px, about 27px). The cell line height is the tallest
-// box except for the 18px buttons icon.
+// 13px x 1.45 plus 2 x 4px, about 27px).
 table.list td {
   padding-block: calc(var(--ravnus-row-pad-y) - 1px) var(--ravnus-row-pad-y);
-  border-block-start-color: var(--ravnus-border-muted);
+  border-block-start-color: var(--ravnus-border-default);
 }
 
-// Stripes and hover. Same selectors as the core, which the theme follows.
+// No stripes by default (the Striped rows preset sets the token); hover is the
+// muted surface. Same selectors as the core.
 table.list:not(.odd-even) tbody tr:nth-child(odd),
 .odd {
   background-color: var(--ravnus-bg-canvas);
@@ -72,7 +85,7 @@ table.list:not(.odd-even) tbody tr:nth-child(odd):hover,
 .odd:hover,
 table.list:not(.odd-even) tbody tr:nth-child(even):hover,
 .even:hover {
-  background-color: var(--ravnus-bg-hover);
+  background-color: var(--ravnus-bg-subtle);
 }
 
 // Subjects avoid a last line of one syllable (Phase 1 regression, 7.6).
@@ -80,130 +93,185 @@ table.list td.subject {
   text-wrap: pretty;
 }
 
-// Name columns break between words only, never between syllables: in a
-// table squeezed by many columns they stay on one line, and the table
-// scrolls inside #content instead (Phase 1 regression, 7.6).
+// Name columns break between words only, never between syllables (7.6).
 table.list td:is(.assigned_to, .author, .last_updated_by, .category) {
   white-space: nowrap;
 }
 
 // ---------------------------------------------------------------------------
-// Row variables: zero-specificity defaults (5.6). Later rules win at equal
-// specificity, so closed rows and priority positions come after the default.
+// Row variables: zero-specificity defaults (5.6). Closed rows come after.
 // ---------------------------------------------------------------------------
 
-:where(table.list tr.issue) {
+:where(table.list tr.issue, div.issue) {
   --ravnus-status-color: var(--ravnus-status-open-color);
   --ravnus-status-fill: 0;
   --ravnus-status-check: 0;
-  --ravnus-tracker-color: var(--ravnus-fg-muted);
-  --ravnus-priority-color: transparent;
-  --ravnus-row-marker-width: 0;
-  --ravnus-row-marker-color: transparent;
+  --ravnus-status-slash: 0;
+  --ravnus-tracker-color: var(--ravnus-tracker-default);
 }
 
-:where(table.list tr.issue.closed) {
+:where(table.list tr.issue.closed, div.issue.closed) {
   --ravnus-status-color: var(--ravnus-status-closed-color);
   --ravnus-status-fill: 1;
 }
 
-// Position classes only, never priority-N ids (6.4). The attribute selectors
-// catch extra low and high positions of installations with more priorities.
-:where(table.list tr.issue:is(.priority-lowest, [class*=" priority-low"])) {
-  --ravnus-priority-color: var(--ravnus-priority-low-fg);
-}
-
-:where(table.list tr.issue:is(.priority-high3, [class*=" priority-high"])) {
-  --ravnus-priority-color: var(--ravnus-priority-high3-fg);
-}
-
-:where(table.list tr.issue.priority-high2) {
-  --ravnus-priority-color: var(--ravnus-priority-high2-fg);
-  --ravnus-row-marker-width: 3px;
-  --ravnus-row-marker-color: var(--ravnus-priority-high2-fg);
-}
-
-:where(table.list tr.issue.priority-highest) {
-  --ravnus-priority-color: var(--ravnus-priority-highest-fg);
-  --ravnus-row-marker-width: 6px;
-  --ravnus-row-marker-color: var(--ravnus-priority-highest-fg);
-}
-
 // ---------------------------------------------------------------------------
-// Row marker: a border on a pseudo-element of the first cell, so it keeps the
-// column widths of the collapsed table, follows the writing direction and
-// stays in forced colors (6.4).
+// Badges: an outline pill behind the cell text (shadcn Badge
+// variant="outline": rounded-full, 1px border, text-xs, font-medium).
 // ---------------------------------------------------------------------------
 
-table.list tr.issue > td:first-child {
-  position: relative;
-}
-
-table.list tr.issue > td:first-child::before {
+@mixin _outline-badge($inset-inline-start, $max: none) {
   content: "";
   position: absolute;
-  inset-block: 0;
-  inset-inline-start: 0;
-  border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color);
-  pointer-events: none;
+  z-index: -1;
+  inset-block: calc(50% - 11px);
+  inset-inline-start: $inset-inline-start;
+  inline-size: calc(100% - 2 * #{$inset-inline-start});
+  max-inline-size: $max;
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-full);
+  background-color: var(--ravnus-bg-canvas);
 }
 
 // ---------------------------------------------------------------------------
-// Priority glyph (6.4): 12 x 10px signal bars, one per level, or a 14px
-// square with "!" for the highest level. Default priority has none.
+// Status (6.5): outline badge, muted label, 12px icon in the status color.
+// fill 0 is a ring, 0.5 a half disc, 1 a disc; check adds a dot; slash
+// crosses the ring.
 // ---------------------------------------------------------------------------
 
-$_bar: linear-gradient(var(--ravnus-priority-color), var(--ravnus-priority-color));
-$_bars: (
-  1: ($_bar, 3px 4px, 0 100%),
-  2: ($_bar, 3px 7px, 4.5px 100%),
-  3: ($_bar, 3px 10px, 9px 100%),
-);
+table.list tr.issue td.status {
+  position: relative;
+  isolation: isolate;
+  padding-inline: calc(var(--ravnus-space-100) + 20px) var(--ravnus-space-150);
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-min);
+  font-weight: 500;
+  text-align: start;
+  white-space: nowrap;
+}
 
-@function _bar-layers($count, $part) {
-  $layers: ();
-  @for $i from 1 through $count {
-    $layers: list.append($layers, list.nth(map.get($_bars, $i), $part), $separator: comma);
-  }
-  @return $layers;
+table.list tr.issue td.status::before {
+  @include _outline-badge(var(--ravnus-space-050), 8em);
+}
+
+@mixin _status-icon {
+  box-sizing: border-box;
+  inline-size: 12px;
+  block-size: 12px;
+  border: max(1.5px, (var(--ravnus-status-fill) - 0.5) * 12px) solid var(--ravnus-status-color);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, color-mix(in srgb, var(--ravnus-status-color) calc(var(--ravnus-status-check) * 100%), transparent) 0 2px, transparent 2.5px),
+    linear-gradient(135deg, transparent 44%, color-mix(in srgb, var(--ravnus-status-color) calc(var(--ravnus-status-slash) * 100%), transparent) 44% 58%, transparent 58%),
+    linear-gradient(90deg, var(--ravnus-status-color) calc(var(--ravnus-status-fill) * 100%), transparent 0);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+table.list tr.issue td.status::after {
+  @include _status-icon;
+  content: "";
+  position: absolute;
+  inset-inline-start: calc(var(--ravnus-space-050) + 9px);
+  inset-block-start: calc(50% - 6px);
+}
+
+// The same badge for the status on the issue page.
+div.issue .attributes .status.attribute .value {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--ravnus-space-075);
+  padding-inline: var(--ravnus-space-100);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-full);
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-min);
+  font-weight: 500;
+  line-height: 1.8;
+}
+
+div.issue .attributes .status.attribute .value::before {
+  @include _status-icon;
+  content: "";
+  flex: none;
+}
+
+// ---------------------------------------------------------------------------
+// Tracker: outline badge with a dot in the tracker color.
+// ---------------------------------------------------------------------------
+
+table.list tr.issue td.tracker {
+  position: relative;
+  isolation: isolate;
+  padding-inline: var(--ravnus-space-150);
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-min);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+table.list tr.issue td.tracker::after {
+  @include _outline-badge(var(--ravnus-space-050));
+}
+
+table.list tr.issue td.tracker::before {
+  content: "";
+  display: inline-block;
+  inline-size: 7px;
+  block-size: 7px;
+  margin-inline-end: var(--ravnus-space-075);
+  vertical-align: 1px;
+  border-radius: 50%;
+  background-color: var(--ravnus-tracker-color);
+  print-color-adjust: exact;
+  -webkit-print-color-adjust: exact;
+}
+
+// ---------------------------------------------------------------------------
+// Priority (6.4): a 12px icon whose shape and color differ per position class
+// (down arrow, equals, double chevron, up arrow, bolt) and a muted label.
+// Never priority-N ids; the attribute selectors catch extra positions.
+// ---------------------------------------------------------------------------
+
+table.list tr.issue td.priority {
+  color: var(--ravnus-fg-muted);
+  text-align: start;
+  white-space: nowrap;
 }
 
 table.list tr.issue td.priority::before {
   content: "";
   display: inline-block;
   inline-size: 12px;
-  block-size: 10px;
+  block-size: 12px;
   margin-inline-end: var(--ravnus-space-075);
   vertical-align: -1px;
-  background-repeat: no-repeat;
+  background-color: var(--ravnus-priority-default-fg);
+  clip-path: polygon(0 22%, 100% 22%, 100% 40%, 0 40%, 0 60%, 100% 60%, 100% 78%, 0 78%);
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
 
-table.list tr.issue.priority-default td.priority::before {
-  display: none;
+table.list tr.issue:is(.priority-lowest, [class*=" priority-low"]) td.priority::before {
+  background-color: var(--ravnus-priority-low-fg);
+  clip-path: polygon(38% 0, 62% 0, 62% 55%, 90% 55%, 50% 100%, 10% 55%, 38% 55%);
 }
 
-@each $selector, $count in (".priority-lowest, [class*=' priority-low']": 1, ".priority-high3, [class*=' priority-high']": 2, ".priority-high2": 3) {
-  table.list tr.issue:is(#{$selector}) td.priority::before {
-    background-image: _bar-layers($count, 1);
-    background-size: _bar-layers($count, 2);
-    background-position: _bar-layers($count, 3);
-  }
+table.list tr.issue:is(.priority-high3, [class*=" priority-high"]) td.priority::before {
+  background-color: var(--ravnus-priority-high3-fg);
+  clip-path: path("M6 0 L12 5.2 L10.4 6.8 L6 3 L1.6 6.8 L0 5.2 Z M6 5.2 L12 10.4 L10.4 12 L6 8.2 L1.6 12 L0 10.4 Z");
 }
 
-// "!" in on-solid on a danger square: a bar and a dot drawn as gradients.
+table.list tr.issue.priority-high2 td.priority::before {
+  background-color: var(--ravnus-priority-high2-fg);
+  clip-path: polygon(50% 0, 90% 45%, 62% 45%, 62% 100%, 38% 100%, 38% 45%, 10% 45%);
+}
+
 table.list tr.issue.priority-highest td.priority::before {
-  inline-size: 14px;
   block-size: 14px;
   vertical-align: -2px;
-  border-radius: var(--ravnus-radius-sm);
-  background-color: var(--ravnus-danger-solid);
-  background-image:
-    linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid)),
-    linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid));
-  background-size: 2px 6px, 2px 2px;
-  background-position: 6px 3px, 6px 10px;
+  background-color: var(--ravnus-priority-highest-fg);
+  clip-path: path("M7.5 0 L1 8 L5.5 8 L4 14 L11 5.5 L6.5 5.5 Z");
 }
 
 table.list tr.issue.priority-highest td.priority {
@@ -212,136 +280,63 @@ table.list tr.issue.priority-highest td.priority {
 }
 
 // ---------------------------------------------------------------------------
-// Status glyph (6.5): a 10px circle. fill 0 is a ring, 0.5 a half disc, 1 a
-// disc (the 5px border fills it); check adds a dot in the ring.
+// Due date: plain text; overdue is the one filled badge (red-50 with red-700
+// text); behind schedule is amber text. Redmine also marks issues closed
+// before reaching their done ratio as behind schedule; a finished issue is
+// not late.
 // ---------------------------------------------------------------------------
 
-// The circle and the tick are both placed from the cell center, so they line
-// up whatever the font; the start padding keeps room for them. The cell
-// aligns to the start instead of the core center.
-table.list tr.issue td.status {
+table.list tr.issue td.due_date {
   position: relative;
-  text-align: start;
-  padding-inline-start: calc(var(--ravnus-space-100) + 10px + var(--ravnus-space-075));
+  isolation: isolate;
+  padding-inline: var(--ravnus-space-150);
+  white-space: nowrap;
 }
 
-table.list tr.issue td.status::before {
-  content: "";
-  position: absolute;
-  inset-inline-start: var(--ravnus-space-100);
-  inset-block-start: calc(50% - 5px);
-  box-sizing: border-box;
-  inline-size: 10px;
-  block-size: 10px;
-  border: max(1.5px, (var(--ravnus-status-fill) - 0.5) * 10px) solid var(--ravnus-status-color);
-  border-radius: 50%;
-  background: linear-gradient(to top, var(--ravnus-status-color) calc(var(--ravnus-status-fill) * 100%), transparent 0);
+table.list tr.issue.overdue td.due_date {
+  color: var(--ravnus-overdue-fg);
+  font-weight: 500;
+}
+
+table.list tr.issue.overdue td.due_date:not(:empty)::before {
+  @include _outline-badge(var(--ravnus-space-050));
+  border-color: var(--ravnus-overdue-border);
+  background-color: var(--ravnus-overdue-bg);
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
 
-// Done: a 4px dot in the ring (a tick does not read at 10px on 1x screens).
-// --ravnus-status-check keeps its name for mappings.
-table.list tr.issue td.status::after {
-  content: "";
-  position: absolute;
-  inset-inline-start: calc(var(--ravnus-space-100) + 3px);
-  inset-block-start: calc(50% - 2px);
-  inline-size: 4px;
-  block-size: 4px;
-  border: 2px solid var(--ravnus-status-color);
-  border-radius: 50%;
-  box-sizing: border-box;
-  opacity: var(--ravnus-status-check);
-  pointer-events: none;
-  print-color-adjust: exact;
-  -webkit-print-color-adjust: exact;
+table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date {
+  color: var(--ravnus-behind-fg);
+  font-weight: 500;
 }
 
-// ---------------------------------------------------------------------------
-// Tracker (6.5): neutral text and an 8px square dot by default; a mapping
-// such as `tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }`
-// colors both.
-// ---------------------------------------------------------------------------
-
-table.list tr.issue td.tracker {
-  color: var(--ravnus-tracker-color);
-}
-
-table.list tr.issue td.tracker::before {
-  content: "";
-  display: inline-block;
-  inline-size: 8px;
-  block-size: 8px;
-  margin-inline-end: var(--ravnus-space-075);
-  border: 4px solid var(--ravnus-tracker-color);
-  border-radius: 2px;
-  box-sizing: border-box;
-}
-
-// ---------------------------------------------------------------------------
-// Other row states (6.5)
-// ---------------------------------------------------------------------------
-
-// Closed rows: subtle text (6.01), no strike-through on the subject.
-table.list tr.issue.closed td {
+// Closed rows: subtle text outside the badges, no strike-through.
+table.list tr.issue.closed td:not(.status, .tracker) {
   color: var(--ravnus-fg-subtle);
 }
 
-// Overdue: danger text, 600 (typography) and a 10px "!" disc. Same
-// specificity as the core rule (0,4,3), later, and on selected rows too
-// (danger 5.23:1 on accent-muted).
-table.list tr.issue.overdue td.due_date {
-  color: var(--ravnus-danger-fg);
-}
-
-table.list tr.issue.overdue td.due_date::before,
-table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
-  content: "";
-  display: inline-block;
-  inline-size: 10px;
-  block-size: 10px;
-  margin-inline-end: var(--ravnus-space-050);
-  vertical-align: -1px;
-  background-repeat: no-repeat;
-  print-color-adjust: exact;
-  -webkit-print-color-adjust: exact;
-}
-
-table.list tr.issue.overdue td.due_date::before {
-  border-radius: 50%;
-  background-color: var(--ravnus-danger-solid);
-  background-image:
-    linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid)),
-    linear-gradient(var(--ravnus-on-solid), var(--ravnus-on-solid));
-  background-size: 1.5px 4px, 1.5px 1.5px;
-  background-position: 4.25px 2px, 4.25px 7px;
-}
-
-// Behind schedule: warning text and a triangle (warning alone is 2.64:1
-// against body text, so the shape is the non-color cue). Redmine also marks
-// closed issues that were closed before reaching their done ratio; a
-// finished issue is not late, so closed rows get none of it.
-table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date {
-  color: var(--ravnus-warning-fg);
-}
-
-table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
-  background-color: var(--ravnus-warning-solid);
-  clip-path: polygon(50% 0, 100% 100%, 0 100%);
-}
-
 // ---------------------------------------------------------------------------
-// Progress bars (6.1): green, the behind-schedule share hatched.
+// Progress bars (shadcn Progress): h-2, rounded-full, primary on a track.
 // ---------------------------------------------------------------------------
 
-// Cells of the progress bar table nested in a list cell keep no padding (the
-// list cell padding above would otherwise thicken the bar).
 table.list table.progress td {
   padding-block: 0;
+  border-inline-end: 0;
+}
+
+table.progress {
+  border: 0;
+  border-collapse: separate;
+  border-spacing: 0;
+  border-radius: var(--ravnus-radius-full);
+  overflow: hidden;
+  background: var(--ravnus-progress-track);
 }
 
 table.progress td {
+  block-size: 8px;
+  padding: 0;
   print-color-adjust: exact;
   -webkit-print-color-adjust: exact;
 }
@@ -358,21 +353,6 @@ table.progress td.todo {
   background: var(--ravnus-progress-track);
 }
 
-// A canvas line between the closed and done shares of roadmap bars (1.58:1).
-table.progress td.closed + td.done {
-  border-inline-start: 1px solid var(--ravnus-bg-canvas);
-}
-
-// The issue page bar only: subtask and related issue rows inside div.issue
-// carry their own row classes.
-:is(table.list tr.issue.behind-schedule:not(.closed), div.issue.behind-schedule:not(.closed) .attributes) table.progress td.closed {
-  background: repeating-linear-gradient(
-    45deg,
-    var(--ravnus-progress-behind) 0 3px,
-    color-mix(in srgb, var(--ravnus-progress-behind) 55%, var(--ravnus-bg-canvas)) 3px 6px
-  );
-}
-
 p.percent,
 p.progress-info {
   color: var(--ravnus-fg-muted);
@@ -381,13 +361,21 @@ p.progress-info {
 // ---------------------------------------------------------------------------
 // Selected rows (context menu, 6.5): accent-muted background, default text,
 // the list link color and icons in currentColor. The checked checkbox is the
-// cue besides color, so no marker.
+// cue besides color. Badges keep their own surfaces.
 // ---------------------------------------------------------------------------
 
 table.list tr.context-menu-selection,
 table.list tr.context-menu-selection:hover {
   background-color: var(--ravnus-accent-muted) !important;
   color: var(--ravnus-fg-default) !important;
+}
+
+table.list tr.context-menu-selection.overdue td.due_date {
+  color: var(--ravnus-overdue-fg) !important;
+}
+
+table.list tr.context-menu-selection.behind-schedule:not(.overdue, .closed) td.due_date {
+  color: var(--ravnus-behind-fg) !important;
 }
 
 table.list tr.context-menu-selection a,
@@ -405,26 +393,30 @@ table.list tr.context-menu-selection svg.icon-svg {
 
 // The list cell padding above would replace the core group spacing.
 tr.group td {
-  padding-block: 0.8em 0.5em;
-  background-color: var(--ravnus-bg-subtle);
+  padding-block: 1.2em 0.5em;
+  background-color: var(--ravnus-bg-canvas);
   border-block-end: 1px solid var(--ravnus-border-default);
   color: var(--ravnus-fg-default);
 }
 
 table.list tbody tr.group:hover {
-  background-color: var(--ravnus-bg-subtle);
+  background-color: var(--ravnus-bg-canvas);
 }
 
 tr.group span.name {
+  color: var(--ravnus-fg-default);
   font-weight: 600;
 }
 
+// Secondary badge (shadcn Badge variant="secondary").
 tr.group span.count {
   inset-block-end: 0;
-  padding-inline: var(--ravnus-space-075);
+  padding-inline: var(--ravnus-space-100);
   border-radius: var(--ravnus-radius-full);
   background: var(--ravnus-bg-inset);
-  color: var(--ravnus-fg-muted);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+  text-transform: none;
 }
 
 tr.group span.totals,
@@ -478,41 +470,29 @@ tr.group .expander svg.icon-svg {
 }
 
 // ---------------------------------------------------------------------------
-// Forced colors (8.8): backgrounds and gradients drop in this mode, so the
-// glyphs opt out and redraw in system colors. Borders (status ring, row
-// marker) stay on their own.
+// Forced colors (8.8): badge borders stay; icons opt out and redraw in system
+// colors.
 // ---------------------------------------------------------------------------
 
 @media (forced-colors: active) {
   table.list tr.issue td.priority::before,
-  table.list tr.issue td.status::before,
   table.list tr.issue td.status::after,
-  table.list tr.issue td.due_date::before,
+  div.issue .attributes .status.attribute .value::before,
+  table.list tr.issue td.tracker::before,
   table.progress td {
     forced-color-adjust: none;
   }
 
-  table.list tr.issue td.priority::before {
-    --ravnus-priority-color: CanvasText;
-  }
-
-  table.list tr.issue.priority-highest td.priority::before {
+  // The per-level priority rules are more specific; html body lifts this one
+  // above them.
+  html body table.list tr.issue:is(*, .priority-lowest) td.priority::before,
+  table.list tr.issue td.tracker::before {
     background-color: CanvasText;
-    background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
   }
 
-  table.list tr.issue td.status::before,
-  table.list tr.issue td.status::after {
+  table.list tr.issue td.status::after,
+  div.issue .attributes .status.attribute .value::before {
     --ravnus-status-color: CanvasText;
-  }
-
-  table.list tr.issue.overdue td.due_date::before {
-    background-color: CanvasText;
-    background-image: linear-gradient(Canvas, Canvas), linear-gradient(Canvas, Canvas);
-  }
-
-  table.list tr.issue.behind-schedule:not(.overdue, .closed) td.due_date::before {
-    background-color: CanvasText;
   }
 
   table.progress {
@@ -526,19 +506,11 @@ tr.group .expander svg.icon-svg {
   table.progress td:is(.closed, .done) {
     background: CanvasText;
   }
-
-  table.progress td.closed + td.done {
-    border-inline-start-color: Canvas;
-  }
-
-  :is(table.list tr.issue.behind-schedule:not(.closed), div.issue.behind-schedule:not(.closed) .attributes) table.progress td.closed {
-    background: repeating-linear-gradient(45deg, CanvasText 0 3px, Canvas 3px 6px);
-  }
 }
 
 // ---------------------------------------------------------------------------
-// Print (8.9): glyphs and bars print with their colors (above); stripes,
-// hover and selection tints do not.
+// Print (8.9): icons and bars print with their colors; stripes, hover and
+// selection tints do not.
 // ---------------------------------------------------------------------------
 
 // html body lifts the rules above the stripe and hover rules (0,3,3), (0,4,3).
@@ -552,20 +524,5 @@ tr.group .expander svg.icon-svg {
 
   table.list tr.context-menu-selection {
     background-color: transparent !important;
-  }
-
-  // The checkbox column is hidden in print (hide-when-print), so the row
-  // marker moves to the id cell, which every issue query has (its other
-  // neighbors draw glyphs on ::before).
-  table.list tr.issue > td.checkbox.hide-when-print + td.id {
-    position: relative;
-  }
-
-  table.list tr.issue > td.checkbox.hide-when-print + td.id::before {
-    content: "";
-    position: absolute;
-    inset-block: 0;
-    inset-inline-start: 0;
-    border-inline-start: var(--ravnus-row-marker-width) solid var(--ravnus-row-marker-color);
   }
 }

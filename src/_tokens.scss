@@ -32,24 +32,26 @@
 // black. The build checks every key against its color.
 $neutral: (
   0: #FFFFFF,
-  16: #FAF9FC,
-  32: #F4F4F7,
-  43: #F0F0F6,
-  50: #EEEEF1,
-  74: #E6E6E9,
-  116: #D9D8DD,
-  300: #9F9DA3,
-  410: #7D7C85,
-  499: #64626A,
-  550: #55545D,
-  555: #53535B,
-  754: #202026,
+  15: #FAFAFA,
+  30: #F5F5F5,
+  78: #E5E5E5,
+  130: #D4D4D4,
+  285: #A3A3A3,
+  367: #8A8A8A,
+  444: #737373,
+  472: #6B6B6B,
+  561: #525252,
+  629: #404040,
+  731: #262626,
+  795: #171717,
+  855: #0A0A0A,
   1000: #000000,
 );
 $violet: (
   46: #F0EDFF,
   139: #D1CEE4,
   161: #CAC5EA,
+  459: #7C3AED, // violet-600: feedback status
   550: #5A3CA5,
   640: #46009B, // RAVNUS brand violet
   641: #3E3463,
@@ -60,6 +62,7 @@ $blue: (
   45: #E4F2FF,
   94: #D4E2EF,
   201: #98C3E8,
+  454: #2563EB, // blue-600: links, open status
   503: #1864AB,
   508: #0065A4,
   511: #215DB3,
@@ -71,6 +74,7 @@ $green: (
   45: #E0F7E9,
   200: #90CEAC,
   415: #249163,
+  473: #15803D, // green-700: done and closed status
   521: #176E4A,
   531: #126B47,
 );
@@ -79,15 +83,20 @@ $amber: (
   43: #FFEEDA,
   180: #EABC6E,
   203: #FEA800, // logo amber
+  393: #C46500, // priority high icon
   379: #BD7221,
+  445: #B45309, // amber-700: in progress status, behind schedule
   460: #B24B0A,
   499: #964D09,
   500: #8A560C,
 );
 $red: (
+  29: #FEF2F2, // red-50: overdue badge
   37: #FFEEEE,
   47: #FFEAE8,
+  115: #FECACA, // red-200: overdue badge border
   200: #F2A7A4,
+  495: #B91C1C, // red-700: overdue badge text
   501: #B32322,
   520: #A5292B,
 );
@@ -190,21 +199,32 @@ $_tags: (
   green: (_p(green, 531), _p(green, 45)),
   blue: (_p(blue, 530), _p(blue, 45)),
   violet: (_p(violet, 550), _p(violet, 46)),
-  gray: (_p(neutral, 550), _p(neutral, 50)),
+  gray: (_p(neutral, 561), _p(neutral, 30)),
 );
 $_domain-tokens: (
-  "priority-low-fg": _ref("fg-subtle"),
-  "priority-high3-fg": _ref("warning-fg"),
+  // Priority icons (6.4): a shape and a color per position class.
+  "priority-low-fg": _p(blue, 454),
+  "priority-default-fg": _ref("fg-icon"),
+  "priority-high3-fg": _p(amber, 393),
   "priority-high2-fg": _p(amber, 460),
   "priority-highest-fg": _ref("danger-fg"),
-  "status-open-color": _ref("info-fg"),
-  "status-progress-color": _ref("warning-fg"),
-  "status-done-color": _ref("success-fg"),
-  "status-closed-color": _ref("fg-subtle"),
-  "progress-closed": _p(green, 521),
-  "progress-done": _p(green, 415),
-  "progress-behind": _p(amber, 379),
-  "progress-track": _ref("border-muted"),
+  // Status icons in the outline badge (decision 9 of 2026-10-18, 6.5): the
+  // color goes to the icon only; the label stays muted.
+  "status-open-color": _p(blue, 454),
+  "status-progress-color": _p(amber, 445),
+  "status-feedback-color": _p(violet, 459),
+  "status-done-color": _p(green, 473),
+  "status-closed-color": _p(green, 473),
+  "status-rejected-color": _ref("fg-icon"),
+  // The one filled badge: overdue due dates.
+  "overdue-fg": _p(red, 495),
+  "overdue-bg": _p(red, 29),
+  "overdue-border": _p(red, 115),
+  "behind-fg": _p(amber, 445),
+  "tracker-default": _ref("fg-icon"),
+  "progress-closed": _ref("accent"),
+  "progress-done": _ref("fg-icon"),
+  "progress-track": _ref("border-default"),
 );
 @each $name, $colors in $_tags {
   $_domain-tokens: map.merge($_domain-tokens, (
@@ -220,49 +240,49 @@ $_groups: (
   ),
   "Surfaces": (
     "bg-canvas": _p(neutral, 0),
-    "bg-subtle": _p(neutral, 16),
-    "bg-inset": _p(neutral, 32),
-    "bg-hover": _p(neutral, 43),
+    "bg-subtle": _p(neutral, 15),
+    "bg-inset": _p(neutral, 30),
+    "bg-hover": _p(neutral, 30),
     "bg-raised": _ref("bg-canvas"),
     "bg-overlay": _ref("bg-canvas"),
     "bg-inverse": _ref("fg-default"),
-    "accent-subtle": _mix("accent", 6%, "bg-canvas"),
-    "accent-muted": _mix("accent", 12%, "bg-canvas"),
-    "nav-bg": _mix("accent", 4%, "bg-canvas"),
-    "nav-hover-bg": _mix("accent", 9%, "bg-canvas"),
-    "em-bg": _mix("accent", 10%, "bg-canvas"),
+    "accent-subtle": _mix("accent", 4%, "bg-canvas"),
+    "accent-muted": _mix("accent", 4%, "bg-canvas"),
+    "nav-bg": _ref("bg-canvas"),
+    "nav-hover-bg": _ref("bg-inset"),
+    "em-bg": _mix("accent", 4%, "bg-canvas"),
   ),
   "Text and icons": (
-    "fg-default": _p(neutral, 754),
-    "fg-muted": _p(neutral, 555),
-    "fg-subtle": _p(neutral, 499),
-    "fg-disabled": _p(neutral, 300),
-    "fg-icon": _p(neutral, 410),
+    "fg-default": _p(neutral, 855),
+    "fg-muted": _p(neutral, 561),
+    "fg-subtle": _p(neutral, 472),
+    "fg-disabled": _p(neutral, 285),
+    "fg-icon": _p(neutral, 444),
     "fg-inverse": _ref("bg-canvas"),
-    "link": _p(blue, 511),
-    "link-hover": _mix("link", 80%, "_mix-dark"),
+    "link": _p(blue, 454),
+    "link-hover": _mix("link", 79%, "_mix-dark"),
     "link-decoration": _mix("link", 75%, transparent),
   ),
   "Accent": (
-    "accent": _p(violet, 640),
+    "accent": _p(neutral, 795),
     "accent-hover": _mix("accent", 86%, "_mix-light"),
     "accent-active": _mix("accent", 85%, "_mix-dark"),
-    "on-accent": _p(neutral, 0),
+    "on-accent": _p(neutral, 15),
     "focus-ring": _ref("accent"),
   ),
   "Borders": (
-    "border-muted": _p(neutral, 74),
-    "border-default": _p(neutral, 116),
-    "border-control": _p(neutral, 410),
+    "border-muted": _p(neutral, 78),
+    "border-default": _p(neutral, 78),
+    "border-control": _p(neutral, 367),
     "nav-border": _ref("border-default"),
   ),
   "Roles": $_role-tokens,
   "Domain: priority, status, progress and tags": $_domain-tokens,
   "Chrome": (
-    "topbar-bg": _ref("accent"),
-    "topbar-fg": _ref("on-accent"),
-    "topbar-fg-muted": _p(violet, 161),
-    "topbar-focus": _p(amber, 203),
+    "topbar-bg": _p(neutral, 855),
+    "topbar-fg": _p(neutral, 15),
+    "topbar-fg-muted": _p(neutral, 285),
+    "topbar-focus": _p(neutral, 15),
     "topbar-height": 2rem,
     "header-bg": _ref("bg-canvas"),
     "header-fg": _ref("fg-default"),
@@ -315,9 +335,9 @@ $_groups: (
     "space-250": 20px,
     "space-300": 24px,
     "space-400": 32px,
-    "radius-sm": 3px,
-    "radius": 6px,
-    "radius-lg": 8px,
+    "radius-sm": 4px,
+    "radius": 8px,
+    "radius-lg": 10px,
     "radius-full": 9999px,
     "control-height": 2rem,
     "control-height-sm": 1.75rem,
@@ -325,7 +345,7 @@ $_groups: (
     "sticky-header-block-size": 50px,
     "sidebar-at-start": 0,
     "row-pad-y": 0.375rem,
-    "row-stripe": _ref("bg-subtle"),
+    "row-stripe": transparent,
     "list-link": _ref("link"),
     "prose-max-inline-size": none,
     "subject-min-inline-size": 12em,
@@ -407,16 +427,39 @@ $_ink: (
   "topbar-height": 1.75rem,
 );
 
+// The RAVNUS violet accent with its derived colors as literals (the default
+// accent is neutral near-black since decision 10 of 2026-10-18).
+$_violet-accent: (
+  "accent": _p(violet, 640),
+  "accent-hover": _literal(),
+  "accent-active": _literal(),
+  "accent-subtle": _literal(),
+  "accent-muted": _literal(),
+  "nav-bg": _literal(),
+  "nav-hover-bg": _literal(),
+  "em-bg": _literal(),
+  "link": _p(blue, 511),
+);
+
 $presets: (
+  "signature": (
+    "title": "Signature",
+    "about": "RAVNUS violet top bar and accent over the white header (the default until v0.2).",
+    "tokens": map.merge((
+      "topbar-bg": _p(violet, 640),
+      "topbar-fg-muted": _p(violet, 161),
+      "topbar-focus": _p(amber, 203),
+    ), $_violet-accent),
+  ),
   "ink": (
     "title": "Ink (A)",
     "about": "Ink violet header and top bar with light text, like the core header.",
-    "tokens": $_ink,
+    "tokens": map.merge($_ink, $_violet-accent),
   ),
   "brand-forward": (
     "title": "Brand-forward",
     "about": "Ink with the brand violet as the header color.",
-    "tokens": map.merge($_ink, ("header-bg": _p(violet, 640))),
+    "tokens": map.merge(map.merge($_ink, ("header-bg": _p(violet, 640))), $_violet-accent),
   ),
   "calm": (
     "title": "Calm (C)",
@@ -458,10 +501,10 @@ $presets: (
       "font-size-cell-subject": 0.8125rem,
     ),
   ),
-  "classic-stripes-off": (
-    "title": "Classic stripes off",
-    "about": "No row stripes in lists.",
-    "tokens": ("row-stripe": transparent),
+  "striped": (
+    "title": "Striped rows",
+    "about": "Tinted every other row in lists (no stripes by default).",
+    "tokens": ("row-stripe": _ref("bg-subtle")),
   ),
 );
 
@@ -788,9 +831,9 @@ $_rounding-margin: 0.05;
  *    #{_knob("prose-max-inline-size", $reserved: true)}
  *    #{_knob("subject-min-inline-size")}
  * 4. Domain hooks: map issue rows by status or tracker id, for example
- *    tr.status-2 {
+ *    :is(tr, div).status-2 {
  *      --ravnus-status-color: var(--ravnus-status-progress-color);
- *      --ravnus-status-fill: 0.5; --ravnus-status-check: 0;
+ *      --ravnus-status-fill: 0.5;
  *    }
  *    tr.tracker-1 { --ravnus-tracker-color: var(--ravnus-tag-red-fg); }
  * 5. Advanced: every other token in the blocks below (the semantic set that
@@ -858,6 +901,23 @@ $_rounding-margin: 0.05;
  * paste color-mix() itself.
  */
 /*
+ * Preset: #{_preset-title("signature")}. #{_preset-about("signature")}
+ * :root {
+ *   #{_preset-decl("signature", 1)}
+ *   #{_preset-decl("signature", 2)}
+ *   #{_preset-decl("signature", 3)}
+ *   #{_preset-decl("signature", 4)}
+ *   #{_preset-decl("signature", 5)}
+ *   #{_preset-decl("signature", 6)}
+ *   #{_preset-decl("signature", 7)}
+ *   #{_preset-decl("signature", 8)}
+ *   #{_preset-decl("signature", 9)}
+ *   #{_preset-decl("signature", 10)}
+ *   #{_preset-decl("signature", 11)}
+ *   #{_preset-decl("signature", 12)}
+ * }#{_preset-end("signature", 12)}
+ */
+/*
  * Preset: #{_preset-title("ink")}. #{_preset-about("ink")}
  * :root {
  *   #{_preset-decl("ink", 1)}
@@ -870,7 +930,16 @@ $_rounding-margin: 0.05;
  *   #{_preset-decl("ink", 8)}
  *   #{_preset-decl("ink", 9)}
  *   #{_preset-decl("ink", 10)}
- * }#{_preset-end("ink", 10)}
+ *   #{_preset-decl("ink", 11)}
+ *   #{_preset-decl("ink", 12)}
+ *   #{_preset-decl("ink", 13)}
+ *   #{_preset-decl("ink", 14)}
+ *   #{_preset-decl("ink", 15)}
+ *   #{_preset-decl("ink", 16)}
+ *   #{_preset-decl("ink", 17)}
+ *   #{_preset-decl("ink", 18)}
+ *   #{_preset-decl("ink", 19)}
+ * }#{_preset-end("ink", 19)}
  */
 /*
  * Preset: #{_preset-title("brand-forward")}. #{_preset-about("brand-forward")}
@@ -885,7 +954,16 @@ $_rounding-margin: 0.05;
  *   #{_preset-decl("brand-forward", 8)}
  *   #{_preset-decl("brand-forward", 9)}
  *   #{_preset-decl("brand-forward", 10)}
- * }#{_preset-end("brand-forward", 10)}
+ *   #{_preset-decl("brand-forward", 11)}
+ *   #{_preset-decl("brand-forward", 12)}
+ *   #{_preset-decl("brand-forward", 13)}
+ *   #{_preset-decl("brand-forward", 14)}
+ *   #{_preset-decl("brand-forward", 15)}
+ *   #{_preset-decl("brand-forward", 16)}
+ *   #{_preset-decl("brand-forward", 17)}
+ *   #{_preset-decl("brand-forward", 18)}
+ *   #{_preset-decl("brand-forward", 19)}
+ * }#{_preset-end("brand-forward", 19)}
  */
 /*
  * Preset: #{_preset-title("calm")}. #{_preset-about("calm")}
@@ -934,8 +1012,8 @@ $_rounding-margin: 0.05;
  * }#{_preset-end("compact", 2)}
  */
 /*
- * Preset: #{_preset-title("classic-stripes-off")}. #{_preset-about("classic-stripes-off")}
+ * Preset: #{_preset-title("striped")}. #{_preset-about("striped")}
  * :root {
- *   #{_preset-decl("classic-stripes-off", 1)}
- * }#{_preset-end("classic-stripes-off", 1)}
+ *   #{_preset-decl("striped", 1)}
+ * }#{_preset-end("striped", 1)}
  */

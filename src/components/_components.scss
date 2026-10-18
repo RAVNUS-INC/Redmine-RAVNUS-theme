@@ -1,0 +1,447 @@
+// Shared components mapped to shadcn/ui (decision 9 of 2026-10-18): Button,
+// Input, Tabs (line variant), Card, Alert, Empty, Badge, Dropdown Menu,
+// Pagination and the login card. The shapes follow the shadcn registry
+// (new-york-v4): rounded-md controls, 1px borders, shadow-xs on controls,
+// shadow-sm on cards, font-medium labels. Colors come from the tokens, so
+// the contrast gate covers them: control borders stay at 3:1 or more, which
+// makes them darker than shadcn's own.
+//
+// Core rules this file overrides load before the theme unless noted;
+// context_menu.css and dropdown.css load after it, so those rules add a
+// selector step (DESIGN.md 8.3).
+
+$_shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+$_shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+$_shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+
+// ---------------------------------------------------------------------------
+// Input, select, textarea (shadcn Input)
+// ---------------------------------------------------------------------------
+
+:is(input:is([type="text"], [type="password"], [type="date"], [type="number"], [type="email"], [type="url"], [type="search"], [type="tel"], [type="time"], :not([type])), select, textarea) {
+  border: 1px solid var(--ravnus-border-control);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  box-shadow: $_shadow-xs;
+}
+
+:is(input:is([type="text"], [type="password"], [type="date"], [type="number"], [type="email"], [type="url"], [type="search"], [type="tel"], [type="time"], :not([type])), select) {
+  min-block-size: var(--ravnus-control-height-sm);
+  padding-inline: var(--ravnus-space-100);
+}
+
+select:not([multiple]) {
+  padding-inline-end: var(--ravnus-space-300);
+}
+
+// The core focus rule (0,2,1) swaps the border to blue and removes the
+// outline; equal specificity, later, restores a visible indicator.
+input[type="text"]:focus-visible,
+input[type="password"]:focus-visible,
+input[type="date"]:focus-visible,
+input[type="number"]:focus-visible,
+input[type="email"]:focus-visible,
+input[type="url"]:focus-visible,
+input[type="search"]:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  border-color: var(--ravnus-fg-icon);
+  outline: 0;
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ravnus-focus-ring) 18%, transparent);
+}
+
+// The file picker's button follows the outline button.
+input[type="file"]::file-selector-button {
+  min-block-size: var(--ravnus-control-height-sm);
+  margin-inline-end: var(--ravnus-space-100);
+  padding-inline: var(--ravnus-space-150);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font: inherit;
+  font-weight: 500;
+  box-shadow: $_shadow-xs;
+  cursor: pointer;
+}
+
+input[type="file"]::file-selector-button:hover {
+  background-color: var(--ravnus-bg-inset);
+}
+
+input:is([type="checkbox"], [type="radio"]) {
+  accent-color: var(--ravnus-accent);
+}
+
+fieldset:not(.collapsible) {
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+}
+
+fieldset.collapsible {
+  border-color: var(--ravnus-border-default);
+}
+
+legend {
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+}
+
+// ---------------------------------------------------------------------------
+// Button (shadcn Button: outline by default, the primary variant on the main
+// action of a form, 4.10)
+// ---------------------------------------------------------------------------
+
+:is(input:is([type="submit"], [type="button"], [type="reset"]), button):not(.icon-only, .tab-left, .tab-right, .ui-button, .ui-datepicker-trigger, .jstb_button, [class*="jstb_"]) {
+  min-block-size: var(--ravnus-control-height-sm);
+  padding-block: 0;
+  padding-inline: var(--ravnus-space-150);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+  box-shadow: $_shadow-xs;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: var(--ravnus-bg-inset);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ravnus-focus-ring);
+    outline-offset: 2px;
+  }
+}
+
+// Main actions: the commit button of a form (create, save) and sign in. The
+// delete confirmation pages also name their button commit (users, projects,
+// wikis, my account and the bulk deletes, 4.10), so their actions are left
+// out and keep the outline button.
+body:not(.action-destroy, .action-bulk_destroy) input[type="submit"][name="commit"]:not(.btn-alert),
+#login-form #login-submit {
+  border-color: var(--ravnus-accent);
+  background-color: var(--ravnus-accent);
+  color: var(--ravnus-on-accent);
+
+  &:hover {
+    border-color: var(--ravnus-accent-hover);
+    background-color: var(--ravnus-accent-hover);
+  }
+}
+
+// Destructive buttons (shadcn Button variant="destructive"); the core has no
+// style for .btn-alert (4.10).
+// Same specificity as the outline button rule above (0,2,1), later.
+:is(input, button, a).btn-alert:not(.icon-only) {
+  border-color: var(--ravnus-danger-solid);
+  background-color: var(--ravnus-danger-solid);
+  color: var(--ravnus-on-solid);
+
+  // Darker on hover, so the text contrast only grows.
+  &:hover {
+    border-color: color-mix(in srgb, var(--ravnus-danger-solid) 85%, black);
+    background-color: color-mix(in srgb, var(--ravnus-danger-solid) 85%, black);
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Tabs in the content (shadcn Tabs, line variant): no boxes, muted labels,
+// the selected tab in the foreground with an underline.
+// ---------------------------------------------------------------------------
+
+#content .tabs ul {
+  border-block-end-color: var(--ravnus-border-default);
+}
+
+#content .tabs ul li a {
+  border: 0;
+  border-radius: var(--ravnus-radius-sm) var(--ravnus-radius-sm) 0 0;
+  background: transparent;
+  color: var(--ravnus-fg-muted);
+  font-weight: 500;
+
+  &:hover {
+    color: var(--ravnus-fg-default);
+    background: var(--ravnus-bg-inset);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--ravnus-focus-ring);
+    outline-offset: -2px;
+  }
+}
+
+#content .tabs ul li a.selected,
+#content .tabs ul li a.selected:hover {
+  border: 0;
+  background: transparent;
+  color: var(--ravnus-fg-default);
+  box-shadow: inset 0 -2px 0 var(--ravnus-accent);
+}
+
+// ---------------------------------------------------------------------------
+// Card (shadcn Card): the issue, boxes, the login form.
+// ---------------------------------------------------------------------------
+
+div.issue,
+.box,
+.mypage-box,
+#login-form {
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  box-shadow: $_shadow-sm;
+}
+
+div.issue {
+  padding-block: var(--ravnus-space-250);
+  padding-inline: var(--ravnus-space-300);
+}
+
+div.issue div.subject p {
+  color: var(--ravnus-fg-muted);
+}
+
+div.issue hr {
+  background: var(--ravnus-border-default);
+}
+
+#login-form {
+  padding: var(--ravnus-space-300);
+}
+
+.mypage-box {
+  padding: var(--ravnus-space-200);
+}
+
+// Journal headers: a quiet row on the muted surface, the anchor target tinted.
+.journals h4.journal-header {
+  border-radius: var(--ravnus-radius);
+  background-color: var(--ravnus-bg-subtle);
+}
+
+.journals h4.journal-header .update-info {
+  color: var(--ravnus-fg-muted);
+}
+
+.journals div:target h4.journal-header {
+  background-color: var(--ravnus-accent-subtle);
+  box-shadow: inset 0 0 0 1px var(--ravnus-border-default);
+}
+
+// ---------------------------------------------------------------------------
+// Alert (shadcn Alert): a card-colored box with a colored icon; destructive
+// and warning alerts color the text too. Empty states (.nodata) follow shadcn
+// Empty: dashed border, muted text.
+// ---------------------------------------------------------------------------
+
+#errorExplanation,
+div.flash,
+.conflict,
+.warning {
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font-size: var(--ravnus-font-size-base);
+  box-shadow: $_shadow-xs;
+}
+
+// The core notice (0,2,1) keeps its green box over div.flash; the notice is
+// a plain card with a green icon.
+div.flash.notice {
+  border-color: var(--ravnus-border-default);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+}
+
+div.flash.notice svg.icon-svg {
+  stroke: var(--ravnus-success-fg);
+}
+
+div.flash.error,
+#errorExplanation {
+  border-color: var(--ravnus-danger-border);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-danger-fg);
+}
+
+div.flash.error svg.icon-svg,
+#errorExplanation svg.icon-svg {
+  stroke: var(--ravnus-danger-fg);
+}
+
+div.flash.warning,
+.conflict,
+.warning {
+  border-color: var(--ravnus-warning-border);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-warning-fg);
+}
+
+div.flash.warning svg.icon-svg,
+.conflict svg.icon-svg {
+  stroke: var(--ravnus-warning-fg);
+}
+
+.nodata {
+  border: 1px dashed var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-lg);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-muted);
+  font-size: var(--ravnus-font-size-base);
+}
+
+// ---------------------------------------------------------------------------
+// Badge (shadcn Badge): outline pills; private is the destructive variant,
+// counts the secondary one.
+// ---------------------------------------------------------------------------
+
+.badge {
+  inset-block-end: 0;
+  padding-block: 0;
+  padding-inline: var(--ravnus-space-100);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius-full);
+  background: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+  text-transform: none;
+  vertical-align: middle;
+}
+
+.badge-private {
+  border-color: var(--ravnus-danger-border);
+  background: var(--ravnus-danger-subtle);
+  color: var(--ravnus-danger-fg);
+}
+
+.badge-count,
+.badge-issues-count {
+  border-color: transparent;
+  background: var(--ravnus-bg-inset);
+  color: var(--ravnus-fg-default);
+}
+
+.badge-status-open {
+  color: var(--ravnus-fg-default);
+}
+
+.badge-status-locked {
+  color: var(--ravnus-warning-fg);
+}
+
+.badge-status-closed {
+  color: var(--ravnus-fg-muted);
+}
+
+// ---------------------------------------------------------------------------
+// Dropdown Menu (shadcn DropdownMenu): the issue context menu and the "..."
+// menus. context_menu.css loads after the theme, so #content-free rules add
+// html (8.3).
+// ---------------------------------------------------------------------------
+
+html #context-menu ul,
+.contextual .drdn-content,
+.journal-actions .drdn-content {
+  padding: var(--ravnus-space-050);
+  border: 1px solid var(--ravnus-border-default);
+  border-radius: var(--ravnus-radius);
+  background: var(--ravnus-bg-overlay);
+  box-shadow: $_shadow-md;
+}
+
+html #context-menu li {
+  border: 0;
+  border-radius: var(--ravnus-radius-sm);
+}
+
+html #context-menu li:hover {
+  border: 0;
+  background-color: var(--ravnus-bg-inset);
+}
+
+html #context-menu a,
+html #context-menu a:hover {
+  padding-block: var(--ravnus-space-075);
+  color: var(--ravnus-fg-default);
+}
+
+html #context-menu a.disabled,
+html #context-menu a.disabled:hover {
+  color: var(--ravnus-fg-disabled);
+}
+
+.contextual .drdn-items > a,
+.journal-actions .drdn-items > a {
+  border-radius: var(--ravnus-radius-sm);
+  color: var(--ravnus-fg-default);
+}
+
+.contextual .drdn-items > a:hover,
+.journal-actions .drdn-items > a:hover {
+  background-color: var(--ravnus-bg-inset);
+  color: var(--ravnus-fg-default);
+}
+
+// ---------------------------------------------------------------------------
+// Pagination (shadcn Pagination): ghost page links, the current page as an
+// outline button.
+// ---------------------------------------------------------------------------
+
+.pagination ul.pages li,
+.pagination ul.pages li:first-child,
+.pagination ul.pages li:last-child {
+  margin-inline-end: var(--ravnus-space-050);
+  border: 1px solid transparent;
+  border-radius: var(--ravnus-radius);
+}
+
+.pagination ul.pages li.page:hover {
+  background-color: var(--ravnus-bg-inset);
+}
+
+.pagination ul.pages li.current {
+  border-color: var(--ravnus-border-default);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-default);
+  font-weight: 500;
+  box-shadow: $_shadow-xs;
+}
+
+span.pagination {
+  color: var(--ravnus-fg-muted);
+}
+
+// ---------------------------------------------------------------------------
+// Muted text the core grays below 4.5:1 (oc-gray-5 2.07, oc-gray-6 3.32):
+// the footer, the export links, journal details, revision info and the wiki
+// page update line.
+// ---------------------------------------------------------------------------
+
+#footer {
+  border-block-start-color: var(--ravnus-border-default);
+  background-color: var(--ravnus-bg-canvas);
+  color: var(--ravnus-fg-subtle);
+}
+
+p.other-formats,
+.journals .journal-details,
+ul.revision-info,
+.wiki-update-info {
+  color: var(--ravnus-fg-muted);
+}
+
+.journals .journal-details a,
+ul.revision-info a {
+  color: var(--ravnus-link);
+}
+
+.journals .journal-details a:hover,
+ul.revision-info a:hover {
+  color: var(--ravnus-link-hover);
+}
